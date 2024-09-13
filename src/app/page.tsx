@@ -1,4 +1,4 @@
-// /src/app/page.tsx
+
 "use client";
 
 import { useEffect } from 'react';
@@ -8,8 +8,8 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace('/auth/login');
+    router.replace('/homepages/Reports');
   }, [router]);
 
-  return null;  // O muestra un mensaje de redirección si lo prefieres
+  return null;  
 }

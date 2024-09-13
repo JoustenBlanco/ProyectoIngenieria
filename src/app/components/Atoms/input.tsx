@@ -1,14 +1,5 @@
 import React from 'react';
-
-interface InputProps {
-  id: string;
-  name: string;
-  type: string;
-  label: string;
-  placeholder?: string;
-  required?: boolean;
-  className?: string;
-}
+import {InputProps} from "../../../../types";
 
 const Input: React.FC<InputProps> = ({ id, name, type, label, placeholder, required, className }) => {
   return (

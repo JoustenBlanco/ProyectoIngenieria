@@ -1,5 +1,5 @@
 import React from 'react';
-import Input from '../../components/input';
+import Input from '../../../components/Atoms/input';
 
 export default function LoginPage() {
   return (
