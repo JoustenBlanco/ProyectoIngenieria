@@ -1,0 +1,236 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model RAE_Alerta_Temprana {
+  Id_alerta        Int
+  Id_alumno        Int
+  Descripcion      String           @db.VarChar(200)
+  Fecha            DateTime         @db.Date
+  Estado           String           @db.VarChar(1)
+  Id_Funcionario   Int
+  RAE_Alumnos      RAE_Alumnos      @relation(fields: [Id_alumno], references: [Id_alumno], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Alerta_Temprana_ibfk_1")
+  RAE_Funcionarios RAE_Funcionarios @relation(fields: [Id_Funcionario], references: [Id_Funcionario], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Alerta_Temprana_ibfk_2")
+
+  @@id([Id_alerta, Id_alumno, Id_Funcionario])
+  @@index([Id_Funcionario], map: "Id_Funcionario")
+  @@index([Id_alumno], map: "Id_alumno")
+}
+
+model RAE_Alumnos {
+  Id_alumno                Int                        @id
+  Primer_nombre            String                     @db.VarChar(50)
+  Segundo_nombre           String?                    @db.VarChar(50)
+  Primer_apellido          String                     @db.VarChar(30)
+  Segundo_apellido         String?                    @db.VarChar(30)
+  Fecha_nacimiento         DateTime                   @db.Date
+  Grado                    String                     @db.VarChar(30)
+  Cedula                   String                     @db.VarChar(50)
+  Correo_mep               String                     @db.VarChar(30)
+  Estado                   String                     @db.VarChar(1)
+  Seccion                  String                     @db.VarChar(10)
+  RAE_Alerta_Temprana      RAE_Alerta_Temprana[]
+  RAE_Asistencia_X_Alumnos RAE_Asistencia_X_Alumnos[]
+  RAE_Clases_X_Alumnos     RAE_Clases_X_Alumnos[]
+  RAE_Encargado_X_Alumno   RAE_Encargado_X_Alumno[]
+}
+
+model RAE_Anno_lectivo {
+  Id_anno_lectivo                    Int                                  @id
+  Anno                               Int
+  Comentarios                        String?                              @db.VarChar(200)
+  Estado                             String                               @db.VarChar(1)
+  Id_colegio                         Int
+  Criterio_alerta_temprana           String                               @db.VarChar(30)
+  RAE_Colegio                        RAE_Colegio                          @relation(fields: [Id_colegio], references: [Id_colegio], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Anno_lectivo_ibfk_1")
+  RAE_Anno_lectivo_X_Dias_lectivos   RAE_Anno_lectivo_X_Dias_lectivos[]
+  RAE_Anno_lectivo_X_dias_especiales RAE_Anno_lectivo_X_dias_especiales[]
+  RAE_Funcionarios_X_AnnoLectivo     RAE_Funcionarios_X_AnnoLectivo[]
+
+  @@index([Id_colegio], map: "Id_colegio")
+}
+
+model RAE_Anno_lectivo_X_Dias_lectivos {
+  Id_anno_lectivo   Int
+  Id_dia_lectivo    Int
+  RAE_Anno_lectivo  RAE_Anno_lectivo  @relation(fields: [Id_anno_lectivo], references: [Id_anno_lectivo], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Anno_lectivo_X_Dias_lectivos_ibfk_1")
+  RAE_Dias_lectivos RAE_Dias_lectivos @relation(fields: [Id_dia_lectivo], references: [Id_dia_lectivo], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Anno_lectivo_X_Dias_lectivos_ibfk_2")
+
+  @@id([Id_anno_lectivo, Id_dia_lectivo])
+  @@index([Id_dia_lectivo], map: "Id_dia_lectivo")
+}
+
+model RAE_Anno_lectivo_X_dias_especiales {
+  Id_anno_lectivo     Int
+  Id_dia_especial     Int
+  RAE_Anno_lectivo    RAE_Anno_lectivo    @relation(fields: [Id_anno_lectivo], references: [Id_anno_lectivo], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Anno_lectivo_X_dias_especiales_ibfk_1")
+  RAE_Dias_especiales RAE_Dias_especiales @relation(fields: [Id_dia_especial], references: [Id_dia_especial], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Anno_lectivo_X_dias_especiales_ibfk_2")
+
+  @@id([Id_anno_lectivo, Id_dia_especial])
+  @@index([Id_dia_especial], map: "Id_dia_especial")
+}
+
+model RAE_Asistencia {
+  Id_asistencia            String                     @id @db.VarChar(30)
+  Comentarios              String?                    @db.VarChar(200)
+  Fecha                    DateTime                   @db.Date
+  Lugar                    String                     @db.VarChar(30)
+  RAE_Asistencia_X_Alumnos RAE_Asistencia_X_Alumnos[]
+  RAE_Clases               RAE_Clases[]
+}
+
+model RAE_Asistencia_X_Alumnos {
+  Id_asistencia  String         @db.VarChar(30)
+  Attribute1     Int
+  Asistio        String         @db.VarChar(1)
+  RAE_Asistencia RAE_Asistencia @relation(fields: [Id_asistencia], references: [Id_asistencia], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Asistencia_X_Alumnos_ibfk_1")
+  RAE_Alumnos    RAE_Alumnos    @relation(fields: [Attribute1], references: [Id_alumno], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Asistencia_X_Alumnos_ibfk_2")
+
+  @@id([Id_asistencia, Attribute1])
+  @@index([Attribute1], map: "Attribute1")
+}
+
+model RAE_Clases {
+  Id_Clase                  Int
+  Descripcion               String?                     @db.VarChar(200)
+  Hora_inicio               DateTime                    @db.Timestamp(0)
+  Hora_finalizacion         DateTime                    @db.Timestamp(0)
+  Estado                    String                      @db.VarChar(30)
+  Id_Materia                Int
+  Id_asistencia             String                      @db.VarChar(30)
+  Id_dia_lectivo            Int
+  RAE_Materia               RAE_Materia                 @relation(fields: [Id_Materia], references: [Id_Materia], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Clases_ibfk_1")
+  RAE_Asistencia            RAE_Asistencia              @relation(fields: [Id_asistencia], references: [Id_asistencia], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Clases_ibfk_2")
+  RAE_Dias_lectivos         RAE_Dias_lectivos           @relation(fields: [Id_dia_lectivo], references: [Id_dia_lectivo], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Clases_ibfk_3")
+  RAE_Clases_X_Alumnos      RAE_Clases_X_Alumnos[]
+  RAE_Funcionarios_X_Clases RAE_Funcionarios_X_Clases[]
+
+  @@id([Id_Clase, Id_dia_lectivo])
+  @@index([Id_Materia], map: "Id_Materia")
+  @@index([Id_asistencia], map: "Id_asistencia")
+  @@index([Id_dia_lectivo], map: "Id_dia_lectivo")
+}
+
+model RAE_Clases_X_Alumnos {
+  Id_alumno      Int
+  Id_Clase       Int
+  Id_dia_lectivo Int
+  RAE_Alumnos    RAE_Alumnos @relation(fields: [Id_alumno], references: [Id_alumno], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Clases_X_Alumnos_ibfk_1")
+  RAE_Clases     RAE_Clases  @relation(fields: [Id_Clase, Id_dia_lectivo], references: [Id_Clase, Id_dia_lectivo], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Clases_X_Alumnos_ibfk_2")
+
+  @@id([Id_alumno, Id_Clase, Id_dia_lectivo])
+  @@index([Id_Clase, Id_dia_lectivo], map: "Id_Clase")
+}
+
+model RAE_Colegio {
+  Id_colegio       Int                @id
+  Nombre           String             @db.VarChar(50)
+  Direccion        String             @db.VarChar(200)
+  Telefono         String?            @db.VarChar(30)
+  Correo           String             @db.VarChar(50)
+  RAE_Anno_lectivo RAE_Anno_lectivo[]
+}
+
+model RAE_Dias_especiales {
+  Id_dia_especial                    Int                                  @id
+  Fecha                              DateTime                             @db.Date
+  Comentarios                        String?                              @db.VarChar(200)
+  RAE_Anno_lectivo_X_dias_especiales RAE_Anno_lectivo_X_dias_especiales[]
+}
+
+model RAE_Dias_lectivos {
+  Id_dia_lectivo                   Int                                @id
+  Fecha                            DateTime                           @db.Date
+  Comentario                       String?                            @db.VarChar(200)
+  RAE_Anno_lectivo_X_Dias_lectivos RAE_Anno_lectivo_X_Dias_lectivos[]
+  RAE_Clases                       RAE_Clases[]
+}
+
+model RAE_Encargado_X_Alumno {
+  Id_encargado_legal  Int
+  Id_alumno           Int
+  RAE_Encargado_legal RAE_Encargado_legal @relation(fields: [Id_encargado_legal], references: [Id_encargado_legal], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Encargado_X_Alumno_ibfk_1")
+  RAE_Alumnos         RAE_Alumnos         @relation(fields: [Id_alumno], references: [Id_alumno], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Encargado_X_Alumno_ibfk_2")
+
+  @@id([Id_encargado_legal, Id_alumno])
+  @@index([Id_alumno], map: "Id_alumno")
+}
+
+model RAE_Encargado_legal {
+  Id_encargado_legal     Int                      @id
+  Primer_nombre          String                   @db.VarChar(50)
+  Segundo_nombre         String?                  @db.VarChar(50)
+  Primer_apellido        String                   @db.VarChar(50)
+  Segundo_apellido       String?                  @db.VarChar(50)
+  Cedula                 String                   @db.VarChar(50)
+  Numero                 String                   @db.VarChar(30)
+  Correo                 String                   @db.VarChar(100)
+  RAE_Encargado_X_Alumno RAE_Encargado_X_Alumno[]
+}
+
+model RAE_Funcionarios {
+  Id_Funcionario                 Int                              @id
+  Primer_nombre                  String                           @db.VarChar(50)
+  Segundo_nombre                 String?                          @db.VarChar(50)
+  Primer_apellido                String                           @db.VarChar(50)
+  Segundo_apellido               String?                          @db.VarChar(50)
+  Cedula                         String                           @db.VarChar(30)
+  Estado                         String                           @db.VarChar(1)
+  Suplente                       String                           @db.VarChar(1)
+  Password                       String                           @db.VarChar(30)
+  RAE_Alerta_Temprana            RAE_Alerta_Temprana[]
+  RAE_Funcionarios_X_AnnoLectivo RAE_Funcionarios_X_AnnoLectivo[]
+  RAE_Funcionarios_X_Clases      RAE_Funcionarios_X_Clases[]
+  RAE_Funcionarios_X_Rol         RAE_Funcionarios_X_Rol[]
+}
+
+model RAE_Funcionarios_X_AnnoLectivo {
+  Id_Funcionario   Int
+  Id_anno_lectivo  Int
+  RAE_Funcionarios RAE_Funcionarios @relation(fields: [Id_Funcionario], references: [Id_Funcionario], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Funcionarios_X_AnnoLectivo_ibfk_1")
+  RAE_Anno_lectivo RAE_Anno_lectivo @relation(fields: [Id_anno_lectivo], references: [Id_anno_lectivo], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Funcionarios_X_AnnoLectivo_ibfk_2")
+
+  @@id([Id_Funcionario, Id_anno_lectivo])
+  @@index([Id_anno_lectivo], map: "Id_anno_lectivo")
+}
+
+model RAE_Funcionarios_X_Clases {
+  Id_Funcionario   Int
+  Id_Clase         Int
+  Id_dia_lectivo   Int
+  RAE_Funcionarios RAE_Funcionarios @relation(fields: [Id_Funcionario], references: [Id_Funcionario], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Funcionarios_X_Clases_ibfk_1")
+  RAE_Clases       RAE_Clases       @relation(fields: [Id_Clase, Id_dia_lectivo], references: [Id_Clase, Id_dia_lectivo], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Funcionarios_X_Clases_ibfk_2")
+
+  @@id([Id_Funcionario, Id_Clase, Id_dia_lectivo])
+  @@index([Id_Clase, Id_dia_lectivo], map: "Id_Clase")
+}
+
+model RAE_Funcionarios_X_Rol {
+  Id_Funcionario      Int
+  Id_rol_funcionario  Int
+  RAE_Funcionarios    RAE_Funcionarios    @relation(fields: [Id_Funcionario], references: [Id_Funcionario], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Funcionarios_X_Rol_ibfk_1")
+  RAE_Rol_Funcionario RAE_Rol_Funcionario @relation(fields: [Id_rol_funcionario], references: [Id_rol_funcionario], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Funcionarios_X_Rol_ibfk_2")
+
+  @@id([Id_Funcionario, Id_rol_funcionario])
+  @@index([Id_rol_funcionario], map: "Id_rol_funcionario")
+}
+
+model RAE_Materia {
+  Id_Materia   Int          @id
+  Nombre       String       @db.VarChar(30)
+  Descripcion  String?      @db.VarChar(50)
+  Tipo_materia String       @db.VarChar(30)
+  RAE_Clases   RAE_Clases[]
+}
+
+model RAE_Rol_Funcionario {
+  Id_rol_funcionario     Int                      @id
+  Descripcion            String                   @db.VarChar(200)
+  Nombre                 String                   @db.VarChar(30)
+  RAE_Funcionarios_X_Rol RAE_Funcionarios_X_Rol[]
+}
