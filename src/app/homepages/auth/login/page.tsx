@@ -1,11 +1,16 @@
+"use client";
+
 import React from "react";
 import Input from "../../../components/Atoms/input";
 import Carousel from "../../../components/Atoms/carousel";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
+
   const images = [
     "/images/user.svg",
-    "/images/escudo.svg  ",
+    "/images/escudo.svg",
     "/images/To-do-list.svg",
   ];
 
@@ -21,12 +26,17 @@ export default function LoginPage() {
     "Controla la asistencia de tus estudiantes",
   ];
 
+  const handleLogin = (event: React.FormEvent) => {
+    event.preventDefault();
+    router.push('/homepages/curses');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#E6FAFF] from-5% to-white to-50% flex items-center justify-center flex-col p-8 flex-wrap gap-10">
       <div className="flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden w-full max-w-6xl mx-auto shadow-2xl relative">
         <div className="absolute top-4 right-4">
           <img
-            src="/images/escudo.png"
+            src="/images/escudo.svg"
             alt="Logo de LSP"
             className="h-14 w-14"
           />
@@ -44,7 +54,7 @@ export default function LoginPage() {
               Iniciar Sesión <br /> en el Sistema
             </h1>
           </div>
-          <form className="w-full max-w-md">
+          <form onSubmit={handleLogin} className="w-full max-w-md">
             <div className="mb-6">
               <a
                 href="#"
