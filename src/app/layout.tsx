@@ -1,7 +1,6 @@
-// app/layout.tsx
-
 import './globals.css';
 import { Inter } from 'next/font/google';
+import Sidebar from './components/Landign/sidebar';  // Asegúrate de importar tu Sidebar
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -17,8 +16,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        {children}
+      <body className={`${inter.className}  bg-gradient-to-b from-[#E6FAFF] from-5% to-white to-50% flex items-center justify-center flex-col p-8 flex-wrap gap-10`}>
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="flex w-full shadow-xl rounded-2xl overflow-hidden">
+            <Sidebar />
+            <main className="flex-1 p-6 bg-gray-200 rounded-r-lg">
+              {children}
+            </main>
+          </div>
+        </div>
       </body>
     </html>
   );
