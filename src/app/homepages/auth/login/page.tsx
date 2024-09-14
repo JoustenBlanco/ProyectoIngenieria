@@ -3,6 +3,7 @@
 import React from "react";
 import Input from "../../../components/Atoms/input";
 import Carousel from "../../../components/Atoms/carousel";
+import Footer from "../../../components/Landign/footer";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -32,7 +33,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#E6FAFF] from-5% to-white to-50% flex items-center justify-center flex-col p-8 flex-wrap gap-10">
+    <div className="min-h-screen bg-gradient-to-b from-[#E6FAFF] from-5% to-white to-50% flex items-center justify-center flex-col p-8 flex-wrap ">
       <div className="flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden w-full max-w-6xl mx-auto shadow-2xl relative">
         <div className="absolute top-4 right-4">
           <img
@@ -147,9 +148,7 @@ export default function LoginPage() {
           </form>
         </div>
       </div>
-      <footer className="text-gray-600">
-        <text>Propiedad del Liceo San Pedro</text>
-      </footer>
+      <Footer/>
     </div>
   );
 }

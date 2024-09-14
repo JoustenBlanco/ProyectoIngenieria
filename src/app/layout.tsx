@@ -1,6 +1,7 @@
 import './globals.css';
 import { Inter } from 'next/font/google';
-import Sidebar from './components/Landign/sidebar';  // Asegúrate de importar tu Sidebar
+import Sidebar from './components/Landign/sidebar';
+import Footer from "./components/Landign/footer";  // Asegúrate de importar tu Sidebar
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -16,15 +17,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className}  bg-gradient-to-b from-[#E6FAFF] from-5% to-white to-50% flex items-center justify-center flex-col p-8 flex-wrap gap-10`}>
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="flex w-full shadow-xl rounded-2xl overflow-hidden">
+      <body className={`${inter.className} bg-gradient-to-b from-[#E6FAFF] to-white flex flex-col min-h-screen p-12 justify-center items-center`}>
+        <div className="flex flex-col w-full">
+          <div className="flex flex-1 overflow-hidden w-full shadow-xl rounded-2xl ">
             <Sidebar />
-            <main className="flex-1 p-6 bg-gray-200 rounded-r-lg">
+            <main className="flex-1 flex-col justify-start items-center p-6 bg-gray-200 rounded-r-lg overflow-auto w-full">
               {children}
             </main>
           </div>
         </div>
+        <Footer />
       </body>
     </html>
   );

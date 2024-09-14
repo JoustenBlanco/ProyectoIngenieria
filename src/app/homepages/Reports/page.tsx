@@ -1,21 +1,23 @@
-import React from 'react';
-import Header from '../../components/Landign/header';
-import ReportsOptions from '../../components/Reports/Options';
-import Text from '../../components/Atoms/text';
+import Report from "../../components/Reports/report";
 
-const ReportsPage = () => {
+export default function Reports() {
   return (
-    <div className="min-h-screen bg-gray-800 text-white">
-      <Header />
-      <main className="flex flex-col items-center p-8 bg-blue-600">
-        <Text variant="title">Reportes</Text>
-        <ReportsOptions />
-      </main>
-      <footer className="bg-blue-900 text-center py-4 mt-auto">
-        <p>Liceo San Pedro-Todos los derechos reservados</p>
-      </footer>
+    <div className="p-6">
+      <h1 className="text-3xl font-bold mb-8 text-gray-500">Reportes</h1>
+      <div className="grid grid-col gap-16 w-full">
+        <Report
+          image="/images/user.svg"
+          title="Estudiante por Materia"
+        />
+        <Report
+          image="/images/students.svg"
+          title="Sección por Materia"
+        />
+        <Report
+          image="/images/historyclock.svg"
+          title="Histórico"
+        />
+      </div>
     </div>
   );
-};
-
-export default ReportsPage;
+}
