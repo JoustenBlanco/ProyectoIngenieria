@@ -8,7 +8,7 @@ datasource db {
 }
 
 model RAE_Alerta_Temprana {
-  Id_alerta        Int
+  Id_alerta        Int              @default(autoincrement())
   Id_alumno        Int
   Descripcion      String           @db.VarChar(200)
   Fecha            DateTime         @db.Date
@@ -23,7 +23,7 @@ model RAE_Alerta_Temprana {
 }
 
 model RAE_Alumnos {
-  Id_alumno                Int                        @id
+  Id_alumno                Int                        @id @default(autoincrement())
   Primer_nombre            String                     @db.VarChar(50)
   Segundo_nombre           String?                    @db.VarChar(50)
   Primer_apellido          String                     @db.VarChar(30)
@@ -41,7 +41,7 @@ model RAE_Alumnos {
 }
 
 model RAE_Anno_lectivo {
-  Id_anno_lectivo                    Int                                  @id
+  Id_anno_lectivo                    Int                                  @id @default(autoincrement())
   Anno                               Int
   Comentarios                        String?                              @db.VarChar(200)
   Estado                             String                               @db.VarChar(1)
@@ -76,7 +76,7 @@ model RAE_Anno_lectivo_X_dias_especiales {
 }
 
 model RAE_Asistencia {
-  Id_asistencia            String                     @id @db.VarChar(30)
+  Id_asistencia            Int                        @id @default(autoincrement())
   Comentarios              String?                    @db.VarChar(200)
   Fecha                    DateTime                   @db.Date
   Lugar                    String                     @db.VarChar(30)
@@ -85,24 +85,24 @@ model RAE_Asistencia {
 }
 
 model RAE_Asistencia_X_Alumnos {
-  Id_asistencia  String         @db.VarChar(30)
-  Attribute1     Int
+  Id_asistencia  Int
+  Id_Alumno      Int
   Asistio        String         @db.VarChar(1)
   RAE_Asistencia RAE_Asistencia @relation(fields: [Id_asistencia], references: [Id_asistencia], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Asistencia_X_Alumnos_ibfk_1")
-  RAE_Alumnos    RAE_Alumnos    @relation(fields: [Attribute1], references: [Id_alumno], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Asistencia_X_Alumnos_ibfk_2")
+  RAE_Alumnos    RAE_Alumnos    @relation(fields: [Id_Alumno], references: [Id_alumno], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Asistencia_X_Alumnos_ibfk_2")
 
-  @@id([Id_asistencia, Attribute1])
-  @@index([Attribute1], map: "Attribute1")
+  @@id([Id_asistencia, Id_Alumno])
+  @@index([Id_Alumno], map: "Id_Alumno")
 }
 
 model RAE_Clases {
-  Id_Clase                  Int
+  Id_Clase                  Int                         @default(autoincrement())
   Descripcion               String?                     @db.VarChar(200)
   Hora_inicio               DateTime                    @db.Timestamp(0)
   Hora_finalizacion         DateTime                    @db.Timestamp(0)
   Estado                    String                      @db.VarChar(30)
   Id_Materia                Int
-  Id_asistencia             String                      @db.VarChar(30)
+  Id_asistencia             Int
   Id_dia_lectivo            Int
   RAE_Materia               RAE_Materia                 @relation(fields: [Id_Materia], references: [Id_Materia], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Clases_ibfk_1")
   RAE_Asistencia            RAE_Asistencia              @relation(fields: [Id_asistencia], references: [Id_asistencia], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Clases_ibfk_2")
@@ -128,7 +128,7 @@ model RAE_Clases_X_Alumnos {
 }
 
 model RAE_Colegio {
-  Id_colegio       Int                @id
+  Id_colegio       Int                @id @default(autoincrement())
   Nombre           String             @db.VarChar(50)
   Direccion        String             @db.VarChar(200)
   Telefono         String?            @db.VarChar(30)
@@ -137,14 +137,14 @@ model RAE_Colegio {
 }
 
 model RAE_Dias_especiales {
-  Id_dia_especial                    Int                                  @id
+  Id_dia_especial                    Int                                  @id @default(autoincrement())
   Fecha                              DateTime                             @db.Date
   Comentarios                        String?                              @db.VarChar(200)
   RAE_Anno_lectivo_X_dias_especiales RAE_Anno_lectivo_X_dias_especiales[]
 }
 
 model RAE_Dias_lectivos {
-  Id_dia_lectivo                   Int                                @id
+  Id_dia_lectivo                   Int                                @id @default(autoincrement())
   Fecha                            DateTime                           @db.Date
   Comentario                       String?                            @db.VarChar(200)
   RAE_Anno_lectivo_X_Dias_lectivos RAE_Anno_lectivo_X_Dias_lectivos[]
@@ -162,7 +162,7 @@ model RAE_Encargado_X_Alumno {
 }
 
 model RAE_Encargado_legal {
-  Id_encargado_legal     Int                      @id
+  Id_encargado_legal     Int                      @id @default(autoincrement())
   Primer_nombre          String                   @db.VarChar(50)
   Segundo_nombre         String?                  @db.VarChar(50)
   Primer_apellido        String                   @db.VarChar(50)
@@ -174,7 +174,7 @@ model RAE_Encargado_legal {
 }
 
 model RAE_Funcionarios {
-  Id_Funcionario                 Int                              @id
+  Id_Funcionario                 Int                              @id @default(autoincrement())
   Primer_nombre                  String                           @db.VarChar(50)
   Segundo_nombre                 String?                          @db.VarChar(50)
   Primer_apellido                String                           @db.VarChar(50)
@@ -221,7 +221,7 @@ model RAE_Funcionarios_X_Rol {
 }
 
 model RAE_Materia {
-  Id_Materia   Int          @id
+  Id_Materia   Int          @id @default(autoincrement())
   Nombre       String       @db.VarChar(30)
   Descripcion  String?      @db.VarChar(50)
   Tipo_materia String       @db.VarChar(30)
@@ -229,7 +229,7 @@ model RAE_Materia {
 }
 
 model RAE_Rol_Funcionario {
-  Id_rol_funcionario     Int                      @id
+  Id_rol_funcionario     Int                      @id @default(autoincrement())
   Descripcion            String                   @db.VarChar(200)
   Nombre                 String                   @db.VarChar(30)
   RAE_Funcionarios_X_Rol RAE_Funcionarios_X_Rol[]
