@@ -26,7 +26,7 @@ export async function POST(_req: Request) {
         Cedula: data.Cedula,
         Correo_mep: data.Correo_mep,
         Estado: data.Estado,
-        Seccion: data.Seccion,
+        Id_seccion: data.Id_seccion,
       },
     });
     return NextResponse.json(newStudent, { status: 201 });
@@ -50,7 +50,7 @@ export async function PUT(req: Request) {
           Cedula: data.Cedula,
           Correo_mep: data.Correo_mep,
           Estado: data.Estado,
-          Seccion: data.Seccion,
+          Id_seccion: data.Id_seccion,
         },
       });
       return NextResponse.json(updatedStudent, { status: 200 });

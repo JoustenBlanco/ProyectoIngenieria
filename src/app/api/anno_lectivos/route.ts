@@ -1,6 +1,5 @@
 import {NextResponse} from "next/server"
 import prisma from '../../../../lib/prisma'
-import { Trykker } from "next/font/google";
 import { CreateSchoolYear, SchoolYear } from "../../../../types";
 
 
@@ -23,6 +22,8 @@ export async function POST (_req:Request){
                 Estado:data.Estado,                               
                 Id_colegio:data.Id_colegio,
                 Criterio_alerta_temprana:data.Criterio_alerta_temprana,
+                Fecha_Inicio:new Date(data.Fecha_Inicio),
+                Fecha_Finalizacion:new Date(data.Fecha_Finalizacion),
             }
         });
         return NextResponse.json(result, { status: 201 });
@@ -42,6 +43,8 @@ export async function PUT(_req:Request){
                 Estado:data.Estado,                               
                 Id_colegio:data.Id_colegio,
                 Criterio_alerta_temprana:data.Criterio_alerta_temprana,
+                Fecha_Inicio:new Date(data.Fecha_Inicio),
+                Fecha_Finalizacion:new Date(data.Fecha_Finalizacion),
             },
         });
         return NextResponse.json(result,{status:200});

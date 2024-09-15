@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server"
 import prisma from '../../../../lib/prisma'
-import { CrearFuncionarios, CreateParents, Funcionarios, Parents } from "../../../../types";
+import { CreateParents, Parents } from "../../../../types";
 
 export async function GET(){
     try {

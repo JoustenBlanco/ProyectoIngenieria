@@ -9,30 +9,30 @@ export interface InputProps {
   }
 
   export interface CreateStudent { 
-    Primer_nombre: string;
-    Segundo_nombre?: string;
-    Primer_apellido: string;
-    Segundo_apellido?: string;
-    Fecha_nacimiento: string; 
-    Grado: string;
-    Cedula: string;
-    Correo_mep: string;
-    Estado: string;
-    Seccion: string;
+    Primer_nombre: string,
+    Segundo_nombre?: string,
+    Primer_apellido: string,
+    Segundo_apellido?: string,
+    Fecha_nacimiento: string,
+    Grado: string,
+    Cedula: string,
+    Correo_mep: string,
+    Estado: string,
+    Id_seccion: number,
   }
 
   export interface Student { 
-    Id_alumno: Int,
-    Primer_nombre: string;
-    Segundo_nombre?: string;
-    Primer_apellido: string;
-    Segundo_apellido?: string;
-    Fecha_nacimiento: string; 
-    Grado: string;
-    Cedula: string;
-    Correo_mep: string;
-    Estado: string;
-    Seccion: string;
+    Id_alumno: number,
+    Primer_nombre: string,
+    Segundo_nombre?: string,
+    Primer_apellido: string,
+    Segundo_apellido?: string,
+    Fecha_nacimiento: string,
+    Grado: string,
+    Cedula: string,
+    Correo_mep: string,
+    Estado: string,
+    Id_seccion: number,
   }
 
   export interface College {
@@ -56,6 +56,8 @@ export interface InputProps {
   Estado:string,                               
   Id_colegio:number,
   Criterio_alerta_temprana:string,
+  Fecha_Inicio:string,                         
+  Fecha_Finalizacion:string,                         
   }
 
   export interface SchoolYear{
@@ -65,6 +67,8 @@ export interface InputProps {
     Estado:string,                               
     Id_colegio:number,
     Criterio_alerta_temprana:string,
+    Fecha_Inicio:string,                         
+    Fecha_Finalizacion:string,  
   }
 
   export interface EarlyWarning{
@@ -73,15 +77,15 @@ export interface InputProps {
     Descripcion:string,          
     Fecha:DateTime,
     Estado:string,        
-    Id_Funcionario:int,
+    Id_funcionario:int,
   }
 
   export interface CreateEarlyWarning{          
     Id_alumno:number,
     Descripcion:string,          
-    Fecha:DateTime,
+    Fecha:string,
     Estado:string,        
-    Id_Funcionario:int,
+    Id_funcionario:int,
   }
 
   export interface Record{ //Es la misma vara que asistencia
@@ -91,7 +95,7 @@ export interface InputProps {
     Lugar: string,                     
   }
 
-  export interface CreateRecord{ //Es la misma vara que asistencia                   
+  export interface CreateRecord{                  
     Comentarios?:string,                 
     Fecha :string,          
     Lugar: string,                     
@@ -99,52 +103,9 @@ export interface InputProps {
 
   export interface RecordXStudent{
     Id_asistencia:number,
-    Id_Alumno:number,
+    Id_alumno:number,
     Asistio:string,
-  }
-
-  export interface SchoolDay{
-    Id_dia_lectivo:number,                                  
-    Fecha:string,                          
-    Comentario?:string,                                   
-  }
-
-  export interface CreateSchoolDay{                                 
-    Fecha:string,                          
-    Comentario?:string,                                   
-  }
-
-  
-  export interface SpecialDay{
-    Id_dia_especial:number,                                  
-    Fecha:string,                          
-    Comentarios?:string,                                   
-  }
-
-  export interface CreateSpecialDay{                                 
-    Fecha:string,                          
-    Comentarios?:string,                                   
-  }
-
-  export interface Classes{
-    Id_Clase:number,                       
-    Descripcion?:string,            
-    Hora_inicio:DateTime,          
-    Hora_finalizacion:DateTime,         
-    Estado:string,           
-    Id_Materia:number,
-    Id_asistencia:number,          
-    Id_dia_lectivo:number,           
-  }
-
-  export interface CreateClasses{                      
-    Descripcion?:string,            
-    Hora_inicio:DateTime,          
-    Hora_finalizacion:DateTime,         
-    Estado:string,           
-    Id_Materia:number,
-    Id_asistencia:number,          
-    Id_dia_lectivo:number,           
+    Comentarios?:string,
   }
 
   export interface ClasesXAlumnos{
@@ -154,7 +115,7 @@ export interface InputProps {
   }
 
   export interface Funcionarios{
-    Id_Funcionario:number,                                      
+    Id_funcionario:number,                                      
     Primer_nombre:string,                                        
     Segundo_nombre?:string,                                         
     Primer_apellido:string,                                          
@@ -198,15 +159,83 @@ export interface InputProps {
     }
 
     export interface Materia{
-      Id_Materia:number,        
+      Id_materia:number,        
       Nombre:string,       
       Descripcion?:string,      
       Tipo_materia:string,   
     }
 
-    export interface CrearMateria{
-      Id_Materia:number,        
+    export interface CrearMateria{     
       Nombre:string,       
       Descripcion?:string,      
       Tipo_materia:string,   
     }
+
+    export interface RolFuncionario{
+      Id_rol_funcionario:number,                      
+      Descripcion:string ,     
+      Nombre:string,     
+    }
+
+    export interface CreateRolFuncionario{                     
+      Descripcion:string ,     
+      Nombre:string,     
+    }
+
+    export interface Clase {
+      Id_clase: number;                 
+      Descripcion?: string | null;      
+      Hora_inicio: Date;                
+      Hora_finalizacion: Date;          
+      Estado: string;                   
+      Id_asistencia: number;            
+      Id_funcionario: number;           
+      Id_materia: number;               
+      Id_seccion: number;               
+      Fecha: string;                      
+    }
+
+    export interface CreateClase {                
+      Descripcion?: string | null;      
+      Hora_inicio: string;                
+      Hora_finalizacion: string;          
+      Estado: string;                   
+      Id_asistencia: number;            
+      Id_funcionario: number;           
+      Id_materia: number;               
+      Id_seccion: number;               
+      Fecha: string;                      
+    }
+
+    export interface EncargadoXAlumno{
+      Id_encargado_legal:number,
+      Id_alumno:number,
+    }
+
+    export interface FuncionariosXAnnolectivo{
+      Id_funcionario:number,
+      Id_anno_lectivo:number,
+    }
+
+    export interface FuncionariosXRol{
+      Id_funcionario:number,
+      Id_rol_funcionario:number,
+    }
+
+    interface Seccion {
+      Id_seccion: number;               
+      Estado: string;                   
+      Comentarios?: string | null;      
+      Grado: string;                    
+      Nombre: string;                   
+      Id_funcionario: number;           
+    }
+
+    interface CreateSeccion {             
+      Estado: string;                   
+      Comentarios?: string | null;      
+      Grado: string;                    
+      Nombre: string;                   
+      Id_funcionario: number;           
+    }
+    

@@ -31,7 +31,7 @@ export async function POST(_req:Request){
 export async function PUT(_req:Request){
     try {
         const data : College = await _req.json();
-        const result = prisma.rAE_Colegio.update({
+        const result = await prisma.rAE_Colegio.update({
             where:{Id_colegio:data.Id_colegio},
             data:{
                 Nombre: data.Nombre, 
@@ -40,7 +40,9 @@ export async function PUT(_req:Request){
                 Correo:data.Correo,
             }
         });
+        return NextResponse.json(result,{status:200});
     } catch (error) {
+        console.log(error);
         return NextResponse.json({error:'Error while updating the college'}, {status:500});
     }
 }

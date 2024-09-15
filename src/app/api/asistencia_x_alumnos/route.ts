@@ -17,12 +17,14 @@ export async function POST(_req: Request) {
       const result = await prisma.rAE_Asistencia_X_Alumnos.create({
         data: {
             Id_asistencia:data.Id_asistencia,
-            Id_Alumno:data.Id_Alumno,
+            Id_alumno:data.Id_alumno,
             Asistio:data.Asistio,
+            Comentarios : data.Comentarios || null,
         },
       });
       return NextResponse.json(result, { status: 201 });
     } catch (error) {
+      console.log(error);
       return NextResponse.json({ error: 'Error creating Record X Student' }, { status: 500 });
     }
   }
@@ -32,28 +34,30 @@ export async function POST(_req: Request) {
       const data : RecordXStudent = await req.json();
       const result = await prisma.rAE_Asistencia_X_Alumnos.update({
         where: { 
-            Id_asistencia_Id_Alumno:{
-                Id_Alumno:data.Id_Alumno,
+            Id_asistencia_Id_alumno:{
+                Id_alumno:data.Id_alumno,
                 Id_asistencia:data.Id_asistencia,
             }
         }, 
         data: {
             Asistio : data.Asistio,
+            Comentarios : data.Comentarios || null,
         },
       });
       return NextResponse.json(result, { status: 200 });
     } catch (error) {
+      console.log(error);
       return NextResponse.json({ error: 'Error updating student' }, { status: 500 });
     }
   }
 
   export async function DELETE(_req: Request) {
     try {
-      const { Id_asistencia, Id_Alumno } = await _req.json(); 
+      const { Id_asistencia, Id_alumno } = await _req.json(); 
       const result = await prisma.rAE_Asistencia_X_Alumnos.delete({
         where: { 
-            Id_asistencia_Id_Alumno:{
-                Id_Alumno:Id_Alumno,
+            Id_asistencia_Id_alumno:{
+                Id_alumno:Id_alumno,
                 Id_asistencia:Id_asistencia,
             }
         }, 

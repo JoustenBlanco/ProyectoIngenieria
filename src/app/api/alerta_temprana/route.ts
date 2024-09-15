@@ -18,13 +18,14 @@ export async function POST (_req:Request){
             data:{
                 Id_alumno:data.Id_alumno,
                 Descripcion:data.Descripcion,          
-                Fecha:data.Fecha,
+                Fecha:new Date(data.Fecha),
                 Estado:data.Estado,        
-                Id_Funcionario:data.Id_Funcionario,
+                Id_funcionario:data.Id_funcionario,
             }
         });
         return NextResponse.json(result,{status:200});
     } catch (error) {
+        console.log(error);
         return NextResponse.json({error:'Error while creating the early warnings'},{status:500});
     }
 }
@@ -35,11 +36,7 @@ export async function PUT(_req: Request) {
   
       const result = await prisma.rAE_Alerta_Temprana.update({
         where: {
-          Id_alerta_Id_alumno_Id_Funcionario: {
-            Id_alerta: data.Id_alerta,
-            Id_alumno: data.Id_alumno,
-            Id_Funcionario: data.Id_Funcionario,
-          },
+          Id_alerta:data.Id_alerta
         },
         data: {
           Descripcion: data.Descripcion,
@@ -68,16 +65,10 @@ La es estructura del body es
 
 export async function DELETE(_req: Request) {
     try {
-      const { Id_alerta, Id_alumno, Id_Funcionario } = await _req.json(); 
+      const { Id_alerta } = await _req.json(); 
   
       const deletedAlert = await prisma.rAE_Alerta_Temprana.delete({
-        where: {
-          Id_alerta_Id_alumno_Id_Funcionario: {
-            Id_alerta: Id_alerta,
-            Id_alumno: Id_alumno,
-            Id_Funcionario: Id_Funcionario,
-          },
-        },
+        where: {Id_alerta:Id_alerta},
       });
   
       return NextResponse.json(deletedAlert, { status: 200 });

@@ -37,7 +37,7 @@ export async function POST(_req: Request) {
       const data : Funcionarios = await req.json();
       const result = await prisma.rAE_Funcionarios.update({
         where: { 
-            Id_Funcionario : data.Id_Funcionario
+            Id_funcionario : data.Id_funcionario
         }, 
         data: {
             Primer_nombre:data.Primer_nombre,                                        
@@ -58,9 +58,9 @@ export async function POST(_req: Request) {
 
   export async function DELETE(_req: Request) {
     try {
-      const { Id_Funcionario } = await _req.json(); 
+      const { Id_funcionario } = await _req.json(); 
       const result = await prisma.rAE_Funcionarios.delete({
-        where:{Id_Funcionario:Id_Funcionario},
+        where:{Id_funcionario:Id_funcionario},
       });
       return NextResponse.json(result, { status: 200 });
     } catch (error) {

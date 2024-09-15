@@ -32,7 +32,7 @@ export async function PUT(req: Request) {
     try {
       const data : Materia = await req.json();
       const updatedStudent = await prisma.rAE_Materia.update({
-        where: { Id_Materia: data.Id_Materia }, 
+        where: { Id_materia: data.Id_materia }, 
         data: {
           Nombre:data.Nombre,       
           Descripcion:data.Descripcion || null,      
@@ -41,7 +41,7 @@ export async function PUT(req: Request) {
       });
       return NextResponse.json(updatedStudent, { status: 200 });
     } catch (error) {
-      return NextResponse.json({ error: 'Error updating student' }, { status: 500 });
+      return NextResponse.json({ error: 'Error updating materia' }, { status: 500 });
     }
   }
   
@@ -49,13 +49,13 @@ export async function PUT(req: Request) {
 
   export async function DELETE(_req: Request) {
     try {
-      const { Id_Materia } = await _req.json(); 
+      const { Id_materia } = await _req.json(); 
       const deletedStudent = await prisma.rAE_Materia.delete({
-        where: { Id_Materia: Id_Materia },
+        where: { Id_materia: Id_materia },
       });
       return NextResponse.json(deletedStudent, { status: 200 });
     } catch (error) {
-      return NextResponse.json({ error: 'Error deleting student' }, { status: 500 });
+      return NextResponse.json({ error: 'Error deleting materia' }, { status: 500 });
     }
   }
   
