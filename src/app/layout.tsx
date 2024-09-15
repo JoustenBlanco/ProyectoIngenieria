@@ -17,9 +17,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-gradient-to-b from-[#E6FAFF] to-white flex flex-col min-h-screen p-12 justify-center items-center`}>
-        <div className="flex flex-col w-full">
-          <div className="flex flex-1 overflow-hidden w-full shadow-xl rounded-2xl ">
+      <body className={`${inter.className} bg-gradient-to-b from-[#E6FAFF] to-white flex flex-col min-h-screen p-2 justify-center items-center h-screen md:p-8`}>
+        <div className="flex flex-col w-full h-full">
+          <div className="flex flex-1 overflow-hidden w-full shadow-xl rounded-2xl h-full">
             <Sidebar />
             <main className="flex-1 flex-col justify-start items-center p-6 bg-gray-200 rounded-r-lg overflow-auto w-full">
               {children}
