@@ -245,3 +245,13 @@ export interface InputProps {
       Id_funcionario: number;           
     }
     
+  export interface User {
+    Id: number;
+    FirstName: string;
+    LastName: string;
+    Email: string;
+    Cedula: string;
+    Status: string;
+    PhoneNumber:string;
+    Rol:number;
+  }

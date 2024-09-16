@@ -5,14 +5,17 @@ import Input from "../../../components/Atoms/input";
 import Carousel from "../../../components/Atoms/carousel";
 import Footer from "../../../components/Landign/footer";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";  // Importa la función signIn de NextAuth
+import { signIn, getSession } from "next-auth/react";  
+import { Funcionarios, FuncionariosXRol, User } from "../../../../../types";
+import useAuthStore from "../../../../../provider/store";
+
 
 export default function LoginPage() {
   const router = useRouter();
-
   const [cedula, setCedula] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const {setUser} = useAuthStore();
 
   const images = [
     "/images/user.svg",
@@ -39,6 +42,24 @@ export default function LoginPage() {
       
       setError("Credenciales incorrectas, por favor intente de nuevo.");
     } else {
+      const session = await getSession();
+      const urlUsuario = `/api/funcionarios/[id]?Id_funcionario=${session?.user.id}`;
+      const resultUsuario = await fetch(urlUsuario);
+      const funcionario:Funcionarios = await resultUsuario.json();
+      const urlRol = `/api/funcionarios_x_rol?Id_funcionario=${session?.user.id}`
+      const resultRol = await fetch(urlRol);
+      const rol : FuncionariosXRol = await resultRol.json();
+      const usuario:User = {
+        Id: funcionario.Id_funcionario,
+        FirstName: funcionario.Primer_nombre,
+        LastName: funcionario.Primer_apellido,
+        Email: funcionario.Email,
+        Cedula: funcionario.Cedula,
+        Status: funcionario.Estado,
+        PhoneNumber:funcionario.Numero_telefono,
+        Rol:rol.Id_funcionario,
+      }
+      setUser (usuario);
       router.push('/homepages/curses');
     }
   };

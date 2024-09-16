@@ -2,11 +2,19 @@ import {NextResponse} from "next/server"
 import prisma from '../../../../lib/prisma'
 import { FuncionariosXRol } from "../../../../types";
 
-export async function GET(){
+//filtra por funcionarios de momento no le veo sentido al findMany
+//api/funcionarios_x_rol?Id_funcionario=1
+export async function GET(_req:Request){
     try {
-        const result = await prisma.rAE_Funcionarios_X_Rol.findMany();
+        const { searchParams } = new URL(_req.url); 
+        const Id_funcionario = searchParams.get('Id_funcionario'); 
+        console.log('El id del funcionario es ',Id_funcionario);
+        const result = await prisma.rAE_Funcionarios_X_Rol.findFirst({
+          where:{Id_funcionario:Number(Id_funcionario)}
+        });
         return NextResponse.json(result,{status:200});
     } catch (error) {
+        console.log(error);
         return NextResponse.json({ error: 'Error fetching FuncionariosXRol' }, { status: 500 });
     }
 }

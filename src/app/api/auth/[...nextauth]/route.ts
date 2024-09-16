@@ -55,7 +55,7 @@ export const handler = NextAuth({
       return token;
     },
     async session({ session, token }) {
-      // Verificamos que session.user esté definido antes de asignarle id
+
       if (session.user) {
         session.user.id = token.id as string;
       }
@@ -63,7 +63,7 @@ export const handler = NextAuth({
     },
   },
   pages: {
-    signIn: "/login", // Redirige a tu página de login personalizada
+    signIn: "/homepages/auth/login", 
   },
 });
 

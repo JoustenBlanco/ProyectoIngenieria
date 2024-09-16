@@ -1,7 +1,7 @@
 import './globals.css';
 import { Inter } from 'next/font/google';
 import Sidebar from './components/Landign/sidebar';
-import Footer from "./components/Landign/footer";  // Asegúrate de importar tu Sidebar
+import Footer from './components/Landign/footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
