@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server"
 import prisma from '../../../../lib/prisma'
-import { CrearMateria, CreateStudent, Materia, Student } from "../../../../types";
+import { CrearMateria, Materia } from "../../../../types";
 
 export async function GET(_req:Request){
     try {

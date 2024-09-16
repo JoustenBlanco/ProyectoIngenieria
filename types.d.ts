@@ -1,12 +1,14 @@
 export interface InputProps {
-    id: string;
-    name: string;
-    type: string;
-    label: string;
-    placeholder?: string;
-    required?: boolean;
-    className?: string;
-  }
+  id: string;
+  name: string;
+  type: string;
+  label: string;
+  placeholder?: string;
+  required?: boolean;
+  className?: string;
+  value?: string;                
+  onChange?: React.ChangeEventHandler<HTMLInputElement>; 
+}
 
   export interface CreateStudent { 
     Primer_nombre: string,
@@ -119,18 +121,22 @@ export interface InputProps {
     Primer_nombre:string,                                        
     Segundo_nombre?:string,                                         
     Primer_apellido:string,                                          
-    Segundo_apellido?:string,                                    
+    Segundo_apellido?:string,  
+    Email:string,
+    Numero_telefono:string,                                  
     Cedula:string,                                                
     Estado:string,                                                 
     Suplente:string,                                               
-    Password:string,                                             
+    Password:string,                                              
   }
 
   export interface CrearFuncionarios{                                     
     Primer_nombre:string,                                        
     Segundo_nombre?:string,                                         
     Primer_apellido:string,                                          
-    Segundo_apellido?:string,                                    
+    Segundo_apellido?:string,  
+    Email:string,
+    Numero_telefono:string,                                  
     Cedula:string,                                                
     Estado:string,                                                 
     Suplente:string,                                               

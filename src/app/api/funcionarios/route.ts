@@ -1,6 +1,7 @@
 import {NextResponse} from "next/server"
 import prisma from '../../../../lib/prisma'
 import { CrearFuncionarios, Funcionarios } from "../../../../types";
+import bcrypt from 'bcryptjs';
 
 export async function GET(){
     try {
@@ -14,12 +15,18 @@ export async function GET(){
 export async function POST(_req: Request) {
     try {
       const data: CrearFuncionarios = await _req.json();  
+      if (!data.Password){
+        return NextResponse.json('Password is required', {status:400});
+      }
+      data.Password = await bcrypt.hash(data.Password,10);
       const result = await prisma.rAE_Funcionarios.create({
         data: {
             Primer_nombre:data.Primer_nombre,                                        
             Segundo_nombre:data.Segundo_nombre || null,                                         
             Primer_apellido:data.Primer_apellido,                                          
-            Segundo_apellido:data.Segundo_apellido || null,                                    
+            Segundo_apellido:data.Segundo_apellido || null,     
+            Email:data.Email,
+            Numero_telefono:data.Numero_telefono,                               
             Cedula:data.Cedula,                                                
             Estado:data.Estado,                                                 
             Suplente:data.Suplente,                                               
@@ -28,6 +35,7 @@ export async function POST(_req: Request) {
       }); 
       return NextResponse.json(result, { status: 201 });
     } catch (error) {
+      console.log(error);
       return NextResponse.json({ error: 'Error creating teacher' }, { status: 500 });
     }
   }
@@ -35,6 +43,10 @@ export async function POST(_req: Request) {
   export async function PUT(req: Request) {
     try {
       const data : Funcionarios = await req.json();
+      if (!data.Password){
+        return NextResponse.json('Password is required', {status:400});
+      }
+      data.Password = await bcrypt.hash(data.Password,10);
       const result = await prisma.rAE_Funcionarios.update({
         where: { 
             Id_funcionario : data.Id_funcionario
@@ -43,7 +55,9 @@ export async function POST(_req: Request) {
             Primer_nombre:data.Primer_nombre,                                        
             Segundo_nombre:data.Segundo_nombre || null,                                         
             Primer_apellido:data.Primer_apellido,                                          
-            Segundo_apellido:data.Segundo_apellido || null,                                    
+            Segundo_apellido:data.Segundo_apellido || null,     
+            Email:data.Email,
+            Numero_telefono:data.Numero_telefono,                               
             Cedula:data.Cedula,                                                
             Estado:data.Estado,                                                 
             Suplente:data.Suplente,                                               

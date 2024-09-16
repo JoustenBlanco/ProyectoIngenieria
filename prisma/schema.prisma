@@ -136,10 +136,12 @@ model RAE_Funcionarios {
   Segundo_nombre                 String?                          @db.VarChar(50)
   Primer_apellido                String                           @db.VarChar(50)
   Segundo_apellido               String?                          @db.VarChar(50)
+  Email                          String                           @db.VarChar(100)
+  Numero_telefono                String                           @db.VarChar(12)
   Cedula                         String                           @db.VarChar(30)
   Estado                         String                           @db.VarChar(1)
   Suplente                       String                           @db.VarChar(1)
-  Password                       String                           @db.VarChar(30)
+  Password                       String                           @db.VarChar(100)
   RAE_Alerta_Temprana            RAE_Alerta_Temprana[]
   RAE_Clases                     RAE_Clases[]
   RAE_Funcionarios_X_AnnoLectivo RAE_Funcionarios_X_AnnoLectivo[]

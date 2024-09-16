@@ -1,7 +1,17 @@
 import React from 'react';
-import {InputProps} from "../../../../types";
+import { InputProps } from "../../../../types";
 
-const Input: React.FC<InputProps> = ({ id, name, type, label, placeholder, required, className }) => {
+const Input: React.FC<InputProps> = ({ 
+  id, 
+  name, 
+  type, 
+  label, 
+  placeholder, 
+  required, 
+  className, 
+  value,          
+  onChange        
+}) => {
   return (
     <div className={`mb-7 ${className}`}>
       <label htmlFor={id} className="block text-lg font-medium text-gray-700">
@@ -14,6 +24,8 @@ const Input: React.FC<InputProps> = ({ id, name, type, label, placeholder, requi
         placeholder={placeholder}
         className="mt-1 block w-full bg-gray-100 border-2 border-gray-100 rounded-md focus:border-blue-100 focus:ring-blue-200 shadow-sm text-lg h-10 hover:border-gray-200"
         required={required}
+        value={value}            // Asignamos el valor que viene de las props
+        onChange={onChange}      // Pasamos el manejador de cambios
       />
     </div>
   );

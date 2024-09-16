@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server"
 import prisma from '../../../../lib/prisma'
-import { FuncionariosXAnnolectivo, FuncionariosXRol } from "../../../../types";
+import { FuncionariosXRol } from "../../../../types";
 
 export async function GET(){
     try {

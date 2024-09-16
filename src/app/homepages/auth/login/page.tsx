@@ -1,13 +1,18 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Input from "../../../components/Atoms/input";
 import Carousel from "../../../components/Atoms/carousel";
 import Footer from "../../../components/Landign/footer";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";  // Importa la función signIn de NextAuth
 
 export default function LoginPage() {
   const router = useRouter();
+
+  const [cedula, setCedula] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const images = [
     "/images/user.svg",
@@ -15,21 +20,27 @@ export default function LoginPage() {
     "/images/To-do-list.svg",
   ];
 
-  const titles = [
-    "Bienvenido",
-    "Liceo San Pedro",
-    "Control de Asistencias LSP",
-  ];
-
+  const titles = ["Bienvenido", "Liceo San Pedro", "Control de Asistencias LSP"];
   const descriptions = [
     "¡Inicia sesión y a trabajar!",
     "Cada día es una nueva oportunidad para aprender, crecer y brillar",
     "Controla la asistencia de tus estudiantes",
   ];
 
-  const handleLogin = (event: React.FormEvent) => {
+  const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
-    router.push('/homepages/curses');
+
+    const res = await signIn("credentials", {
+      redirect: false, 
+      cedula,          
+      password,        
+    });
+    if (res?.error) {
+      
+      setError("Credenciales incorrectas, por favor intente de nuevo.");
+    } else {
+      router.push('/homepages/curses');
+    }
   };
 
   return (
@@ -101,12 +112,14 @@ export default function LoginPage() {
             </div>
 
             <Input
-              id="email"
-              name="email"
-              type="email"
-              label="Correo electrónico"
-              placeholder=""
+              id="cedula"
+              name="cedula"
+              type="text"
+              label="Cédula"
+              placeholder="Ingresa tu cédula"
               required
+              value={cedula} 
+              onChange={(e) => setCedula(e.target.value)} 
             />
 
             <Input
@@ -114,9 +127,13 @@ export default function LoginPage() {
               name="password"
               type="password"
               label="Contraseña"
-              placeholder=""
+              placeholder="Ingresa tu contraseña"
               required
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
             />
+
+            {error && <p className="text-red-500">{error}</p>} {/* Muestra el error si ocurre */}
 
             <div className="flex items-center mb-6">
               <input
