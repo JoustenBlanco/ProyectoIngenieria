@@ -16,7 +16,10 @@ model RAE_Alerta_Temprana {
   Id_alumno        Int
   RAE_Funcionarios RAE_Funcionarios @relation(fields: [Id_funcionario], references: [Id_funcionario], onDelete: NoAction, onUpdate: NoAction, map: "FuncionarioXAlerta")
   RAE_Alumnos      RAE_Alumnos      @relation(fields: [Id_alumno], references: [Id_alumno], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Alerta_Temprana_ibfk_1")
+  RAE_Alumnos      RAE_Alumnos      @relation(fields: [Id_alumno], references: [Id_alumno], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Alerta_Temprana_ibfk_1")
 
+  @@index([Id_alumno], map: "Id_alumno")
+  @@index([Id_funcionario], map: "Id_funcionario")
   @@index([Id_alumno], map: "Id_alumno")
   @@index([Id_funcionario], map: "Id_funcionario")
 }
@@ -39,6 +42,7 @@ model RAE_Alumnos {
   RAE_Encargado_X_Alumno   RAE_Encargado_X_Alumno[]
 
   @@index([Id_seccion], map: "Id_seccion")
+  @@index([Id_seccion], map: "Id_seccion")
 }
 
 model RAE_Anno_lectivo {
@@ -54,6 +58,7 @@ model RAE_Anno_lectivo {
   RAE_Funcionarios_X_AnnoLectivo RAE_Funcionarios_X_AnnoLectivo[]
 
   @@index([Id_colegio], map: "Id_colegio")
+  @@index([Id_colegio], map: "Id_colegio")
 }
 
 model RAE_Asistencia {
@@ -65,7 +70,13 @@ model RAE_Asistencia {
   Hora_inicio              DateTime                   @db.Timestamp(0)
   Hora_finalizacion        DateTime                   @db.Timestamp(0)
   RAE_Clases               RAE_Clases?                @relation(fields: [Id_clase], references: [Id_clase], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Asistencia_ibfk_1")
+  Id_clase                 Int?
+  Hora_inicio              DateTime                   @db.Timestamp(0)
+  Hora_finalizacion        DateTime                   @db.Timestamp(0)
+  RAE_Clases               RAE_Clases?                @relation(fields: [Id_clase], references: [Id_clase], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Asistencia_ibfk_1")
   RAE_Asistencia_X_Alumnos RAE_Asistencia_X_Alumnos[]
+
+  @@index([Id_clase], map: "Id_clase")
 
   @@index([Id_clase], map: "Id_clase")
 }
@@ -77,8 +88,10 @@ model RAE_Asistencia_X_Alumnos {
   Comentarios    String?        @db.VarChar(200)
   RAE_Asistencia RAE_Asistencia @relation(fields: [Id_asistencia], references: [Id_asistencia], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Asistencia_X_Alumnos_ibfk_1")
   RAE_Alumnos    RAE_Alumnos    @relation(fields: [Id_alumno], references: [Id_alumno], onDelete: NoAction, onUpdate: NoAction, map: "AlumnoXAsistencia")
+  RAE_Alumnos    RAE_Alumnos    @relation(fields: [Id_alumno], references: [Id_alumno], onDelete: NoAction, onUpdate: NoAction, map: "AlumnoXAsistencia")
 
   @@id([Id_asistencia, Id_alumno])
+  @@index([Id_alumno], map: "Id_alumno")
   @@index([Id_alumno], map: "Id_alumno")
 }
 
@@ -93,7 +106,20 @@ model RAE_Clases {
   RAE_Funcionarios RAE_Funcionarios @relation(fields: [Id_funcionario], references: [Id_funcionario], onDelete: NoAction, onUpdate: NoAction, map: "Funcionarios_X_Clases")
   RAE_Materia      RAE_Materia      @relation(fields: [Id_materia], references: [Id_materia], onDelete: NoAction, onUpdate: NoAction, map: "Clases_X_Materias")
   RAE_Secciones    RAE_Secciones    @relation(fields: [Id_seccion], references: [Id_seccion], onDelete: NoAction, onUpdate: NoAction, map: "Secciones_X_Clases")
+  Id_clase         Int              @id @default(autoincrement())
+  Descripcion      String?          @db.VarChar(200)
+  Estado           String           @db.VarChar(30)
+  Id_funcionario   Int
+  Id_materia       Int
+  Id_seccion       Int
+  RAE_Asistencia   RAE_Asistencia[]
+  RAE_Funcionarios RAE_Funcionarios @relation(fields: [Id_funcionario], references: [Id_funcionario], onDelete: NoAction, onUpdate: NoAction, map: "Funcionarios_X_Clases")
+  RAE_Materia      RAE_Materia      @relation(fields: [Id_materia], references: [Id_materia], onDelete: NoAction, onUpdate: NoAction, map: "Clases_X_Materias")
+  RAE_Secciones    RAE_Secciones    @relation(fields: [Id_seccion], references: [Id_seccion], onDelete: NoAction, onUpdate: NoAction, map: "Secciones_X_Clases")
 
+  @@index([Id_funcionario], map: "Id_funcionario")
+  @@index([Id_materia], map: "Id_materia")
+  @@index([Id_seccion], map: "Id_seccion")
   @@index([Id_funcionario], map: "Id_funcionario")
   @@index([Id_materia], map: "Id_materia")
   @@index([Id_seccion], map: "Id_seccion")
@@ -113,8 +139,10 @@ model RAE_Encargado_X_Alumno {
   Id_alumno           Int
   RAE_Encargado_legal RAE_Encargado_legal @relation(fields: [Id_encargado_legal], references: [Id_encargado_legal], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Encargado_X_Alumno_ibfk_1")
   RAE_Alumnos         RAE_Alumnos         @relation(fields: [Id_alumno], references: [Id_alumno], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Encargado_X_Alumno_ibfk_2")
+  RAE_Alumnos         RAE_Alumnos         @relation(fields: [Id_alumno], references: [Id_alumno], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Encargado_X_Alumno_ibfk_2")
 
   @@id([Id_encargado_legal, Id_alumno])
+  @@index([Id_alumno], map: "Id_alumno")
   @@index([Id_alumno], map: "Id_alumno")
 }
 
@@ -141,7 +169,7 @@ model RAE_Funcionarios {
   Cedula                         String                           @db.VarChar(30)
   Estado                         String                           @db.VarChar(1)
   Suplente                       String                           @db.VarChar(1)
-  Password                       String                           @db.VarChar(100)
+  Password                       String                           @db.VarChar(30)
   RAE_Alerta_Temprana            RAE_Alerta_Temprana[]
   RAE_Clases                     RAE_Clases[]
   RAE_Funcionarios_X_AnnoLectivo RAE_Funcionarios_X_AnnoLectivo[]
@@ -152,6 +180,7 @@ model RAE_Funcionarios {
 model RAE_Funcionarios_X_AnnoLectivo {
   Id_funcionario   Int
   Id_anno_lectivo  Int
+  RAE_Funcionarios RAE_Funcionarios @relation(fields: [Id_funcionario], references: [Id_funcionario], onDelete: NoAction, onUpdate: NoAction, map: "Funcionarios_X_Anno")
   RAE_Funcionarios RAE_Funcionarios @relation(fields: [Id_funcionario], references: [Id_funcionario], onDelete: NoAction, onUpdate: NoAction, map: "Funcionarios_X_Anno")
   RAE_Anno_lectivo RAE_Anno_lectivo @relation(fields: [Id_anno_lectivo], references: [Id_anno_lectivo], onDelete: NoAction, onUpdate: NoAction, map: "RAE_Funcionarios_X_AnnoLectivo_ibfk_2")
 

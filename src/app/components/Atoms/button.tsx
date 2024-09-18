@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 
 const Button: React.FC<{ icon: React.ReactNode; text: string }> = ({ icon, text }) => {

@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 
 const Icon: React.FC<{ type: 'user' | 'section' | 'history' }> = ({ type }) => {
