@@ -1,3 +1,4 @@
+"use client";
 import Mainten from "../../components/maintenance/maintenance";
 
 export default function Maintenance() {

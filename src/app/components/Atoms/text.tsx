@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 
 const Text: React.FC<{ variant: 'title' | 'body'; children: React.ReactNode }> = ({ variant, children }) => {
