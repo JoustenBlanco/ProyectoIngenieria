@@ -16,15 +16,11 @@ export async function POST(_req: Request) {
       const data: CreateClase = await _req.json();  
       const result = await prisma.rAE_Clases.create({
         data: {
-            Descripcion: data.Descripcion || null,      
-            Hora_inicio: new Date(data.Hora_inicio),              
-            Hora_finalizacion: new Date(data.Hora_finalizacion),          
-            Estado: data.Estado,                   
-            Id_asistencia: data.Id_asistencia,            
+            Descripcion: data.Descripcion || null,                              
+            Estado: data.Estado,                             
             Id_funcionario: data.Id_funcionario,           
             Id_materia: data.Id_materia,               
-            Id_seccion: data.Id_seccion,               
-            Fecha: new Date(data.Fecha),  
+            Id_seccion: data.Id_seccion,                
         },
       }); 
       return NextResponse.json(result, { status: 201 });
@@ -41,15 +37,11 @@ export async function POST(_req: Request) {
             Id_clase : data.Id_clase
         }, 
         data: {
-            Descripcion: data.Descripcion || null,      
-            Hora_inicio: new Date(data.Hora_inicio),              
-            Hora_finalizacion: new Date(data.Hora_finalizacion),          
-            Estado: data.Estado,                   
-            Id_asistencia: data.Id_asistencia,            
+            Descripcion: data.Descripcion || null,                            
+            Estado: data.Estado,                              
             Id_funcionario: data.Id_funcionario,           
             Id_materia: data.Id_materia,               
-            Id_seccion: data.Id_seccion,               
-            Fecha: new Date(data.Fecha),  
+            Id_seccion: data.Id_seccion,                
         },
       });
       return NextResponse.json(result, { status: 200 });

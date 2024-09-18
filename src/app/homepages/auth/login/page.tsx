@@ -48,6 +48,7 @@ export default function LoginPage() {
       const funcionario:Funcionarios = await resultUsuario.json();
       const urlRol = `/api/funcionarios_x_rol?Id_funcionario=${session?.user.id}`
       const resultRol = await fetch(urlRol);
+      console.log('El rol del  ');
       const rol : FuncionariosXRol = await resultRol.json();
       const usuario:User = {
         Id: funcionario.Id_funcionario,

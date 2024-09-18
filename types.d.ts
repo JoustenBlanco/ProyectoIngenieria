@@ -190,27 +190,31 @@ export interface InputProps {
 
     export interface Clase {
       Id_clase: number;                 
-      Descripcion?: string | null;      
-      Hora_inicio: Date;                
-      Hora_finalizacion: Date;          
-      Estado: string;                   
-      Id_asistencia: number;            
+      Descripcion?: string | null;            
+      Estado: string;                             
       Id_funcionario: number;           
       Id_materia: number;               
-      Id_seccion: number;               
-      Fecha: string;                      
+      Id_seccion: number;                                   
     }
 
     export interface CreateClase {                
-      Descripcion?: string | null;      
-      Hora_inicio: string;                
-      Hora_finalizacion: string;          
-      Estado: string;                   
-      Id_asistencia: number;            
+      Descripcion?: string | null;             
+      Estado: string;                             
       Id_funcionario: number;           
       Id_materia: number;               
-      Id_seccion: number;               
-      Fecha: string;                      
+      Id_seccion: number;                                   
+    }
+
+    export interface ClaseXSessiones{
+      Id_clase: number;
+      Descripcion: string;
+      Estado: string;
+      Id_funcionario: number;
+      Id_materia: number;
+      Id_seccion: number;
+      RAE_Secciones: Seccion;
+      RAE_Materia:Materia;
+       
     }
 
     export interface EncargadoXAlumno{
