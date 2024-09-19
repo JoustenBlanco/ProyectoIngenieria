@@ -1,9 +1,13 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Input from "../../../components/Atoms/input";
 import ActionButtons from "../../../components/Atoms/ActionButtons";
+import Select from "../../../components/Atoms/select";
 
 export default function Legal_Guardians() {
+
+  const [status, setStatus] = useState("Activo");
+  const [substitute, setSubstitute] = useState("No");
   const handleNew = () => {
     alert("Botón Nuevo presionado");
   };
@@ -84,6 +88,15 @@ export default function Legal_Guardians() {
             label="Email"
             placeholder="Ingresa el correo electrónico"
             required
+          />
+          <Select
+            id="status"
+            name="status"
+            label="Estado"
+            options={["Activo", "Inactivo"]}
+            required
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
           />
         </div>
       </div>
