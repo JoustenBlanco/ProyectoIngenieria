@@ -68,7 +68,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden w-full max-w-6xl mx-auto shadow-2xl relative">
+    <div className="flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden w-full max-w-6xl mx-auto shadow-2xl relative md:max-h-screen">
       <div className="absolute top-4 right-4">
         <img src="/images/escudo.svg" alt="Logo de LSP" className="h-14 w-14" />
       </div>
@@ -119,7 +119,7 @@ export default function LoginPage() {
               </div>
             </a>
           </div>
-          <div className="relative my-12 flex items-center">
+          <div className="relative my-12 md:my-6 flex items-center">
             <div className="flex-grow border-t border-gray-300"></div>
             <span className="mx-4 text-gray-500">ó</span>
             <div className="flex-grow border-t border-gray-300"></div>

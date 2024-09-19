@@ -56,11 +56,11 @@ const Carousel: React.FC<CarouselProps> = ({ images, titles, descriptions }) => 
         ))}
       </div>
 
-      <div className="text-center mt-4 p-8 h-64">
+      <div className="text-center mt-4 p-8 h-64 md:p-2">
         <h2 className="text-2xl font-bold">
           {titles[currentIndex]}
         </h2>
-        <p className="text-lg text-gray-500 mt-2 p-10 mb-10">
+        <p className="text-lg text-gray-500 mt-2 p-10 mb-10 md:mb-2">
           {descriptions[currentIndex]}
         </p>
       </div>

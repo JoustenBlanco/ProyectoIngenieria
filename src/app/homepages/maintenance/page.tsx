@@ -9,14 +9,17 @@ export default function Maintenance() {
         <Mainten
           image="/images/students.svg"
           title="Usuarios"
+          route="/homepages/maintenance/users"
         />
         <Mainten
           image="/images/students.svg"
           title="Estudiantes"
+          route="/homepages/maintenance/students"
         />
         <Mainten
           image="/images/students.svg"
           title="Encargados Legales"
+          route="/homepages/maintenance/legal-guardians" 
         />
       </div>
     </div>
