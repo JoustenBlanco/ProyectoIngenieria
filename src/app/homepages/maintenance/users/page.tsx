@@ -4,7 +4,7 @@ import Input from "../../../components/Atoms/input";
 import Select from "../../../components/Atoms/select";
 import Button from "../../../components/Atoms/button";
 
-export default function Maintenance() {
+export default function Users() {
   const [status, setStatus] = useState("Activo");
   const [substitute, setSubstitute] = useState("No");
 
@@ -34,7 +34,7 @@ export default function Maintenance() {
           name="firstName"
           type="text"
           label="Primer Nombre"
-          placeholder="Ingresa tu primer nombre"
+          placeholder="Ingresa el primer nombre"
           required
         />
 
@@ -43,7 +43,7 @@ export default function Maintenance() {
           name="secondName"
           type="text"
           label="Segundo Nombre"
-          placeholder="Ingresa tu segundo nombre"
+          placeholder="Ingresa el segundo nombre"
           required
         />
 
@@ -52,7 +52,7 @@ export default function Maintenance() {
           name="firstLastName"
           type="text"
           label="Primer Apellido"
-          placeholder="Ingresa tu primer apellido"
+          placeholder="Ingresa el primer apellido"
           required
         />
 
@@ -61,7 +61,7 @@ export default function Maintenance() {
           name="secondLastName"
           type="text"
           label="Segundo Apellido"
-          placeholder="Ingresa tu segundo apellido"
+          placeholder="Ingresa el segundo apellido"
           required
         />
 
@@ -70,7 +70,7 @@ export default function Maintenance() {
           name="email"
           type="email"
           label="Email"
-          placeholder="Ingresa tu correo electrónico"
+          placeholder="Ingresa el correo electrónico"
           required
         />
 
@@ -79,7 +79,7 @@ export default function Maintenance() {
           name="phoneNumber"
           type="tel"
           label="Número de Teléfono"
-          placeholder="Ingresa tu número de teléfono"
+          placeholder="Ingresa el número de teléfono"
           required
         />
 
@@ -88,7 +88,7 @@ export default function Maintenance() {
           name="idNumber"
           type="text"
           label="Cédula"
-          placeholder="Ingresa tu número de cédula"
+          placeholder="Ingresa el número de cédula"
           required
         />
 
@@ -117,7 +117,7 @@ export default function Maintenance() {
           name="password"
           type="password"
           label="Contraseña"
-          placeholder="Ingresa tu contraseña"
+          placeholder="Ingresa la contraseña"
           required
         />
       </div>
