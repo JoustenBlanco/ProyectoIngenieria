@@ -1,6 +1,33 @@
 
 # Proyecto ingeniería de sistemas 
 
+```bash
+
+          _____                    _____                    _____                    _____            _____                    _____          
+         /\    \                  /\    \                  /\    \                  /\    \          /\    \                  /\    \         
+        /::\    \                /::\    \                /::\    \                /::\____\        /::\    \                /::\    \        
+       /::::\    \              /::::\    \              /::::\    \              /:::/    /       /::::\    \              /::::\    \       
+      /::::::\    \            /::::::\    \            /::::::\    \            /:::/    /       /::::::\    \            /::::::\    \      
+     /:::/\:::\    \          /:::/\:::\    \          /:::/\:::\    \          /:::/    /       /:::/\:::\    \          /:::/\:::\    \     
+    /:::/__\:::\    \        /:::/__\:::\    \        /:::/__\:::\    \        /:::/    /       /:::/__\:::\    \        /:::/__\:::\    \    
+   /::::\   \:::\    \      /::::\   \:::\    \      /::::\   \:::\    \      /:::/    /        \:::\   \:::\    \      /::::\   \:::\    \   
+  /::::::\   \:::\    \    /::::::\   \:::\    \    /::::::\   \:::\    \    /:::/    /       ___\:::\   \:::\    \    /::::::\   \:::\    \  
+ /:::/\:::\   \:::\____\  /:::/\:::\   \:::\    \  /:::/\:::\   \:::\    \  /:::/    /       /\   \:::\   \:::\    \  /:::/\:::\   \:::\____\ 
+/:::/  \:::\   \:::|    |/:::/  \:::\   \:::\____\/:::/__\:::\   \:::\____\/:::/____/       /::\   \:::\   \:::\____\/:::/  \:::\   \:::|    |
+\::/   |::::\  /:::|____|\::/    \:::\  /:::/    /\:::\   \:::\   \::/    /\:::\    \       \:::\   \:::\   \::/    /\::/    \:::\  /:::|____|
+ \/____|:::::\/:::/    /  \/____/ \:::\/:::/    /  \:::\   \:::\   \/____/  \:::\    \       \:::\   \:::\   \/____/  \/_____/\:::\/:::/    / 
+       |:::::::::/    /            \::::::/    /    \:::\   \:::\    \       \:::\    \       \:::\   \:::\    \               \::::::/    /  
+       |::|\::::/    /              \::::/    /      \:::\   \:::\____\       \:::\    \       \:::\   \:::\____\               \::::/    /   
+       |::| \::/____/               /:::/    /        \:::\   \::/    /        \:::\    \       \:::\  /:::/    /                \::/____/    
+       |::|  ~|                    /:::/    /          \:::\   \/____/          \:::\    \       \:::\/:::/    /                  ~~          
+       |::|   |                   /:::/    /            \:::\    \               \:::\    \       \::::::/    /                               
+       \::|   |                  /:::/    /              \:::\____\               \:::\____\       \::::/    /                                
+        \:|   |                  \::/    /                \::/    /                \::/    /        \::/    /                                 
+         \|___|                   \/____/                  \/____/                  \/____/          \/____/                                  
+                                                                                                                  
+
+```
+
 Este repositorio alberga el proyecto de ingeniería de sistemas (I,II,III) de los estudiantes Sebastián Granados Barrantes y Jousten Blanco Fonseca en la universidad Nacional de Costa Rica (UNA).
 
 El proyecto consiste en una plataforma WEB para el control de asistencia de los estudiantes a clases en el Liceo San Pedro (LSP) de Peréz Zeledón. El sistema esta pensado para que pueda registrarse en tiempo real la asistencia de cada estudiante a clases y posteriormente poder hacer reportes sobre la información de asistencia de un estudiante a una clase en especifico o de una sección en especifico en una clase también en especifico. 
