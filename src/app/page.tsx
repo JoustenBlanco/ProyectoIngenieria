@@ -9,7 +9,7 @@ export default function HomePage() {
 
   useEffect(() => {
     router.replace('/homepages/auth/login');
-  }, [router]);
+  }, []);
 
   return null;  
 }

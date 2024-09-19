@@ -1,6 +1,5 @@
 import './globals.css';
 import { Inter } from 'next/font/google';
-import Sidebar from './components/Landign/sidebar';
 import Footer from './components/Landign/footer';
 import ClientWrapper from './components/ClientWrapper'; 
 
