@@ -19,7 +19,7 @@ export default function Maintenance() {
         <Mainten
           image="/images/students.svg"
           title="Encargados Legales"
-          route="/homepages/maintenance/legal-guardians" 
+          route="/homepages/maintenance/legal_guardians"
         />
       </div>
     </div>
