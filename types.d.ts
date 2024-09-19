@@ -151,7 +151,8 @@ export interface InputProps {
   Segundo_apellido?:string,      
   Cedula:string,               
   Numero:string,                
-  Correo:string,                 
+  Correo:string, 
+  Estado:string,                
   }
 
   export interface CreateParents{           
@@ -161,7 +162,8 @@ export interface InputProps {
     Segundo_apellido?:string,      
     Cedula:string,               
     Numero:string,                
-    Correo:string,                 
+    Correo:string,      
+    Estado:string,           
     }
 
     export interface Materia{

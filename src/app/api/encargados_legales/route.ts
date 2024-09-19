@@ -23,6 +23,7 @@ export async function POST(_req: Request) {
             Cedula:data.Cedula,               
             Numero:data.Numero,                
             Correo:data.Correo,
+            Estado:data.Estado,
         },
       }); 
       return NextResponse.json(result, { status: 201 });
@@ -46,6 +47,7 @@ export async function POST(_req: Request) {
             Cedula:data.Cedula,               
             Numero:data.Numero,                
             Correo:data.Correo,
+            Estado:data.Estado,
         },
       });
       return NextResponse.json(result, { status: 200 });

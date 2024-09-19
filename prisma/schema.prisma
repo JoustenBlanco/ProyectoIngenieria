@@ -127,6 +127,7 @@ model RAE_Encargado_legal {
   Cedula                 String                   @db.VarChar(50)
   Numero                 String                   @db.VarChar(30)
   Correo                 String                   @db.VarChar(100)
+  Estado                 String                   @db.VarChar(1)
   RAE_Encargado_X_Alumno RAE_Encargado_X_Alumno[]
 }
 
