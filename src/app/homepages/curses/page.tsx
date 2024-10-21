@@ -39,7 +39,7 @@ export default function Curses() {
               image="/images/students.svg"
               title={`Sección ${clase.RAE_Secciones.Nombre} - ${clase.RAE_Materia.Nombre}`}
               description={clase.Descripcion || "Sin descripción"}
-              route="homepages/curses/studentsList"
+              route="/homepages/curses/studentsList"
             />
         ))}
       </div>
