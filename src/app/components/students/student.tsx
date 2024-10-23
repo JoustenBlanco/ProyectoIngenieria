@@ -18,16 +18,15 @@ const Curse: React.FC<StudentProps> = ({
 }) => {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case "activo":
+      case "a":
         return "bg-green-500 text-green-800";
-      case "inactivo":
+      case "i":
         return "bg-red-500 text-red-800";
       default:
         return "bg-gray-700";
     }
   };
 
-  // Convertimos el valor de "present" a booleano
   const isPresent = present === "S";
 
   return (
