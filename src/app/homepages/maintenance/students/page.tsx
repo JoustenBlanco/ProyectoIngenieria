@@ -90,11 +90,11 @@ export default function Students() {
           <DateInput
             id="birthDate"
             label="Fecha de Nacimiento"
-            value={watch("Fecha_nacimiento") || ""} // Obtener el valor del watch
+            value={watch("Fecha_nacimiento") || ""}
             {...register("Fecha_nacimiento", {
               required: "Este campo es obligatorio",
             })}
-            onChange={(e) => setValue("Fecha_nacimiento", e.target.value)} // Actualizar el valor
+            onChange={(e) => setValue("Fecha_nacimiento", e.target.value)}
             error={errors.Fecha_nacimiento?.message}
           />
 

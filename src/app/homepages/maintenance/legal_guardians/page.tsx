@@ -1,23 +1,54 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
+import { useForm } from "react-hook-form";
 import Input from "../../../components/Atoms/input";
 import ActionButtons from "../../../components/Atoms/ActionButtons";
 import Select from "../../../components/Atoms/select";
+import { CreateParents } from "../../../../../types";
 
 export default function Legal_Guardians() {
 
-  const [status, setStatus] = useState("Activo");
-  const [substitute, setSubstitute] = useState("No");
+  const { register, handleSubmit, reset, watch, formState: { errors }, } = useForm<CreateParents>({
+    defaultValues: {
+      Primer_nombre: "",
+      Segundo_nombre: "",
+      Primer_apellido: "",
+      Segundo_apellido: "",
+      Cedula: "",
+      Numero: "",
+      Correo: "",
+      Estado: "Activo",
+    },
+  });
+
+  const onSubmit = async (data: CreateParents) => {
+    try {
+      const response = await fetch("/api/encargados_legales", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        alert("Encargado legal guardado exitosamente");
+        reset();
+      } else {
+        throw new Error("Error al guardar el encargado legal");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Hubo un problema al guardar el encargado legal");
+    }
+  };
+
   const handleNew = () => {
-    alert("Botón Nuevo presionado");
+    reset();
   };
 
   const handleModify = () => {
     alert("Botón Modificar presionado");
-  };
-
-  const handleSave = () => {
-    alert("Botón Guardar presionado");
   };
 
   const handleDelete = () => {
@@ -31,81 +62,84 @@ export default function Legal_Guardians() {
           Mantenimiento - Encargados Legales
         </h1>
       </div>
-      <div className="flex-grow">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex-grow">
         <div className="grid md:grid-cols-2 sm:grid-cols-1 gap-3 w-full gap-x-10">
           <Input
             id="firstName"
-            name="firstName"
-            type="text"
             label="Primer Nombre"
             placeholder="Ingresa el primer nombre"
+            type="text"
             required
+            {...register("Primer_nombre", { required: "Este campo es obligatorio" })}
+            error={errors.Primer_nombre?.message}
           />
           <Input
             id="secondName"
-            name="secondName"
-            type="text"
             label="Segundo Nombre"
             placeholder="Ingresa el segundo nombre"
-            required
+            type="text"
+            {...register("Segundo_nombre")}
           />
           <Input
             id="firstLastName"
-            name="firstLastName"
-            type="text"
             label="Primer Apellido"
             placeholder="Ingresa el primer apellido"
+            type="text"
             required
+            {...register("Primer_apellido", { required: "Este campo es obligatorio" })}
+            error={errors.Primer_apellido?.message}
           />
           <Input
             id="secondLastName"
-            name="secondLastName"
-            type="text"
             label="Segundo Apellido"
             placeholder="Ingresa el segundo apellido"
-            required
+            type="text"
+            {...register("Segundo_apellido")}
           />
           <Input
             id="idNumber"
-            name="idNumber"
-            type="text"
             label="Cédula"
             placeholder="Ingresa el número de cédula"
+            type="text"
             required
+            {...register("Cedula", { required: "Este campo es obligatorio" })}
+            error={errors.Cedula?.message}
           />
           <Input
             id="phoneNumber"
-            name="phoneNumber"
-            type="tel"
             label="Número de Teléfono"
             placeholder="Ingresa el número de teléfono"
+            type="tel"
             required
+            {...register("Numero", { required: "Este campo es obligatorio" })}
+            error={errors.Numero?.message}
           />
           <Input
             id="email"
-            name="email"
-            type="email"
             label="Email"
             placeholder="Ingresa el correo electrónico"
+            type="email"
             required
+            {...register("Correo", { required: "Este campo es obligatorio" })}
+            error={errors.Correo?.message}
           />
           <Select
             id="status"
-            name="status"
             label="Estado"
             options={["Activo", "Inactivo"]}
-            required
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
+            value={watch("Estado")}
+            {...register("Estado", { required: true })}
           />
+
+
         </div>
-      </div>
-      <ActionButtons
-        onNew={handleNew}
-        onModify={handleModify}
-        onSave={handleSave}
-        onDelete={handleDelete}
-      />
+        <ActionButtons
+          onNew={handleNew}
+          onModify={handleModify}
+          onSave={handleSubmit(onSubmit)}
+          onDelete={handleDelete}
+        />
+      </form>
     </div>
   );
 }
