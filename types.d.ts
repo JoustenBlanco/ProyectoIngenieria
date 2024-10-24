@@ -8,6 +8,7 @@ export interface InputProps {
   className?: string;
   value?: string;                
   onChange?: React.ChangeEventHandler<HTMLInputElement>; 
+  error?: string;
 }
 
   export interface CreateStudent { 

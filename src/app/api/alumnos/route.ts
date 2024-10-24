@@ -31,6 +31,7 @@ export async function POST(_req: Request) {
     });
     return NextResponse.json(newStudent, { status: 201 });
   } catch (error) {
+    console.error("Error creating student:", error);
     return NextResponse.json({ error: 'Error creating student' }, { status: 500 });
   }
 }
