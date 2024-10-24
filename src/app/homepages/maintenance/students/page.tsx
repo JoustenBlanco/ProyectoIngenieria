@@ -12,6 +12,7 @@ export default function Students() {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
     setValue,
   } = useForm<CreateStudent>();
@@ -32,6 +33,7 @@ export default function Students() {
       });
       if (response.ok) {
         alert("Estudiante guardado exitosamente");
+        reset();
       } else {
         alert("Error al guardar el estudiante");
       }
@@ -39,6 +41,10 @@ export default function Students() {
       console.error("Error en la petición", error);
       alert("Ocurrió un error");
     }
+  };
+
+  const handleNew = () => {
+    reset();
   };
 
   return (
@@ -54,7 +60,7 @@ export default function Students() {
             label="Primer Nombre"
             placeholder="Ingresa el primer nombre"
             {...register("Primer_nombre", {
-              required: "Este campo es obligatorio",
+              required: "Este campo es requerido",
             })}
             error={errors.Primer_nombre?.message}
           />
@@ -73,7 +79,7 @@ export default function Students() {
             label="Primer Apellido"
             placeholder="Ingresa el primer apellido"
             {...register("Primer_apellido", {
-              required: "Este campo es obligatorio",
+              required: "Este campo es requerido",
             })}
             error={errors.Primer_apellido?.message}
           />
@@ -92,7 +98,7 @@ export default function Students() {
             label="Fecha de Nacimiento"
             value={watch("Fecha_nacimiento") || ""}
             {...register("Fecha_nacimiento", {
-              required: "Este campo es obligatorio",
+              required: "Este campo es requerido",
             })}
             onChange={(e) => setValue("Fecha_nacimiento", e.target.value)}
             error={errors.Fecha_nacimiento?.message}
@@ -102,7 +108,7 @@ export default function Students() {
             id="level"
             label="Nivel"
             options={["7", "8", "9", "10", "11"]}
-            {...register("Grado", { required: "Este campo es obligatorio" })}
+            {...register("Grado", { required: "Este campo es requerido" })}
             error={errors.Grado?.message}
           />
 
@@ -111,7 +117,7 @@ export default function Students() {
             type="text"
             label="Cédula"
             placeholder="Ingresa el número de cédula"
-            {...register("Cedula", { required: "Este campo es obligatorio" })}
+            {...register("Cedula", { required: "Este campo es requerido" })}
             error={errors.Cedula?.message}
           />
 
@@ -121,7 +127,7 @@ export default function Students() {
             label="Correo MEP"
             placeholder="Ingresa el correo MEP"
             {...register("Correo_mep", {
-              required: "Este campo es obligatorio",
+              required: "Este campo es requerido",
             })}
             error={errors.Correo_mep?.message}
           />
@@ -132,7 +138,7 @@ export default function Students() {
             label="Sección"
             placeholder="Ingresa la sección"
             {...register("Id_seccion", {
-              required: "Este campo es obligatorio",
+              required: "Este campo es requerido",
             })}
             error={errors.Id_seccion?.message}
           />
@@ -141,12 +147,12 @@ export default function Students() {
             id="status"
             label="Estado"
             options={["Activo", "Inactivo"]}
-            {...register("Estado", { required: "Este campo es obligatorio" })}
+            {...register("Estado", { required: "Este campo es requerido" })}
             error={errors.Estado?.message}
           />
         </div>
         <ActionButtons
-          onNew={() => alert("Nuevo estudiante")}
+          onNew={handleNew}
           onModify={() => alert("Modificar estudiante")}
           onSave={handleSubmit(handleSave)}
           onDelete={() => alert("Eliminar estudiante")}

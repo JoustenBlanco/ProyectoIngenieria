@@ -102,7 +102,7 @@ export default function Legal_Guardians() {
             placeholder="Ingresa el número de cédula"
             type="text"
             required
-            {...register("Cedula", { required: "Este campo es obligatorio" })}
+            {...register("Cedula", { required: "Este campo es requerido" })}
             error={errors.Cedula?.message}
           />
           <Input
@@ -111,7 +111,7 @@ export default function Legal_Guardians() {
             placeholder="Ingresa el número de teléfono"
             type="tel"
             required
-            {...register("Numero", { required: "Este campo es obligatorio" })}
+            {...register("Numero", { required: "Este campo es requerido" })}
             error={errors.Numero?.message}
           />
           <Input
@@ -120,7 +120,7 @@ export default function Legal_Guardians() {
             placeholder="Ingresa el correo electrónico"
             type="email"
             required
-            {...register("Correo", { required: "Este campo es obligatorio" })}
+            {...register("Correo", { required: "Este campo es requerido" })}
             error={errors.Correo?.message}
           />
           <Select
