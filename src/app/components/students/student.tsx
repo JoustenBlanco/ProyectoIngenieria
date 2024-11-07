@@ -30,7 +30,7 @@ const Curse: React.FC<StudentProps> = ({
   const isPresent = present === "S";
 
   return (
-    <div className="flex gap-0 justify-start items-center w-full bg-white p-4 hover:bg-gray-100 transition-all duration-300 h-16">
+    <div className="flex gap-0 justify-start items-center w-full bg-white p-4 hover:bg-gray-100 transition-all duration-300 h-16 dark:bg-gray-800">
       <img
         src={image}
         className="w-12 h-12 bg-green-500 rounded-full p-1 shadow-md"

@@ -58,7 +58,7 @@ export default function Legal_Guardians() {
   return (
     <div className="p-6 flex flex-col h-full">
       <div className="w-full text-start mb-8">
-        <h1 className="text-3xl font-bold text-gray-500">
+        <h1 className="text-3xl font-bold text-gray-500 dark:text-gray-400">
           Mantenimiento - Encargados Legales
         </h1>
       </div>

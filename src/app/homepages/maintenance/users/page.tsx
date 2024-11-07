@@ -47,7 +47,7 @@ export default function Users() {
 
   return (
     <div className="p-6 flex flex-col h-full">
-      <h1 className="text-3xl font-bold mb-8 text-gray-500">
+      <h1 className="text-3xl font-bold mb-8 text-gray-500 dark:text-gray-400">
         Mantenimiento - Usuarios
       </h1>
       <form onSubmit={handleSubmit(onSubmit)} className="flex-grow">

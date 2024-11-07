@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-gradient-to-b from-[#E6FAFF] to-white flex flex-col min-h-screen p-2 justify-center items-center h-screen md:p-8`}>
+      <body className={`${inter.className} bg-gradient-to-b from-[#E6FAFF] dark:from-[#0b1130] to-white dark:to-gray-900 flex flex-col min-h-screen p-2 justify-center items-center h-screen md:p-8`}>
         <div className="flex flex-col w-full h-full">
           <div className="flex flex-1 overflow-hidden w-full shadow-xl rounded-2xl h-full">
             <ClientWrapper>

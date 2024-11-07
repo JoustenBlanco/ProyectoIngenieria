@@ -27,9 +27,9 @@ const StudentsList: React.FC = () => {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-3xl font-bold mb-8 text-gray-500">Lista de Estudiantes</h1>
-      <div className="bg-white rounded-2xl">
-        <div className="h-12 flex flex-row px-8 justify-start text-gray-500">
+      <h1 className="text-3xl font-bold mb-8 text-gray-500 dark:text-gray-400">Lista de Estudiantes</h1>
+      <div className="bg-white rounded-2xl dark:bg-gray-800">
+        <div className="h-12 flex flex-row px-8 justify-start text-gray-500 dark:text-gray-400">
           <span>Nombre</span>
           <span className="ml-80">Cédula</span>
           <span className="ml-12">Estado</span>

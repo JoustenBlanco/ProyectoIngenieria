@@ -24,6 +24,11 @@ const Sidebar = () => {
       path: "/homepages/about",
       icon: "/images/about.svg",
     },
+    {
+      name: "Configuración",
+      path: "/homepages/config",
+      icon: "/images/config.svg",
+    },
   ];
 
   const toggleSidebar = () => {
@@ -34,7 +39,7 @@ const Sidebar = () => {
     <aside
       className={`${
         isCollapsed ? "w-14" : "w-64"
-      } h-full bg-lsp-blue text-white flex-col justify-start items-center pt-8 transition-all duration-300`}
+      } h-full bg-lsp-blue  dark:bg-[#00011f] text-white dark:text-gray-400 flex-col justify-start items-center pt-8 transition-all duration-300`}
     >
       <div className="flex justify-between items-center px-4 py-2">
         <div className="flex items-center space-x-4">
@@ -62,7 +67,7 @@ const Sidebar = () => {
               className={`flex items-center p-2 cursor-pointer w-full border-l-4 border-black my-2 hover:bg-gray-500 hover:bg-opacity-20 transition-all duration-300
                 ${
                   pathname === item.path
-                    ? "bg-gray-500 bg-opacity-25 border-white font-bold text-white transition-all duration-300"
+                    ? "bg-gray-500 bg-opacity-25 border-white dark:border-gray-400 font-bold text-white dark:text-gray-500 transition-all duration-300"
                     : "text-gray-400"
                 }
               `}

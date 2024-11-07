@@ -13,7 +13,7 @@ export default function ClientWrapper({ children }: { children: React.ReactNode 
       {!isAuthRoute && <Sidebar />}
       <main className={`${
         !isAuthRoute
-          ? "flex-1 flex-col justify-start items-center p-6 bg-gray-200 rounded-r-lg overflow-auto w-full "
+          ? "flex-1 flex-col justify-start items-center p-6 bg-gray-200 dark:bg-gray-900 rounded-r-lg overflow-auto w-full "
           : "flex-1 flex-col items-center"
       }`}>
         {children}
