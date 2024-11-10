@@ -25,19 +25,16 @@ const StudentsList: React.FC = () => {
 
   const checkExistingAttendance = async (date: Date) => {
     try {
+      console.log("se esta ejecutando la revicion de asistencia de la fecha actual");
       const formattedDate = format(date, "yyyy-MM-dd");
       const response = await fetch(
         `/api/asistencia/check?sectionId=${sectionId}&classId=${claseId}&date=${formattedDate}`, {
   cache: "no-store"}
       );
-      const data = await response.json();
+      
+      const attendanceData = await response.json();
 
-      if (data.exists) {
-        const response = await fetch(
-          `/api/asistencia?sectionId=${sectionId}&classId=${claseId}&date=${formattedDate}`, {
-  cache: "no-store"}
-        );
-        const attendanceData = await response.json();
+      if (attendanceData.Id_asistencia) {
         console.log("Datos de asistencia existentes:", attendanceData);
         // Aseguramos que las fechas son válidas y se parsean correctamente
         setExistingAttendance(attendanceData);
@@ -55,7 +52,7 @@ const StudentsList: React.FC = () => {
         );
       } else {
         setExistingAttendance(null);
-        setComments("");
+        setComments("Quiero mimir");
         setPlace("");
         setStartTime(null);
         setEndTime(null);
@@ -175,7 +172,6 @@ const StudentsList: React.FC = () => {
             onChange={(date: Date | null) => {
               if (date) {
                 setSelectedDate(date);
-                checkExistingAttendance(date);
               }
             }}
             dateFormat="dd/MM/yyyy"

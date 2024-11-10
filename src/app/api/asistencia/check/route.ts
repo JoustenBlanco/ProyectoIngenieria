@@ -18,7 +18,9 @@ export async function GET(req: Request) {
 
   try {
     // Parseamos la fecha y creamos el rango del día
+    console.log('como llega:', date);
     const parsedDate = new Date(date);
+    console.log('como se parsea:', parsedDate);
     const startOfDay = new Date(parsedDate);
     startOfDay.setUTCHours(0, 0, 0, 0);
 
@@ -38,7 +40,7 @@ export async function GET(req: Request) {
         },
       },
     });
-
+console.log(existingAttendance);
     // Retornamos el resultado de la búsqueda
     return NextResponse.json(
       existingAttendance || { exists: false },
