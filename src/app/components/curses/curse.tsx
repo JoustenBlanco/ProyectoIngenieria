@@ -8,14 +8,16 @@ interface CurseProps {
   description: string;
   route: string;
   sectionId: string; 
+  claseId: string;
 }
 
-const Curse: React.FC<CurseProps> = ({ image, title, description, route, sectionId }) => {
+const Curse: React.FC<CurseProps> = ({ image, title, description, route, sectionId, claseId }) => {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`${route}?sectionId=${sectionId}`);
+    router.push(`${route}?sectionId=${sectionId}&claseId=${claseId}`);
   };
+
 
   return (
     <div

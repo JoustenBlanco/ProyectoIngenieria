@@ -3,17 +3,85 @@ import React, { useState, useEffect } from "react";
 import Student from "@/app/components/students/student";
 import { Student as StudentType } from "../../../../../types";
 import { useSearchParams } from "next/navigation";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { format, parseISO } from "date-fns";
 
 const StudentsList: React.FC = () => {
+  const [comments, setComments] = useState<string | null>("");
+  const [place, setPlace] = useState<string | null>("");
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [endTime, setEndTime] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [existingAttendance, setExistingAttendance] = useState<any | null>(
+    null
+  );
+
   const [students, setStudents] = useState<StudentType[]>([]);
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const searchParams = useSearchParams();
   const sectionId = searchParams.get("sectionId");
+  const claseId = searchParams.get("claseId");
+
+  const checkExistingAttendance = async (date: Date) => {
+    try {
+      const formattedDate = format(date, "yyyy-MM-dd");
+      const response = await fetch(
+        `/api/asistencia/check?sectionId=${sectionId}&classId=${claseId}&date=${formattedDate}`, {
+  cache: "no-store"}
+      );
+      const data = await response.json();
+
+      if (data.exists) {
+        const response = await fetch(
+          `/api/asistencia?sectionId=${sectionId}&classId=${claseId}&date=${formattedDate}`, {
+  cache: "no-store"}
+        );
+        const attendanceData = await response.json();
+        console.log("Datos de asistencia existentes:", attendanceData);
+        // Aseguramos que las fechas son válidas y se parsean correctamente
+        setExistingAttendance(attendanceData);
+        setComments(attendanceData.Comentarios || "");
+        setPlace(attendanceData.Lugar || "");
+        setStartTime(
+          attendanceData.Hora_inicio
+            ? parseISO(attendanceData.Hora_inicio)
+            : null
+        );
+        setEndTime(
+          attendanceData.Hora_finalizacion
+            ? parseISO(attendanceData.Hora_finalizacion)
+            : null
+        );
+      } else {
+        setExistingAttendance(null);
+        setComments("");
+        setPlace("");
+        setStartTime(null);
+        setEndTime(null);
+      }
+    } catch (error) {
+      console.error("Error al verificar la asistencia:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (existingAttendance) {
+      setComments(existingAttendance.Comentarios || "");
+      setPlace(existingAttendance.Lugar || "");
+      setStartTime(existingAttendance.Hora_inicio ? parseISO(existingAttendance.Hora_inicio) : null);
+      setEndTime(existingAttendance.Hora_finalizacion ? parseISO(existingAttendance.Hora_finalizacion) : null);
+    }
+  }, [existingAttendance]);
 
   useEffect(() => {
     const fetchStudents = async () => {
-      if (sectionId) {
+      if (sectionId && selectedDate && claseId) {
+        checkExistingAttendance(selectedDate);
         try {
-          const response = await fetch(`/api/alumnos_x_secciones?Id_seccion=${sectionId}`);
+          const response = await fetch(
+            `/api/alumnos_x_secciones?Id_seccion=${sectionId}`
+          );
           const data = await response.json();
           setStudents(data);
         } catch (error) {
@@ -23,12 +91,183 @@ const StudentsList: React.FC = () => {
     };
 
     fetchStudents();
-  }, [sectionId]);
+  }, [sectionId, selectedDate, claseId]);
+
+  const validateFields = () => {
+    const newErrors: { [key: string]: string } = {};
+
+    if (!selectedDate)
+      newErrors.selectedDate = "La fecha de asistencia es obligatoria.";
+    if (!place) newErrors.place = "El lugar es obligatorio.";
+    if (!startTime) newErrors.startTime = "La hora de inicio es obligatoria.";
+    if (!endTime) newErrors.endTime = "La hora de finalización es obligatoria.";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSaveAttendance = async () => {
+    if (!validateFields()) return;
+
+    const claseIdNumber = claseId ? parseInt(claseId, 10) : null;
+
+    const attendanceData = {
+      Comentarios: comments,
+      Fecha: selectedDate,
+      Lugar: place,
+      Hora_inicio: startTime,
+      Hora_finalizacion: endTime,
+      Id_clase: claseIdNumber,
+    };
+
+    try {
+      if (existingAttendance) {
+        const response = await fetch(`/api/asistencia`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            Id_asistencia: existingAttendance.Id_asistencia,
+            ...attendanceData,
+          }),
+        });
+
+        const result = await response.json();
+        if (result) {
+          alert("Asistencia actualizada exitosamente.");
+        }
+      } else {
+        const response = await fetch("/api/asistencia", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(attendanceData),
+        });
+
+        const result = await response.json();
+
+        if (result) {
+          alert("Asistencia guardada exitosamente.");
+        }
+      }
+    } catch (error) {
+      console.error("Error guardando o actualizando asistencia:", error);
+      alert("Hubo un error al guardar o actualizar la asistencia.");
+    }
+  };
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-3xl font-bold mb-8 text-gray-500 dark:text-gray-400">Lista de Estudiantes</h1>
-      <div className="bg-white rounded-2xl dark:bg-gray-800">
+      <h1 className="text-3xl font-bold mb-4 text-gray-500 dark:text-gray-400">
+        Registrar Asistencia
+      </h1>
+
+      {/* Formulario de Asistencia */}
+      <div className="bg-white p-6 rounded-lg shadow-md dark:bg-gray-800">
+        <div className="mb-4">
+          <label className="block text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
+            Fecha de Asistencia
+          </label>
+          <DatePicker
+            selected={selectedDate || new Date()}
+            onChange={(date: Date | null) => {
+              if (date) {
+                setSelectedDate(date);
+                checkExistingAttendance(date);
+              }
+            }}
+            dateFormat="dd/MM/yyyy"
+            className="p-2 rounded-lg border border-gray-300 dark:bg-gray-700 dark:text-white w-full"
+          />
+          {errors.selectedDate && (
+            <p className="text-red-500 text-sm">{errors.selectedDate}</p>
+          )}
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
+            Lugar
+          </label>
+          <input
+            type="text"
+            value={place || ""}
+            onChange={(e) => setPlace(e.target.value)}
+            className="p-2 rounded-lg border border-gray-300 dark:bg-gray-700 dark:text-white w-full"
+            placeholder="Ingrese el lugar de la asistencia"
+          />
+          {errors.place && (
+            <p className="text-red-500 text-sm">{errors.place}</p>
+          )}
+        </div>
+
+        <div className="mb-4">
+          <label className="block text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
+            Comentarios
+          </label>
+          <textarea
+            value={comments || ""}
+            onChange={(e) => setComments(e.target.value)}
+            className="p-2 rounded-lg border border-gray-300 dark:bg-gray-700 dark:text-white w-full"
+            placeholder="Escriba comentarios adicionales (opcional)"
+            rows={3}
+          />
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
+              Hora de Inicio
+            </label>
+            <DatePicker
+              selected={startTime}
+              onChange={(date: Date | null) => setStartTime(date)}
+              showTimeSelect
+              showTimeSelectOnly
+              timeIntervals={15}
+              timeCaption="Hora"
+              dateFormat="h:mm aa"
+              className="p-2 rounded-lg border border-gray-300 dark:bg-gray-700 dark:text-white w-full"
+            />
+            {errors.startTime && (
+              <p className="text-red-500 text-sm">{errors.startTime}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
+              Hora de Finalización
+            </label>
+            <DatePicker
+              selected={endTime}
+              onChange={(date: Date | null) => setEndTime(date)}
+              showTimeSelect
+              showTimeSelectOnly
+              timeIntervals={15}
+              timeCaption="Hora"
+              dateFormat="h:mm aa"
+              className="p-2 rounded-lg border border-gray-300 dark:bg-gray-700 dark:text-white w-full"
+            />
+            {errors.endTime && (
+              <p className="text-red-500 text-sm">{errors.endTime}</p>
+            )}
+          </div>
+        </div>
+
+        <button
+          onClick={handleSaveAttendance}
+          className="mt-6 bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition-all"
+        >
+          Guardar Asistencia
+        </button>
+      </div>
+
+      {/* Lista de Estudiantes */}
+      <div className="bg-white rounded-2xl dark:bg-gray-800 mt-6">
+        <h2 className="text-2xl font-bold mb-4 text-gray-500 dark:text-gray-400">
+          Lista de Estudiantes
+        </h2>
         <div className="h-12 flex flex-row px-8 justify-start text-gray-500 dark:text-gray-400">
           <span>Nombre</span>
           <span className="ml-80">Cédula</span>

@@ -12,20 +12,24 @@ export async function GET(){
 }
 
 export async function POST(_req: Request) {
-    try {
-      const data: CreateRecord = await _req.json();  
-      const result = await prisma.rAE_Asistencia.create({
-        data: {
-            Comentarios:data.Comentarios || null,                 
-            Fecha :new Date(data.Fecha),          
-            Lugar: data.Lugar, 
-        },
-      });
-      return NextResponse.json(result, { status: 201 });
-    } catch (error) {
-      return NextResponse.json({ error: 'Error creating record' }, { status: 500 });
-    }
+  try {
+    const data: CreateRecord = await _req.json();
+    const result = await prisma.rAE_Asistencia.create({
+      data: {
+        Comentarios: data.Comentarios || null,
+        Fecha: new Date(data.Fecha),
+        Lugar: data.Lugar,
+        Hora_inicio: new Date(data.Hora_inicio),
+        Hora_finalizacion: new Date(data.Hora_finalizacion),
+        Id_clase: data.Id_clase || null,
+      },
+    });
+    return NextResponse.json(result, { status: 201 });
+  } catch (error) {
+    console.error("Error creating record:", error);
+    return NextResponse.json({ error: "Error creating record" }, { status: 500 });
   }
+}
 
   export async function PUT(req: Request) {
     try {
@@ -36,6 +40,9 @@ export async function POST(_req: Request) {
             Comentarios:data.Comentarios || null,                 
             Fecha :new Date(data.Fecha),          
             Lugar: data.Lugar,
+            Hora_inicio: new Date(data.Hora_inicio),
+            Hora_finalizacion: new Date(data.Hora_finalizacion),
+            Id_clase: data.Id_clase || null,
         },
       });
       return NextResponse.json(result, { status: 200 });

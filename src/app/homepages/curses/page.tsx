@@ -40,7 +40,8 @@ export default function Curses() {
               title={`Sección ${clase.RAE_Secciones.Nombre} - ${clase.RAE_Materia.Nombre}`}
               description={clase.Descripcion || "Sin descripción"}
               route="/homepages/curses/studentsList"
-              sectionId={clase.Id_seccion.toString()} // Pasar el ID del curso
+              sectionId={clase.Id_seccion.toString()}
+              claseId={clase.Id_clase.toString()} // Pasar el ID de la sección
             />
         ))}
       </div>

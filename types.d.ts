@@ -95,13 +95,19 @@ export interface InputProps {
     Id_asistencia:number,                   
     Comentarios?:string,                 
     Fecha :string,          
-    Lugar: string,                     
+    Lugar: string,
+    Hora_inicio: DateTime,
+    Hora_finalizacion: DateTime,  
+    Id_clase: int                          
   }
 
   export interface CreateRecord{                  
     Comentarios?:string,                 
     Fecha :string,          
-    Lugar: string,                     
+    Lugar: string,
+    Hora_inicio: DateTime,
+    Hora_finalizacion: DateTime,  
+    Id_clase: int                 
   }
 
   export interface RecordXStudent{
