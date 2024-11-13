@@ -7,6 +7,11 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, parseISO } from "date-fns";
 
+interface ExtendedStudent extends StudentType {
+  Asistio: boolean;
+  Comentarios: string;
+}
+
 const StudentsList: React.FC = () => {
   const [comments, setComments] = useState<string | null>("");
   const [place, setPlace] = useState<string | null>("");
@@ -18,6 +23,9 @@ const StudentsList: React.FC = () => {
   );
 
   const [students, setStudents] = useState<StudentType[]>([]);
+  const [extendedStudents, setExtendedStudents] = useState<ExtendedStudent[]>(
+    []
+  );
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const searchParams = useSearchParams();
   const sectionId = searchParams.get("sectionId");
@@ -25,18 +33,21 @@ const StudentsList: React.FC = () => {
 
   const checkExistingAttendance = async (date: Date) => {
     try {
-      console.log("se esta ejecutando la revicion de asistencia de la fecha actual");
+      console.log(
+        "se esta ejecutando la revicion de asistencia de la fecha actual"
+      );
       const formattedDate = format(date, "yyyy-MM-dd");
       const response = await fetch(
-        `/api/asistencia/check?sectionId=${sectionId}&classId=${claseId}&date=${formattedDate}`, {
-  cache: "no-store"}
+        `/api/asistencia/check?sectionId=${sectionId}&classId=${claseId}&date=${formattedDate}`,
+        {
+          cache: "no-store",
+        }
       );
-      
+
       const attendanceData = await response.json();
 
       if (attendanceData.Id_asistencia) {
         console.log("Datos de asistencia existentes:", attendanceData);
-        // Aseguramos que las fechas son válidas y se parsean correctamente
         setExistingAttendance(attendanceData);
         setComments(attendanceData.Comentarios || "");
         setPlace(attendanceData.Lugar || "");
@@ -52,7 +63,7 @@ const StudentsList: React.FC = () => {
         );
       } else {
         setExistingAttendance(null);
-        setComments("Quiero mimir");
+        setComments("");
         setPlace("");
         setStartTime(null);
         setEndTime(null);
@@ -62,12 +73,22 @@ const StudentsList: React.FC = () => {
     }
   };
 
+
+
   useEffect(() => {
     if (existingAttendance) {
       setComments(existingAttendance.Comentarios || "");
       setPlace(existingAttendance.Lugar || "");
-      setStartTime(existingAttendance.Hora_inicio ? parseISO(existingAttendance.Hora_inicio) : null);
-      setEndTime(existingAttendance.Hora_finalizacion ? parseISO(existingAttendance.Hora_finalizacion) : null);
+      setStartTime(
+        existingAttendance.Hora_inicio
+          ? parseISO(existingAttendance.Hora_inicio)
+          : null
+      );
+      setEndTime(
+        existingAttendance.Hora_finalizacion
+          ? parseISO(existingAttendance.Hora_finalizacion)
+          : null
+      );
     }
   }, [existingAttendance]);
 
@@ -81,6 +102,13 @@ const StudentsList: React.FC = () => {
           );
           const data = await response.json();
           setStudents(data);
+          setExtendedStudents(
+            data.map((student: any) => ({
+              ...student,
+              Asistio: false,
+              Comentarios: "",
+            }))
+          );
         } catch (error) {
           console.error("Error fetching students:", error);
         }
@@ -89,6 +117,24 @@ const StudentsList: React.FC = () => {
 
     fetchStudents();
   }, [sectionId, selectedDate, claseId]);
+
+  const handleAttendanceChange = (id: number, isPresent : boolean) => {
+    setExtendedStudents((prevStudents) =>
+      prevStudents.map((student) =>
+        student.Id_alumno === id ? { ...student, Asistio: isPresent } : student
+      )
+    );
+  };
+
+  const handleCommentChange = (id: number, comment: string) => {
+    setExtendedStudents((prevStudents) =>
+      prevStudents.map((student) =>
+        student.Id_alumno === id
+          ? { ...student, Comentarios: comment }
+          : student
+      )
+    );
+  };
 
   const validateFields = () => {
     const newErrors: { [key: string]: string } = {};
@@ -133,6 +179,7 @@ const StudentsList: React.FC = () => {
         const result = await response.json();
         if (result) {
           alert("Asistencia actualizada exitosamente.");
+          await handleSaveStudentAttendance(existingAttendance.Id_asistencia);
         }
       } else {
         const response = await fetch("/api/asistencia", {
@@ -147,11 +194,40 @@ const StudentsList: React.FC = () => {
 
         if (result) {
           alert("Asistencia guardada exitosamente.");
+          await handleSaveStudentAttendance(result.Id_asistencia);
         }
       }
     } catch (error) {
       console.error("Error guardando o actualizando asistencia:", error);
       alert("Hubo un error al guardar o actualizar la asistencia.");
+    }
+  };
+
+  const handleSaveStudentAttendance = async (attendanceId: number) => {
+    try {
+      await Promise.all(
+        extendedStudents.map(async (student) => {
+          const { Id_alumno, Asistio, Comentarios } = student;
+          const response = await fetch("/api/asistencia_x_alumnos", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              Id_asistencia: attendanceId,
+              Id_alumno: Id_alumno,
+              Asistio: Asistio ? "S" : "N",
+              Comentarios: Comentarios || "",
+            }),
+          });
+          return response.json();
+        })
+      );
+      alert("Asistencia guardada exitosamente.");
+    
+    } catch (error) {
+      console.error("Error guardando la asistencia de estudiantes:", error);
+      alert("Hubo un error al guardar la asistencia de los estudiantes.");
     }
   };
 
@@ -271,14 +347,19 @@ const StudentsList: React.FC = () => {
           <span className="ml-36">Presente</span>
         </div>
         <div>
-          {students.map((student) => (
+          {extendedStudents.map((student) => (
             <Student
               key={student.Id_alumno}
               image="/images/user.svg"
               name={`${student.Primer_nombre} ${student.Segundo_nombre} ${student.Primer_apellido} ${student.Segundo_apellido}`}
-              id={student.Cedula}
+              cedula={student.Cedula}
               status={student.Estado}
-              present="N/A"
+              present={student.Asistio}
+              onAttendanceChange={(cedula, isPresent) => handleAttendanceChange(student.Id_alumno, Boolean(isPresent))}
+
+              onCommentChange={(cedula, comment) =>
+                handleCommentChange(student.Id_alumno, comment)
+              }
             />
           ))}
         </div>
