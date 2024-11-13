@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface StudentProps {
   image: string;
@@ -7,6 +7,7 @@ interface StudentProps {
   cedula: string;
   status: string;
   present: boolean;
+  comment: string;
   onAttendanceChange: (cedula: string, isPresent: boolean) => void;
   onCommentChange: (cedula: string, comment: string) => void;
 }
@@ -17,10 +18,10 @@ const Student: React.FC<StudentProps> = ({
   cedula,
   status,
   present,
+  comment,
   onAttendanceChange,
   onCommentChange,
 }) => {
-  const [comment, setComment] = useState("");
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -39,7 +40,6 @@ const Student: React.FC<StudentProps> = ({
 
   const handleCommentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newComment = e.target.value;
-    setComment(newComment);
     onCommentChange(cedula, newComment);
   };
 

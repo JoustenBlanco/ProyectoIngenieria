@@ -26,6 +26,8 @@ const StudentsList: React.FC = () => {
   const [extendedStudents, setExtendedStudents] = useState<ExtendedStudent[]>(
     []
   );
+  const [isExistingAttendance, setIsExistingAttendance] = useState(false);
+
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const searchParams = useSearchParams();
   const sectionId = searchParams.get("sectionId");
@@ -48,6 +50,22 @@ const StudentsList: React.FC = () => {
 
       if (attendanceData.Id_asistencia) {
         console.log("Datos de asistencia existentes:", attendanceData);
+        console.log(attendanceData.RAE_Asistencia_X_Alumnos);
+        const studentsData: ExtendedStudent[] =
+          attendanceData.RAE_Asistencia_X_Alumnos.map((student: any) => ({
+            Id_alumno: student.Id_alumno,
+            Primer_nombre: student.RAE_Alumnos.Primer_nombre,
+            Segundo_nombre: student.RAE_Alumnos.Segundo_nombre,
+            Primer_apellido: student.RAE_Alumnos.Primer_apellido,
+            Segundo_apellido: student.RAE_Alumnos.Segundo_apellido,
+            Cedula: student.RAE_Alumnos.Cedula,
+            Estado: student.RAE_Alumnos.Estado,
+            Asistio: student.Asistio === "S",
+            Comentarios: student.Comentarios || "",
+          }));
+        console.log(studentsData);
+        setExtendedStudents(studentsData);
+
         setExistingAttendance(attendanceData);
         setComments(attendanceData.Comentarios || "");
         setPlace(attendanceData.Lugar || "");
@@ -61,19 +79,21 @@ const StudentsList: React.FC = () => {
             ? parseISO(attendanceData.Hora_finalizacion)
             : null
         );
+        return attendanceData;
       } else {
+        setExtendedStudents([]);
         setExistingAttendance(null);
         setComments("");
         setPlace("");
         setStartTime(null);
         setEndTime(null);
+        return null;
       }
     } catch (error) {
       console.error("Error al verificar la asistencia:", error);
+      return null;
     }
   };
-
-
 
   useEffect(() => {
     if (existingAttendance) {
@@ -95,20 +115,25 @@ const StudentsList: React.FC = () => {
   useEffect(() => {
     const fetchStudents = async () => {
       if (sectionId && selectedDate && claseId) {
-        checkExistingAttendance(selectedDate);
+        const existing = await checkExistingAttendance(selectedDate);
         try {
           const response = await fetch(
             `/api/alumnos_x_secciones?Id_seccion=${sectionId}`
           );
           const data = await response.json();
           setStudents(data);
-          setExtendedStudents(
-            data.map((student: any) => ({
-              ...student,
-              Asistio: false,
-              Comentarios: "",
-            }))
-          );
+          if (existing) {
+            setIsExistingAttendance(true);
+          } else {
+            setExtendedStudents(
+              data.map((student: any) => ({
+                ...student,
+                Asistio: false,
+                Comentarios: "",
+              }))
+            );
+            setIsExistingAttendance(false);
+          }
         } catch (error) {
           console.error("Error fetching students:", error);
         }
@@ -118,7 +143,7 @@ const StudentsList: React.FC = () => {
     fetchStudents();
   }, [sectionId, selectedDate, claseId]);
 
-  const handleAttendanceChange = (id: number, isPresent : boolean) => {
+  const handleAttendanceChange = (id: number, isPresent: boolean) => {
     setExtendedStudents((prevStudents) =>
       prevStudents.map((student) =>
         student.Id_alumno === id ? { ...student, Asistio: isPresent } : student
@@ -209,7 +234,7 @@ const StudentsList: React.FC = () => {
         extendedStudents.map(async (student) => {
           const { Id_alumno, Asistio, Comentarios } = student;
           const response = await fetch("/api/asistencia_x_alumnos", {
-            method: "POST",
+            method: isExistingAttendance ? "PUT" : "POST",
             headers: {
               "Content-Type": "application/json",
             },
@@ -224,7 +249,6 @@ const StudentsList: React.FC = () => {
         })
       );
       alert("Asistencia guardada exitosamente.");
-    
     } catch (error) {
       console.error("Error guardando la asistencia de estudiantes:", error);
       alert("Hubo un error al guardar la asistencia de los estudiantes.");
@@ -355,8 +379,10 @@ const StudentsList: React.FC = () => {
               cedula={student.Cedula}
               status={student.Estado}
               present={student.Asistio}
-              onAttendanceChange={(cedula, isPresent) => handleAttendanceChange(student.Id_alumno, Boolean(isPresent))}
-
+              comment={student.Comentarios}
+              onAttendanceChange={(cedula, isPresent) =>
+                handleAttendanceChange(student.Id_alumno, Boolean(isPresent))
+              }
               onCommentChange={(cedula, comment) =>
                 handleCommentChange(student.Id_alumno, comment)
               }

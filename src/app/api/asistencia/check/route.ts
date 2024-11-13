@@ -17,7 +17,6 @@ export async function GET(req: Request) {
   }
 
   try {
-    // Parseamos la fecha y creamos el rango del día
     console.log('como llega:', date);
     const parsedDate = new Date(date);
     console.log('como se parsea:', parsedDate);
@@ -27,7 +26,7 @@ export async function GET(req: Request) {
     const endOfDay = new Date(parsedDate);
     endOfDay.setUTCHours(23, 59, 59, 999);
 
-    // Realizamos la búsqueda de una asistencia existente en el rango de la fecha
+
     const existingAttendance = await prisma.rAE_Asistencia.findFirst({
       where: {
         Id_clase: parseInt(classId, 10),
@@ -39,9 +38,15 @@ export async function GET(req: Request) {
           lt: endOfDay,
         },
       },
+      include: {
+        RAE_Asistencia_X_Alumnos: {
+          include: {
+            RAE_Alumnos: true, 
+          },
+        },
+      },
     });
 console.log(existingAttendance);
-    // Retornamos el resultado de la búsqueda
     return NextResponse.json(
       existingAttendance || { exists: false },
       { status: 200 }
