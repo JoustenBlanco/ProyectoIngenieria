@@ -6,6 +6,7 @@ import Select from "../../../components/Atoms/select";
 import DateInput from "../../../components/Atoms/dateInput";
 import ActionButtons from "../../../components/Atoms/ActionButtons";
 import { CreateStudent } from "../../../../../types";
+import StudentList from "../../../components/studentMaintenance/StudentsList";
 
 export default function Students() {
   const {
@@ -16,6 +17,20 @@ export default function Students() {
     formState: { errors },
     setValue,
   } = useForm<CreateStudent>();
+
+  const [showStudentList, setShowStudentList] = useState(false);
+
+  const handleOpenStudentList = () => {
+    setShowStudentList(true);
+  };
+
+  const handleCloseStudentList = () => {
+    setShowStudentList(false);
+  };
+
+  const handleSelectStudent = (student: any) => {
+    reset(student);
+  };
 
   const handleSave = async (data: CreateStudent) => {
     const studentData = {
@@ -52,6 +67,13 @@ export default function Students() {
       <h1 className="text-3xl font-bold mb-8 text-gray-500 dark:text-gray-400">
         Mantenimiento - Estudiantes
       </h1>
+      <button
+        onClick={handleOpenStudentList}
+        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded"
+      >
+        Buscar Estudiantes
+      </button>
+      {showStudentList && <StudentList onClose={handleCloseStudentList} onSelectStudent={handleSelectStudent} />}
       <form onSubmit={handleSubmit(handleSave)}>
         <div className="grid md:grid-cols-2 sm:grid-cols-1 gap-3 w-full gap-x-10">
           <Input

@@ -1,37 +1,36 @@
 import React, { useEffect, useState } from "react";
-import GuardianListItem from "./GuardiansListItem";
+import StudentListItem from "./StudentsListItem";
 import DarkModeWrapper from "../DarkModeWreapper/DarkModeWrapper";
 
-interface Guardian {
-  Id_encargado_legal: number;
+interface Student {
+  Id_alumno: number;
   Primer_nombre: string;
   Segundo_nombre?: string;
   Primer_apellido: string;
   Segundo_apellido?: string;
-  Correo: string;
-  Numero_telefono: string;
+  Cedula?: string;
   Estado: string;
 }
 
-interface GuardianListProps {
+interface StudentListProps {
   onClose: () => void;
-  onSelectGuardian: (guardian: Guardian) => void; // Función para seleccionar usuario
+  onSelectStudent: (student: Student) => void;
 }
 
-const GuardianList: React.FC<GuardianListProps> = ({ onClose, onSelectGuardian }) => {
-  const [guardians, setGuardians] = useState<Guardian[]>([]);
+const StudentList: React.FC<StudentListProps> = ({ onClose, onSelectStudent }) => {
+  const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchGuardians = async () => {
+    const fetchStudents = async () => {
       try {
-        const response = await fetch("/api/encargados_legales");
+        const response = await fetch("/api/alumnos");
         if (response.ok) {
           const data = await response.json();
-          setGuardians(data);
+          setStudents(data);
         } else {
-          throw new Error("Error al obtener los encargados");
+          throw new Error("Error al obtener los alumnos");
         }
       } catch (err) {
         setError("Hubo un problema al cargar los datos.");
@@ -40,7 +39,7 @@ const GuardianList: React.FC<GuardianListProps> = ({ onClose, onSelectGuardian }
       }
     };
 
-    fetchGuardians();
+    fetchStudents();
   }, []);
 
   return (
@@ -48,7 +47,7 @@ const GuardianList: React.FC<GuardianListProps> = ({ onClose, onSelectGuardian }
       <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
         <div className="bg-white dark:bg-gray-800 w-4/5 max-w-3xl p-6 rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
-            Lista de Encargados
+            Lista de Estudiantes
           </h2>
 
           {isLoading ? (
@@ -57,12 +56,12 @@ const GuardianList: React.FC<GuardianListProps> = ({ onClose, onSelectGuardian }
             <p className="text-center text-red-500">{error}</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {guardians.map((guardian) => (
-                <GuardianListItem
-                  key={guardian.Id_encargado_legal}
-                  guardian={guardian}
+              {students.map((student) => (
+                <StudentListItem
+                  key={student.Id_alumno}
+                  student={student}
                   onSelect={() => {
-                    onSelectGuardian(guardian);
+                    onSelectStudent(student);
                     onClose();
                   }}
                 />
@@ -82,4 +81,4 @@ const GuardianList: React.FC<GuardianListProps> = ({ onClose, onSelectGuardian }
   );
 };
 
-export default GuardianList;
+export default StudentList;

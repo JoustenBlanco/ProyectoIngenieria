@@ -6,7 +6,7 @@ interface Guardian {
   Segundo_nombre?: string;
   Primer_apellido: string;
   Segundo_apellido?: string;
-  Email: string;
+  Correo: string;
   Numero_telefono: string;
   Estado: string;
 }
@@ -25,7 +25,7 @@ const GuardianListItem: React.FC<GuardianListItemProps> = ({ guardian, onSelect 
       <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
         {guardian.Primer_nombre} {guardian.Primer_apellido}
       </h3>
-      <p className="text-sm text-gray-700 dark:text-gray-300">{guardian.Email}</p>
+      <p className="text-sm text-gray-700 dark:text-gray-300">{guardian.Correo}</p>
       <p className="text-sm text-gray-500 dark:text-gray-400">{guardian.Estado}</p>
     </div>
   );

@@ -1,10 +1,11 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import Input from "../../../components/Atoms/input";
 import ActionButtons from "../../../components/Atoms/ActionButtons";
 import Select from "../../../components/Atoms/select";
 import { CreateParents } from "../../../../../types";
+import GuardianList from "../../../components/legal_guardians/GuardiansList";
 
 export default function Legal_Guardians() {
 
@@ -20,6 +21,20 @@ export default function Legal_Guardians() {
       Estado: "Activo",
     },
   });
+
+  const [showGuardianList, setShowGuardianList] = useState(false);
+
+  const handleOpenGuardianList = () => {
+    setShowGuardianList(true);
+  };
+
+  const handleCloseGuardianList = () => {
+    setShowGuardianList(false);
+  };
+
+  const handleSelectGuardian = (guardian: any) => {
+    reset(guardian);
+  };
 
   const onSubmit = async (data: CreateParents) => {
     try {
@@ -62,6 +77,13 @@ export default function Legal_Guardians() {
           Mantenimiento - Encargados Legales
         </h1>
       </div>
+      <button
+        onClick={handleOpenGuardianList}
+        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded"
+      >
+        Buscar Encargados
+      </button>
+      {showGuardianList && <GuardianList onClose={handleCloseGuardianList} onSelectGuardian={handleSelectGuardian} />}
       <form onSubmit={handleSubmit(onSubmit)} className="flex-grow">
         <div className="grid md:grid-cols-2 sm:grid-cols-1 gap-3 w-full gap-x-10">
           <Input
