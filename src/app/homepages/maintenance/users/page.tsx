@@ -1,10 +1,11 @@
 "use client";
-import React from "react";
+import React , { useState } from "react";
 import { useForm } from "react-hook-form";
 import Input from "../../../components/Atoms/input";
 import Select from "../../../components/Atoms/select";
 import ActionButtons from "../../../components/Atoms/ActionButtons";
 import { CrearFuncionarios } from "../../../../../types";
+import UserList from "../../../components/Users/UserList";
 
 export default function Users() {
   const {
@@ -14,6 +15,21 @@ export default function Users() {
     reset,
     formState: { errors },
   } = useForm<CrearFuncionarios>();
+  const [selectedUser, setSelectedUser] = useState<CrearFuncionarios | null>(null);
+  const [showUserList, setShowUserList] = useState(false);
+
+  const handleOpenUserList = () => {
+    setShowUserList(true);
+  };
+
+  const handleCloseUserList = () => {
+    setShowUserList(false);
+  };
+
+  const handleSelectUser = (user: any) => {
+    reset(user);
+  };
+
 
   const handleSave = async (data: CrearFuncionarios) => {
     console.log("Datos a enviar:", data);
@@ -50,6 +66,13 @@ export default function Users() {
       <h1 className="text-3xl font-bold mb-8 text-gray-500 dark:text-gray-400">
         Mantenimiento - Usuarios
       </h1>
+      <button
+        onClick={handleOpenUserList}
+        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded"
+      >
+        Buscar Usuarios
+      </button>
+      {showUserList && <UserList onClose={handleCloseUserList} onSelectUser={handleSelectUser} />}
       <form onSubmit={handleSubmit(onSubmit)} className="flex-grow">
         <div className="grid md:grid-cols-2 sm:grid-cols-1 gap-3 w-full gap-x-10">
           <Input
