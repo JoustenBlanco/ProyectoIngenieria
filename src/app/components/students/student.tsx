@@ -51,7 +51,7 @@ const Student: React.FC<StudentProps> = ({
       <div className="w-24 text-center px-4">
         <p className={`rounded-full ${getStatusColor(status)} text-sm p-1`}>{status}</p>
       </div>
-      <div className="flex items-center w-40 gap-2">
+      <div className="flex items-center w-40 gap-2 ml-36">
         <input
           type="checkbox"
           id={`attendance-${cedula}`}
@@ -65,7 +65,7 @@ const Student: React.FC<StudentProps> = ({
           placeholder="Comentarios"
           value={comment}
           onChange={handleCommentChange}
-          className="w-full text-sm px-2 py-1 border border-gray-300 rounded dark:bg-gray-700 dark:text-white focus:outline-none focus:border-green-500"
+          className="w-full text-sm px-2 py-1 border border-gray-300 rounded dark:bg-gray-700 dark:text-white focus:outline-none focus:border-green-500 "
         />
       </div>
     </div>
