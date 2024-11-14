@@ -2,15 +2,17 @@
 import React from "react";
 
 interface ButtonProps {
+  type: any;
   name: string;
   iconName: string;
   bgColor: string;
   onClick: () => void;
 }
 
-const Button: React.FC<ButtonProps> = ({ name, iconName, bgColor, onClick }) => {
+const Button: React.FC<ButtonProps> = ({type, name, iconName, bgColor, onClick }) => {
   return (
     <button
+      type= {type}
       className={`flex items-center px-4 py-2 text-white rounded-md hover:opacity-90 w-60 justify-center`}
       style={{ backgroundColor: bgColor }}
       onClick={onClick}

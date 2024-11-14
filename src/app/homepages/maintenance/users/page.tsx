@@ -1,10 +1,10 @@
 "use client";
-import React , { useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import Input from "../../../components/Atoms/input";
 import Select from "../../../components/Atoms/select";
 import ActionButtons from "../../../components/Atoms/ActionButtons";
-import { CrearFuncionarios } from "../../../../../types";
+import { Funcionarios } from "../../../../../types";
 import UserList from "../../../components/Users/UserList";
 
 export default function Users() {
@@ -14,8 +14,10 @@ export default function Users() {
     watch,
     reset,
     formState: { errors },
-  } = useForm<CrearFuncionarios>();
-  const [selectedUser, setSelectedUser] = useState<CrearFuncionarios | null>(null);
+  } = useForm<Funcionarios>();
+  const [selectedUser, setSelectedUser] = useState<Funcionarios | null>(
+    null
+  );
   const [showUserList, setShowUserList] = useState(false);
 
   const handleOpenUserList = () => {
@@ -27,15 +29,16 @@ export default function Users() {
   };
 
   const handleSelectUser = (user: any) => {
+    setSelectedUser(user);
+    console.log(user);
     reset(user);
   };
 
-
-  const handleSave = async (data: CrearFuncionarios) => {
+  const handleSave = async (data: Funcionarios) => {
     console.log("Datos a enviar:", data);
     try {
       const response = await fetch("/api/funcionarios", {
-        method: "POST",
+        method: selectedUser? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -43,7 +46,7 @@ export default function Users() {
       });
       if (response.ok) {
         alert("Funcionario guardado exitosamente");
-        reset();
+        handleNew();
       } else {
         alert("Error al guardar el funcionario");
       }
@@ -54,12 +57,53 @@ export default function Users() {
   };
 
   const handleNew = () => {
-    reset();
+    reset({
+      Primer_nombre: "",
+      Segundo_nombre: "",
+      Primer_apellido: "",
+      Segundo_apellido: "",
+      Email: "",
+      Numero_telefono: "",
+      Cedula: "",
+      Estado: "",
+      Suplente: "",
+      Password: ""
+    });
+    setSelectedUser(null);
   };
 
-  const onSubmit = (data: CrearFuncionarios) => {
+  const onSubmit = (data: Funcionarios) => {
     handleSave(data);
   };
+
+  const handleDelete = async () => {
+    if (!selectedUser || !selectedUser.Id_funcionario) {
+      alert("Por favor selecciona un funcionario para eliminar");
+      return;
+    }
+  
+    try {
+      const response = await fetch("/api/funcionarios", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ Id_funcionario: selectedUser.Id_funcionario }),
+      });
+  
+      if (response.ok) {
+        alert("Funcionario eliminado exitosamente");
+        handleNew();
+      } else {
+        const errorData = await response.json();
+        alert(`Error al eliminar el funcionario: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error("Error en la petición de eliminación", error);
+      alert("Ocurrió un error al eliminar el funcionario");
+    }
+  };
+  
 
   return (
     <div className="p-6 flex flex-col h-full">
@@ -72,7 +116,12 @@ export default function Users() {
       >
         Buscar Usuarios
       </button>
-      {showUserList && <UserList onClose={handleCloseUserList} onSelectUser={handleSelectUser} />}
+      {showUserList && (
+        <UserList
+          onClose={handleCloseUserList}
+          onSelectUser={handleSelectUser}
+        />
+      )}
       <form onSubmit={handleSubmit(onSubmit)} className="flex-grow">
         <div className="grid md:grid-cols-2 sm:grid-cols-1 gap-3 w-full gap-x-10">
           <Input
@@ -81,7 +130,9 @@ export default function Users() {
             label="Primer Nombre"
             placeholder="Ingresa el primer nombre"
             required
-            {...register("Primer_nombre", { required: "Este campo es requerido" })}
+            {...register("Primer_nombre", {
+              required: "Este campo es requerido",
+            })}
             error={errors.Primer_nombre?.message}
           />
 
@@ -99,7 +150,9 @@ export default function Users() {
             label="Primer Apellido"
             placeholder="Ingresa el primer apellido"
             required
-            {...register("Primer_apellido", { required: "Este campo es requerido" })}
+            {...register("Primer_apellido", {
+              required: "Este campo es requerido",
+            })}
             error={errors.Primer_apellido?.message}
           />
 
@@ -127,7 +180,9 @@ export default function Users() {
             label="Número de Teléfono"
             placeholder="Ingresa el número de teléfono"
             required
-            {...register("Numero_telefono", { required: "Este campo es requerido" })}
+            {...register("Numero_telefono", {
+              required: "Este campo es requerido",
+            })}
             error={errors.Numero_telefono?.message}
           />
 
@@ -142,23 +197,23 @@ export default function Users() {
           />
 
           <Select
-            id="status"
+            id="Estado"
             label="Estado"
-            options={["Activo", "Inactivo"]}
-            value={watch("Estado")}
-            required
-            {...register("Estado", { required: "Este campo es requerido" })}
+            options={["A", "I"]}
+            register={register}
             error={errors.Estado?.message}
+            value={watch("Estado")}
+            required={true}
           />
 
           <Select
-            id="substitute"
+            id="Suplente"
             label="Suplente"
-            options={["Sí", "No"]}
-            value={watch("Suplente")}
-            required
-            {...register("Suplente", { required: "Este campo es requerido" })}
+            options={["S", "N"]}
+            register={register}
             error={errors.Suplente?.message}
+            value={watch("Suplente")}
+            required={true}
           />
 
           <Input
@@ -173,9 +228,8 @@ export default function Users() {
         </div>
         <ActionButtons
           onNew={handleNew}
-          onModify={() => alert("Botón Modificar presionado")}
           onSave={handleSubmit(onSubmit)}
-          onDelete={() => alert("Botón Eliminar presionado")}
+          onDelete={handleDelete}
         />
       </form>
     </div>

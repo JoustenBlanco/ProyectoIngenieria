@@ -4,12 +4,17 @@ import { useForm } from "react-hook-form";
 import Input from "../../../components/Atoms/input";
 import ActionButtons from "../../../components/Atoms/ActionButtons";
 import Select from "../../../components/Atoms/select";
-import { CreateParents } from "../../../../../types";
+import { Parents } from "../../../../../types";
 import GuardianList from "../../../components/legal_guardians/GuardiansList";
 
 export default function Legal_Guardians() {
-
-  const { register, handleSubmit, reset, watch, formState: { errors }, } = useForm<CreateParents>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<Parents>({
     defaultValues: {
       Primer_nombre: "",
       Segundo_nombre: "",
@@ -18,10 +23,12 @@ export default function Legal_Guardians() {
       Cedula: "",
       Numero: "",
       Correo: "",
-      Estado: "Activo",
+      Estado: "A",
     },
   });
-
+  const [selectedUGuardian, setSelectedGuardian] = useState<Parents | null>(
+    null
+  );
   const [showGuardianList, setShowGuardianList] = useState(false);
 
   const handleOpenGuardianList = () => {
@@ -33,13 +40,15 @@ export default function Legal_Guardians() {
   };
 
   const handleSelectGuardian = (guardian: any) => {
+    setSelectedGuardian(guardian);
+    console.log(guardian);
     reset(guardian);
   };
 
-  const onSubmit = async (data: CreateParents) => {
+  const onSubmit = async (data: Parents) => {
     try {
       const response = await fetch("/api/encargados_legales", {
-        method: "POST",
+        method: selectedUGuardian ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
         },
@@ -48,7 +57,7 @@ export default function Legal_Guardians() {
 
       if (response.ok) {
         alert("Encargado legal guardado exitosamente");
-        reset();
+        handleNew();
       } else {
         throw new Error("Error al guardar el encargado legal");
       }
@@ -59,15 +68,47 @@ export default function Legal_Guardians() {
   };
 
   const handleNew = () => {
-    reset();
+    reset({
+      Primer_nombre: "",
+      Segundo_nombre: "",
+      Primer_apellido: "",
+      Segundo_apellido: "",
+      Cedula: "",
+      Estado: "",
+      Numero: "",
+      Correo: "",
+    });
+    setSelectedGuardian(null);
   };
 
-  const handleModify = () => {
-    alert("Botón Modificar presionado");
-  };
 
-  const handleDelete = () => {
-    alert("Botón Eliminar presionado");
+
+  const handleDelete = async () => {
+    if (!selectedUGuardian || !selectedUGuardian.Id_encargado_legal) {
+      alert("Por favor selecciona un encargado para eliminar");
+      return;
+    }
+  
+    try {
+      const response = await fetch("/api/encargados_legales", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ Id_encargado_legal: selectedUGuardian.Id_encargado_legal}),
+      });
+  
+      if (response.ok) {
+        alert("Encargado eliminado exitosamente");
+        handleNew();
+      } else {
+        const errorData = await response.json();
+        alert(`Error al eliminar el encargado: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error("Error en la petición de eliminación", error);
+      alert("Ocurrió un error al eliminar el encargado");
+    }
   };
 
   return (
@@ -83,7 +124,12 @@ export default function Legal_Guardians() {
       >
         Buscar Encargados
       </button>
-      {showGuardianList && <GuardianList onClose={handleCloseGuardianList} onSelectGuardian={handleSelectGuardian} />}
+      {showGuardianList && (
+        <GuardianList
+          onClose={handleCloseGuardianList}
+          onSelectGuardian={handleSelectGuardian}
+        />
+      )}
       <form onSubmit={handleSubmit(onSubmit)} className="flex-grow">
         <div className="grid md:grid-cols-2 sm:grid-cols-1 gap-3 w-full gap-x-10">
           <Input
@@ -92,7 +138,9 @@ export default function Legal_Guardians() {
             placeholder="Ingresa el primer nombre"
             type="text"
             required
-            {...register("Primer_nombre", { required: "Este campo es obligatorio" })}
+            {...register("Primer_nombre", {
+              required: "Este campo es obligatorio",
+            })}
             error={errors.Primer_nombre?.message}
           />
           <Input
@@ -108,7 +156,9 @@ export default function Legal_Guardians() {
             placeholder="Ingresa el primer apellido"
             type="text"
             required
-            {...register("Primer_apellido", { required: "Este campo es obligatorio" })}
+            {...register("Primer_apellido", {
+              required: "Este campo es obligatorio",
+            })}
             error={errors.Primer_apellido?.message}
           />
           <Input
@@ -146,18 +196,17 @@ export default function Legal_Guardians() {
             error={errors.Correo?.message}
           />
           <Select
-            id="status"
+            id="Estado"
             label="Estado"
-            options={["Activo", "Inactivo"]}
+            options={["A", "I"]}
+            register={register}
+            error={errors.Estado?.message}
             value={watch("Estado")}
-            {...register("Estado", { required: true })}
+            required={true}
           />
-
-
         </div>
         <ActionButtons
           onNew={handleNew}
-          onModify={handleModify}
           onSave={handleSubmit(onSubmit)}
           onDelete={handleDelete}
         />

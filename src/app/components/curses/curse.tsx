@@ -22,7 +22,7 @@ const Curse: React.FC<CurseProps> = ({ image, title, description, route, section
   return (
     <div
       onClick={handleClick}
-      className="flex gap-8 justify-start items-center w-full bg-white dark:bg-gray-800 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700  transition-all duration-300"
+      className="flex gap-8 justify-start items-center w-full bg-white dark:bg-gray-800 p-4 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700  transition-all duration-300 cursor-pointer"
     >
       <img
         src={image}

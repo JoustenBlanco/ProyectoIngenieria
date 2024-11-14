@@ -4,20 +4,19 @@ import Button from "./button";
 
 interface ActionButtonsProps {
   onNew: () => void;
-  onModify: () => void;
   onSave: () => void;
   onDelete: () => void;
 }
 
 const ActionButtons: React.FC<ActionButtonsProps> = ({
   onNew,
-  onModify,
   onSave,
   onDelete,
 }) => {
   return (
     <div className="flex space-x-24 mt-16 justify-center items-center">
       <Button
+        type="button"
         name="Nuevo"
         iconName="new"
         bgColor="#00bfe6"
@@ -25,13 +24,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
       />
 
       <Button
-        name="Modificar"
-        iconName="modify"
-        bgColor="#3b82f6"
-        onClick={onModify}
-      />
-
-      <Button
+        type="button"
         name="Guardar"
         iconName="save"
         bgColor="#10b981"
@@ -39,6 +32,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
       />
 
       <Button
+        type="button"
         name="Eliminar"
         iconName="delete"
         bgColor="#ef4444"

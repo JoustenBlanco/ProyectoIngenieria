@@ -1,43 +1,38 @@
 "use client";
-import React from 'react';
+import React from "react";
+import { UseFormRegister, FieldValues, Path } from "react-hook-form";
 
-interface SelectProps {
-  id: string;
-  name: string;
+interface SelectProps<T extends FieldValues> {
+  id: Path<T>;
   label: string;
   options: string[];
   required?: boolean;
-  className?: string;
-  value?: string;
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  register: UseFormRegister<T>;
   error?: string;
+  value?: string; 
 }
 
-const Select = React.forwardRef<HTMLSelectElement, SelectProps>(({
+const Select = <T extends FieldValues>({
   id,
-  name,
   label,
   options,
   required = false,
-  className,
-  value = "",
-  onChange,
+  register,
   error,
-}, ref) => {
+  value,
+}: SelectProps<T>) => {
   return (
-    <div className={`mb-7 ${className}`}>
+    <div className="mb-7">
       <label htmlFor={id} className="block text-lg font-medium text-gray-700 dark:text-gray-400">
         {label}
       </label>
       <select
-        ref={ref}
         id={id}
-        name={name}
-        className="mt-1 block w-full bg-gray-100 dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-md focus:border-blue-100 focus:ring-blue-200 shadow-sm text-lg h-10 hover:border-gray-200 dark:text-gray-400"
-        required={required}
+        {...register(id, { required: required ? "Este campo es obligatorio" : false })}
         value={value}
-        onChange={onChange}
+        className="mt-1 block w-full bg-gray-100 dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-md focus:border-blue-100 focus:ring-blue-200 shadow-sm text-lg h-10 hover:border-gray-200 dark:text-gray-400"
       >
+        <option value="">Selecciona una opción</option>
         {options.map((option) => (
           <option key={option} value={option}>
             {option}
@@ -47,8 +42,6 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(({
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
   );
-});
-
-Select.displayName = 'Select'; // Para facilitar el debugging
+};
 
 export default Select;

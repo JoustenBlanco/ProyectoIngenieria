@@ -5,7 +5,7 @@ import Input from "../../../components/Atoms/input";
 import Select from "../../../components/Atoms/select";
 import DateInput from "../../../components/Atoms/dateInput";
 import ActionButtons from "../../../components/Atoms/ActionButtons";
-import { CreateStudent } from "../../../../../types";
+import { Student } from "../../../../../types";
 import StudentList from "../../../components/studentMaintenance/StudentsList";
 
 export default function Students() {
@@ -16,8 +16,10 @@ export default function Students() {
     reset,
     formState: { errors },
     setValue,
-  } = useForm<CreateStudent>();
-
+  } = useForm<Student>();
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(
+    null
+  );
   const [showStudentList, setShowStudentList] = useState(false);
 
   const handleOpenStudentList = () => {
@@ -29,26 +31,28 @@ export default function Students() {
   };
 
   const handleSelectStudent = (student: any) => {
+    setSelectedStudent(student);
+    console.log(student);
     reset(student);
   };
 
-  const handleSave = async (data: CreateStudent) => {
+  const handleSave = async (data: Student) => {
     const studentData = {
       ...data,
       Id_seccion: Number(data.Id_seccion),
     };
-    console.log("Datos a enviar:", studentData );
+    console.log("Datos a enviar:", studentData);
     try {
       const response = await fetch("/api/alumnos", {
-        method: "POST",
+        method: selectedStudent? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(studentData ),
+        body: JSON.stringify(studentData),
       });
       if (response.ok) {
         alert("Estudiante guardado exitosamente");
-        reset();
+        handleNew();
       } else {
         alert("Error al guardar el estudiante");
       }
@@ -59,9 +63,48 @@ export default function Students() {
   };
 
   const handleNew = () => {
-    reset();
+    reset({ 
+      Primer_nombre: "",
+      Segundo_nombre: "",
+      Primer_apellido: "",
+      Segundo_apellido: "",
+      Fecha_nacimiento: "",
+      Grado: "",
+      Cedula: "",
+      Correo_mep: "",
+      Estado: "",
+      Id_seccion: 0,
+    });
+    setSelectedStudent(null);
   };
 
+  const handleDelete = async () => {
+    if (!selectedStudent || !selectedStudent.Id_alumno) {
+      alert("Por favor selecciona un estudiante para eliminar");
+      return;
+    }
+  
+    try {
+      const response = await fetch("/api/alumnos", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ Id_alumno: selectedStudent.Id_alumno }),
+      });
+  
+      if (response.ok) {
+        alert("Estudiante eliminado exitosamente");
+        handleNew();
+      } else {
+        const errorData = await response.json();
+        alert(`Error al eliminar el estudiante: ${errorData.error}`);
+      }
+    } catch (error) {
+      console.error("Error en la petición de eliminación", error);
+      alert("Ocurrió un error al eliminar el estudiante");
+    }
+  };
   return (
     <div className="p-6 flex flex-col h-full">
       <h1 className="text-3xl font-bold mb-8 text-gray-500 dark:text-gray-400">
@@ -73,7 +116,12 @@ export default function Students() {
       >
         Buscar Estudiantes
       </button>
-      {showStudentList && <StudentList onClose={handleCloseStudentList} onSelectStudent={handleSelectStudent} />}
+      {showStudentList && (
+        <StudentList
+          onClose={handleCloseStudentList}
+          onSelectStudent={handleSelectStudent}
+        />
+      )}
       <form onSubmit={handleSubmit(handleSave)}>
         <div className="grid md:grid-cols-2 sm:grid-cols-1 gap-3 w-full gap-x-10">
           <Input
@@ -127,11 +175,13 @@ export default function Students() {
           />
 
           <Select
-            id="level"
-            label="Nivel"
+            id="Grado"
+            label="Grado"
             options={["7", "8", "9", "10", "11"]}
-            {...register("Grado", { required: "Este campo es requerido" })}
-            error={errors.Grado?.message}
+            register={register}
+            error={errors.Estado?.message}
+            value={watch("Grado")}
+            required={true}
           />
 
           <Input
@@ -166,18 +216,19 @@ export default function Students() {
           />
 
           <Select
-            id="status"
+            id="Estado" // Ahora es una clave válida de CrearFuncionarios
             label="Estado"
-            options={["Activo", "Inactivo"]}
-            {...register("Estado", { required: "Este campo es requerido" })}
+            options={["A", "I"]}
+            register={register}
             error={errors.Estado?.message}
+            value={watch("Estado")} // Usamos el valor observado para mantener el estado
+            required={true}
           />
         </div>
         <ActionButtons
           onNew={handleNew}
-          onModify={() => alert("Modificar estudiante")}
           onSave={handleSubmit(handleSave)}
-          onDelete={() => alert("Eliminar estudiante")}
+          onDelete={handleDelete}
         />
       </form>
     </div>
