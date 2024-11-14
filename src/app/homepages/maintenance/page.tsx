@@ -21,6 +21,11 @@ export default function Maintenance() {
           title="Encargados Legales"
           route="/homepages/maintenance/legal_guardians"
         />
+        <Mainten
+          image="/images/config.svg"
+          title="Otros"
+          route="/homepages/maintenance/otherMaintenance"
+        />
       </div>
     </div>
   );

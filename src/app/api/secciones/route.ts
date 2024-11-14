@@ -4,7 +4,11 @@ import { CreateSeccion, Seccion } from "../../../../types";
 
 export async function GET(_req:Request){
     try {
-        const students = await prisma.rAE_Secciones.findMany({});
+        const students = await prisma.rAE_Secciones.findMany({
+          include: {
+          RAE_Funcionarios: true
+        }
+      });
         return NextResponse.json(students, { status: 200 });
       } catch (error) {
         return NextResponse.json({ error: 'Error fetching secciones' }, { status: 500 });
@@ -15,6 +19,7 @@ export async function GET(_req:Request){
 export async function POST(_req: Request) {
   try {
     const data: CreateSeccion = await _req.json();  
+    console.log(data);
     const newStudent = await prisma.rAE_Secciones.create({
       data: {
         Estado: data.Estado,                   
@@ -26,6 +31,7 @@ export async function POST(_req: Request) {
     });
     return NextResponse.json(newStudent, { status: 201 });
   } catch (error) {
+    console.log(error);
     return NextResponse.json({ error: 'Error creating seccion' }, { status: 500 });
   }
 }

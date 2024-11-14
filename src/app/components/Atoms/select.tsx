@@ -1,11 +1,13 @@
 "use client";
 import React from "react";
 import { UseFormRegister, FieldValues, Path } from "react-hook-form";
-
-interface SelectProps<T extends FieldValues> {
+interface SelectOption {
+  label: string;
+  value: any;
+}interface SelectProps<T extends FieldValues> {
   id: Path<T>;
   label: string;
-  options: string[];
+  options: string[] | SelectOption[];
   required?: boolean;
   register: UseFormRegister<T>;
   error?: string;
@@ -33,11 +35,17 @@ const Select = <T extends FieldValues>({
         className="mt-1 block w-full bg-gray-100 dark:bg-gray-800 border-2 border-gray-100 dark:border-gray-700 rounded-md focus:border-blue-100 focus:ring-blue-200 shadow-sm text-lg h-10 hover:border-gray-200 dark:text-gray-400"
       >
         <option value="">Selecciona una opción</option>
-        {options.map((option) => (
+        {options.map((option) =>
+        typeof option === 'string' ? (
           <option key={option} value={option}>
             {option}
           </option>
-        ))}
+        ) : (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        )
+      )}
       </select>
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
     </div>
