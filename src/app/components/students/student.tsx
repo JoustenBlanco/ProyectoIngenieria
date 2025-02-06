@@ -1,8 +1,7 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 interface StudentProps {
-  image: string;
   name: string;
   cedula: string;
   status: string;
@@ -13,7 +12,6 @@ interface StudentProps {
 }
 
 const Student: React.FC<StudentProps> = ({
-  image,
   name,
   cedula,
   status,
@@ -45,7 +43,6 @@ const Student: React.FC<StudentProps> = ({
 
   return (
     <div className="flex gap-0 justify-start items-center w-full bg-white p-4 hover:bg-gray-100 transition-all duration-300 h-16 dark:bg-gray-800">
-      <img src={image} className="w-12 h-12 bg-green-500 rounded-full p-1 shadow-md" alt="" />
       <h2 className="text-sm font-bold text-gray-500 pr-8 w-80 ml-4">{name}</h2>
       <p className="text-sm text-gray-500 w-24">{cedula}</p>
       <div className="w-24 text-center px-4">

@@ -255,6 +255,17 @@ const StudentsList: React.FC = () => {
     }
   };
 
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "a":
+        return "bg-green-500 text-green-800";
+      case "i":
+        return "bg-red-500 text-red-800";
+      default:
+        return "bg-gray-700";
+    }
+  };
+
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-3xl font-bold mb-4 text-gray-500 dark:text-gray-400">
@@ -364,31 +375,72 @@ const StudentsList: React.FC = () => {
         <h2 className="text-2xl font-bold mb-4 text-gray-500 dark:text-gray-400">
           Lista de Estudiantes
         </h2>
-        <div className="h-12 flex flex-row px-8 justify-start text-gray-500 dark:text-gray-400">
-          <span>Nombre</span>
-          <span className="ml-80">Cédula</span>
-          <span className="ml-12">Estado</span>
-          <span className="ml-36">Presente</span>
-        </div>
-        <div>
-          {extendedStudents.map((student) => (
-            <Student
-              key={student.Id_alumno}
-              image="/images/user.svg"
-              name={`${student.Primer_nombre} ${student.Segundo_nombre} ${student.Primer_apellido} ${student.Segundo_apellido}`}
-              cedula={student.Cedula}
-              status={student.Estado}
-              present={student.Asistio}
-              comment={student.Comentarios}
-              onAttendanceChange={(cedula, isPresent) =>
-                handleAttendanceChange(student.Id_alumno, Boolean(isPresent))
-              }
-              onCommentChange={(cedula, comment) =>
-                handleCommentChange(student.Id_alumno, comment)
-              }
-            />
-          ))}
-        </div>
+
+        <table className="min-w-full bg-white dark:bg-gray-800 dark:text-gray-200">
+          <thead>
+            <tr className="w-full bg-gray-100 dark:bg-gray-700">
+              <th className="py-3 px-6">Nombre</th>
+              <th className="py-3 px-6">Cédula</th>
+              <th className="py-3 px-6">Estado</th>
+              <th className="py-3 px-6">Presente</th>
+              <th className="py-3 px-6 text-right pr-20">Comentarios</th>
+            </tr>
+          </thead>
+          <tbody>
+            {extendedStudents.map((student) => (
+              <tr
+                key={student.Id_alumno}
+                className="border-b dark:border-gray-700 justify-center items-center"
+              >
+                <td>
+                  <h2 className="text-sm font-bold text-gray-500 pr-8 w-80 ml-4">{`${student.Primer_nombre} ${student.Segundo_nombre} ${student.Primer_apellido} ${student.Segundo_apellido}`}</h2>
+                </td>
+                <td className="justify-center items-center">
+                  <p className="text-sm text-gray-500 w-full text-center">
+                    {student.Cedula}
+                  </p>
+                </td>
+                <td className="justify-center items-center">
+                  <div className="w-full text-center px-4">
+                    <p
+                      className={`rounded-full ${getStatusColor(
+                        student.Estado
+                      )} text-sm p-1`}
+                    >
+                      {student.Estado}
+                    </p>
+                  </div>
+                </td>
+                <td className="flex justify-center items-center">
+                  <input
+                    type="checkbox"
+                    id={`attendance-${student.Id_alumno}`}
+                    name={`attendance-${student.Id_alumno}`}
+                    className="h-4 w-4 text-green-600 focus:ring-green-500 bg-green-600 border-gray-300 rounded"
+                    checked={student.Asistio}
+                    onChange={(e) =>
+                      handleAttendanceChange(
+                        student.Id_alumno,
+                        e.target.checked
+                      )
+                    }
+                  />
+                </td>
+                <td>
+                  <input
+                    type="text"
+                    placeholder="NO hay comentarios"
+                    value={student.Comentarios}
+                    onChange={(e) =>
+                      handleCommentChange(student.Id_alumno, e.target.value)
+                    }
+                    className="w-full text-sm px-2 py-1 border border-gray-300 rounded dark:bg-gray-700 dark:text-white focus:outline-none focus:border-green-500 "
+                  />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
