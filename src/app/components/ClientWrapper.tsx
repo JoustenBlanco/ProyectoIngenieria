@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Sidebar from './Landign/sidebar';
 
+
 export default function ClientWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 

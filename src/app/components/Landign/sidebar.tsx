@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { DarkThemeToggle } from "flowbite-react";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);

@@ -13,6 +13,7 @@
     "@prisma/client": "^5.19.1",
     "bcryptjs": "^2.4.3",
     "date-fns": "^4.1.0",
+    "flowbite-react": "^0.10.2",
     "next": "^14.2.12",
     "next-auth": "^4.24.7",
     "react": "^18",
