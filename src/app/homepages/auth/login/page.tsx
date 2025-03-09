@@ -14,7 +14,7 @@ export default function LoginPage() {
   const [cedula, setCedula] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState("");
+  const [showPassword, setShowPassword] = useState("password");
   const { setUser } = useAuthStore();
 
   const images = [
@@ -35,12 +35,12 @@ export default function LoginPage() {
   ];
 
   const handleShowPassword = () =>{
-    console.log("Llega aquí")
+    
     if (showPassword === "text" ){
-      setShowPassword("password")
+      setShowPassword("password");
     }
     else{
-      setShowPassword("text")
+      setShowPassword("text");
     }
   };
 
