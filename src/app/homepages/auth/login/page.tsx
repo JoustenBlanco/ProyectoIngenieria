@@ -14,6 +14,7 @@ export default function LoginPage() {
   const [cedula, setCedula] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState("");
   const { setUser } = useAuthStore();
 
   const images = [
@@ -32,6 +33,16 @@ export default function LoginPage() {
     "Cada día es una nueva oportunidad para aprender, crecer y brillar",
     "Controla la asistencia de tus estudiantes",
   ];
+
+  const handleShowPassword = () =>{
+    console.log("Llega aquí")
+    if (showPassword === "text" ){
+      setShowPassword("password")
+    }
+    else{
+      setShowPassword("text")
+    }
+  };
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -137,7 +148,7 @@ export default function LoginPage() {
           <Input
             id="password"
             name="password"
-            type="password"
+            type = {showPassword}
             label="Contraseña"
             placeholder="Ingresa tu contraseña"
             required
@@ -157,6 +168,21 @@ export default function LoginPage() {
               className="ml-2 text-lg font-medium text-gray-700"
             >
               Recordarme
+            </label>
+          </div>
+          <div className="flex items-center mb-6">
+            <input
+              type="checkbox"
+              id="showPassword"
+              name="showPassword"
+              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+              onChange={handleShowPassword}
+            />
+            <label
+              htmlFor="showPassword"
+              className="ml-2 text-lg font-medium text-gray-700"
+            >
+              Mostrar contraseña
             </label>
           </div>
           <button
