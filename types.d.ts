@@ -11,6 +11,11 @@ export interface InputProps {
   error?: string;
 }
 
+export interface ExportButtonsProps {
+  reportType: string;
+  data: Record<string, string | number>[];
+}
+
   export interface CreateStudent { 
     Primer_nombre: string,
     Segundo_nombre?: string,
