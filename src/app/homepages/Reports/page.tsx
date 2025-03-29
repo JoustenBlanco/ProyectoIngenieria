@@ -6,6 +6,8 @@ import SelectionModal from "@/app/components/Reports/selectionModal";
 import ReportTable from "@/app/components/Reports/reportTable";
 import ReportChart from "@/app/components/Reports/reportChart";
 import ExportButtons from "@/app/components/Reports/exportButtons";
+import { Student as StudentType } from "../../../../types";
+
 interface ReportTableProps {
   reportType: string;
   data: any[];
@@ -13,23 +15,70 @@ interface ReportTableProps {
 
 export default function Reports() {
   const [isHistorical, setIsHistorical] = useState(true);
-  const [selectedReportType, setSelectedReportType] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
   const [reportData, setReportData] = useState<any[]>([]);
   const [showTable, setShowTable] = useState(false);
+  const [cedulaEstudiante, setCedulaEstudiante] = useState<string | null>(null);
+  const [students, setStudents] = useState<StudentType[]>([]);
+  const [searchValue, setSearchValue] = useState<string | null>(null);
+  const [selectedReport, setSelectedReport] =
+    useState<string>("Por Estudiante");
+
+  const [items, setItems] = useState<any[]>([]);
+
+  const fetchStudents = async (cedula: string) => {
+    try {
+      const response = await fetch(
+        `/api/reportes/estudiantes?cedula=${cedula}`
+      );
+      const data = await response.json();
+      setStudents(data);
+    } catch (error) {
+      console.error("Error fetching students:", error);
+    }
+  };
+
+  const fetchItems = async (query: string, type: string) => {
+    let endpoint = "";
+    if (type === "Por Estudiante")
+      endpoint = `/api/reportes/estudiantes?cedula=${query}`;
+    if (type === "Por Docente")
+      endpoint = `/api/reportes/estudiantes?cedula=${query}`;
+    if (type === "Por Curso") endpoint = `/api/cursos?descripcion=${query}`;
+    if (type === "Por Sección") endpoint = `/api/secciones?nombre=${query}`;
+    if (type === "Por Grado") endpoint = `/api/secciones?grado=${query}`;
+    if (type === "General LSP") endpoint = `/api/estudiantes`; // No necesita query
+
+    const response = await fetch(endpoint);
+    const data = await response.json();
+    setItems(data);
+  };
+
+const renderItem = (item: any, onSelect: (value: string) => void) => (
+  <li
+    key={item.Cedula || item.Id || item.Nombre}
+    className="p-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md text-gray-500 dark:text-gray-400"
+    onClick={() => {
+      onSelect(item.Primer_nombre ? `${item.Primer_nombre} ${item.Primer_apellido}` : item.Nombre || item.Descripcion);
+    }}
+  >
+    {item.Primer_nombre ? `${item.Primer_nombre} ${item.Primer_apellido}` : item.Nombre || item.Descripcion} - {item.Cedula || item.Id}
+  </li>
+);
+
+  
 
   const validateAndFetchData = () => {
-
-    if (!selectedReportType) {
+    if (!selectedReport) {
       alert("Seleccione un tipo de reporte.");
       return;
     }
 
-    if (selectedReportType !== "General LSP" && !selectedItem) {
-      alert(`Seleccione ${selectedReportType.replace("Por ", "")}`);
+    if (selectedReport !== "General LSP" && !selectedItem) {
+      alert(`Seleccione ${selectedReport.replace("Por ", "")}`);
       return;
     }
 
@@ -93,7 +142,7 @@ export default function Reports() {
 
   // Datos simulados según el tipo de reporte
   const getOptionsByReportType = () => {
-    switch (selectedReportType) {
+    switch (selectedReport) {
       case "Por Estudiante":
         return ["Juan Pérez", "María López", "Carlos Gómez"];
       case "Por Curso":
@@ -122,7 +171,7 @@ export default function Reports() {
           <Select
             id="reports"
             required
-            onChange={(e) => setSelectedReportType(e.target.value)}
+            onChange={(e) => setSelectedReport(e.target.value)}
           >
             <option value="">Seleccione un tipo</option>
             {reportOptions.map((option) => (
@@ -132,10 +181,10 @@ export default function Reports() {
             ))}
           </Select>
 
-          {selectedReportType &&
-            selectedReportType !== "General LSP" && ( // Si no es "General LSP", se debe seleccionar algo
+          {selectedReport &&
+            selectedReport !== "General LSP" && ( // Si no es "General LSP", se debe seleccionar algo
               <div className="max-w-md grid grid-cols-1 gap-2 items-center">
-                <Button onClick={() => setIsModalOpen(true)}>
+                <Button onClick={() => setShowModal(true)}>
                   <svg
                     className="w-6 h-6 text-gray-800 dark:text-white"
                     aria-hidden="true"
@@ -152,13 +201,14 @@ export default function Reports() {
                       d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
                     />
                   </svg>
-                  Seleccionar {selectedReportType.replace("Por ", "")}
+                  Seleccionar {selectedReport.replace("Por ", "")}{" "}
+                  {selectedReport}
                 </Button>
 
-                {selectedItem && (
+                {searchValue && (
                   <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md">
                     <span className="text-gray-700 dark:text-gray-300">
-                      {selectedReportType.replace("Por ", "")}: {selectedItem}
+                      {selectedReport.replace("Por ", "")}: {searchValue}
                     </span>
                   </div>
                 )}
@@ -205,17 +255,26 @@ export default function Reports() {
       </div>
       {showTable && (
         <>
-          <ReportTable reportType={selectedReportType} data={reportData} />
-          <ReportChart reportType={selectedReportType} data={reportData} />
-          <ExportButtons reportType={selectedReportType} data={reportData} />
+          <ReportTable reportType={selectedReport} data={reportData} />
+          <ReportChart reportType={selectedReport} data={reportData} />
+          <ExportButtons reportType={selectedReport} data={reportData} />
         </>
       )}
       <SelectionModal
-        show={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        title={selectedReportType.replace("Por ", "")}
-        options={getOptionsByReportType()}
-        onSelect={(item) => setSelectedItem(item)}
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        title="Seleccionar Filtro"
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        fetchItems={fetchItems}
+        items={items}
+        renderItem={renderItem}
+        searchType={selectedReport}
+        onSelect={(selectedValue) => {
+          console.log("Seleccionado:", selectedValue);
+          setSearchValue(selectedValue);
+          setShowModal(false);
+        }}
       />
     </div>
   );

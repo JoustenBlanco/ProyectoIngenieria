@@ -1,45 +1,80 @@
 import { Modal } from "flowbite-react";
 
-interface SelectionModalProps {
+interface SelectionModalProps<T> {
   show: boolean;
   onClose: () => void;
   title: string;
-  options: string[];
-  onSelect: (item: string) => void;
+  searchValue: string | null;
+  setSearchValue: (value: string) => void;
+  fetchItems: (query: string, type: string) => void;
+  items: T[];
+  renderItem: (item: T, onSelect: (value: string) => void) => JSX.Element;
+  searchType: string;
+  onSelect: (value: string) => void;
 }
 
-export default function SelectionModal({
+export default function SelectionModal<T>({
   show,
   onClose,
   title,
-  options,
+  searchValue,
+  setSearchValue,
+  fetchItems,
+  items,
+  renderItem,
+  searchType,
   onSelect,
-}: SelectionModalProps) {
+}: SelectionModalProps<T>) {
+  const getPlaceholder = () => {
+    if (searchType === "Por Estudiante" || searchType === "Por Docente")
+      return "Buscar por cédula...";
+    if (searchType === "Por Curso") return "Buscar por descripción...";
+    if (searchType === "Por Sección") return "Buscar por nombre...";
+    if (searchType === "Por Grado") return "Buscar grado...";
+    return "Buscar...";
+  };
+
   return (
     <Modal show={show} onClose={onClose}>
-      <Modal.Header>Seleccionar {title}</Modal.Header>
+      <Modal.Header>Buscar {title}</Modal.Header>
       <Modal.Body>
-        <input
-          type="text"
-          placeholder="Buscar..."
-          className="w-full p-2 border rounded-md dark:bg-gray-800"
-        />
+        {searchType !== "General LSP" && (
+          <input
+            type="text"
+            placeholder={getPlaceholder()}
+            className="w-full p-2 border rounded-md dark:bg-gray-800"
+            value={searchValue || ""}
+            onChange={(e) => {
+              setSearchValue(e.target.value);
+              fetchItems(e.target.value, searchType);
+            }}
+          />
+        )}
 
+        {/* Lista de resultados */}
         <ul className="mt-4">
-          {options.map((item) => (
-            <li
-              key={item}
-              className="p-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md text-gray-500 dark:text-gray-400"
-              onClick={() => {
-                onSelect(item);
-                onClose();
-              }}
-            >
-              {item}
+          {items.length === 0 ? (
+            <li className="p-2 text-gray-500 dark:text-gray-400">
+              No se encontraron resultados
             </li>
-          ))}
+          ) : (
+            items.map((item) =>
+              renderItem(item, (selectedValue) => {
+                onSelect(selectedValue);
+                onClose();
+              })
+            )
+          )}
         </ul>
       </Modal.Body>
+      <Modal.Footer>
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded-md"
+          onClick={onClose}
+        >
+          Cerrar
+        </button>
+      </Modal.Footer>
     </Modal>
   );
 }

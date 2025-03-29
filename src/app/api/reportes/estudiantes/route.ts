@@ -4,7 +4,6 @@ import prisma from "../../../../../lib/prisma";
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const nombre = searchParams.get("nombre") || "";
     const cedula = searchParams.get("cedula") || "";
 
     const reportData = await prisma.rAE_Alumnos.findMany({
@@ -12,15 +11,12 @@ export async function GET(req: NextRequest) {
         Cedula: {
           contains: cedula,
         },
-        Primer_nombre: {
-          contains: nombre,
-        },
       },
       include: {
         RAE_Asistencia_X_Alumnos: true,
       },
     });
-
+    console.log(reportData);
     return NextResponse.json(reportData, { status: 200 });
   } catch (error) {
     console.error("Error al obtener reporte:", error);
