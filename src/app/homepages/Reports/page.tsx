@@ -77,7 +77,7 @@ const renderItem = (item: any, onSelect: (value: string) => void) => (
       return;
     }
 
-    if (selectedReport !== "General LSP" && !selectedItem) {
+    if (selectedReport !== "General LSP" && !searchValue) {
       alert(`Seleccione ${selectedReport.replace("Por ", "")}`);
       return;
     }
@@ -228,9 +228,9 @@ const renderItem = (item: any, onSelect: (value: string) => void) => (
           {!isHistorical && (
             <div className="flex span  items-center justify-start gap-3">
               <span className="text-gray-500 dark:text-gray-400">Entre</span>
-              <Datepicker title="Desde" />
+              <Datepicker title="Desde" value={startDate} onChange={setStartDate} />
               <span className="text-gray-500 dark:text-gray-400">y</span>
-              <Datepicker title="Hasta" />
+              <Datepicker title="Hasta" value={endDate} onChange={setEndDate}/>
             </div>
           )}
         </div>
