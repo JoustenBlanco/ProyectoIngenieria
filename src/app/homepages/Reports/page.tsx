@@ -28,6 +28,7 @@ export default function Reports() {
     useState<string>("Por Estudiante");
 
   const [items, setItems] = useState<any[]>([]);
+  
 
   const fetchStudents = async (cedula: string) => {
     try {
@@ -69,7 +70,40 @@ const renderItem = (item: any, onSelect: (value: string) => void) => (
   </li>
 );
 
-  
+const fetchDataReportStudents = async () => {
+  if (!searchValue) {
+    console.warn("No se ha seleccionado un estudiante.");
+    alert("No se ha seleccionado un estudiante.");
+    return;
+  } if (!startDate && !endDate){
+    alert("Seleccione un rango de fechas válido.");
+  }
+  console.log("Este es el searchValue")
+  console.log(searchValue);
+  let cedula = searchValue;
+
+  try {
+    const parsedValue = JSON.parse(searchValue);
+    if (parsedValue && parsedValue.Cedula) {
+      cedula = parsedValue.Cedula;
+    }
+  } catch (error) {
+    console.warn("searchValue no es un JSON válido, usando el valor como está.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/reportes/estudiantes/data?startdate=${startDate}&endDate=${endDate}&cedula=${encodeURIComponent(cedula)}`);
+    if (!response.ok) {
+      throw new Error("Error en la respuesta del servidor");
+    }
+    const data = await response.json();
+    setReportData(data);
+  } catch (error) {
+    console.error("Error fetching data for report:", error);
+  }
+};
+
 
   const validateAndFetchData = () => {
     if (!selectedReport) {
@@ -86,48 +120,7 @@ const renderItem = (item: any, onSelect: (value: string) => void) => (
       alert("Seleccione un rango de fechas válido.");
       return;
     }
-
-    // Simulación de datos dinámicos
-    const simulatedData = [
-      {
-        Fecha: "2024-03-10",
-        Curso: "Matemáticas",
-        Estudiante: "Juan Pérez",
-        Asistencia: "Presente",
-      },
-      {
-        Fecha: "2024-03-10",
-        Curso: "Historia",
-        Estudiante: "María López",
-        Asistencia: "Presente",
-      },
-      {
-        Fecha: "2024-04-10",
-        Curso: "Historia",
-        Estudiante: "María López",
-        Asistencia: "Ausente",
-      },
-      {
-        Fecha: "2024-05-10",
-        Curso: "Historia",
-        Estudiante: "María López",
-        Asistencia: "Ausente",
-      },
-      {
-        Fecha: "2024-06-10",
-        Curso: "Historia",
-        Estudiante: "María López",
-        Asistencia: "Ausente",
-      },
-      {
-        Fecha: "2024-07-10",
-        Curso: "Historia",
-        Estudiante: "María López",
-        Asistencia: "Ausente",
-      },
-    ];
-
-    setReportData(simulatedData);
+    fetchDataReportStudents();
     setShowTable(true);
   };
 
