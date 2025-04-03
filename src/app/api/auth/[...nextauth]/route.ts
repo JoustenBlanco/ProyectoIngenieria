@@ -5,6 +5,7 @@ import prisma from "../../../../../lib/prisma";
 import { compare } from "bcryptjs";
 
 export const handler = NextAuth({
+  secret: process.env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
@@ -13,6 +14,7 @@ export const handler = NextAuth({
         cedula: { label: "Cedula", type: "text", placeholder: "Tu cédula" },
         password: { label: "Password", type: "password" },
       },
+
       async authorize(credentials) {
         if (!credentials?.cedula || !credentials.password) {
           throw new Error("Cedula and password are required");
@@ -34,14 +36,13 @@ export const handler = NextAuth({
         if (!isValidPassword) {
           throw new Error("Incorrect password");
         }
-
-        // Mapea el objeto devuelto a lo que NextAuth espera
+        
         return {
-          id: String(user.Id_funcionario), // Convertir Id_funcionario a string
+          id: String(user.Id_funcionario),
           name: `${user.Primer_nombre} ${user.Primer_apellido}`,
-          email: null, // Puedes devolver null si no usas email
+          email: null, 
         };
-      } // fin del authorize,
+      } 
     }),
   ],
   session: {

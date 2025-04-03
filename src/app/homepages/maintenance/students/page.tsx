@@ -7,8 +7,20 @@ import DateInput from "../../../components/Atoms/dateInput";
 import ActionButtons from "../../../components/Atoms/ActionButtons";
 import { Student } from "../../../../../types";
 import StudentList from "../../../components/studentMaintenance/StudentsList";
+import { useSession } from "next-auth/react";
+import { use, useEffect } from "react";
+import { redirect, useRouter } from "next/navigation";
 
 export default function Students() {
+  const { data: session, status } = useSession();
+  useEffect(() => {
+    console.log("Llega al useEffect de about");
+  if (status == "unauthenticated"){
+    console.log("No autenticado");
+    redirect("/homepages/auth/login");
+  }
+},
+ [session, status]);
   const {
     register,
     handleSubmit,

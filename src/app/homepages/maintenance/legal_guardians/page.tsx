@@ -6,8 +6,20 @@ import ActionButtons from "../../../components/Atoms/ActionButtons";
 import Select from "../../../components/Atoms/select";
 import { Parents } from "../../../../../types";
 import GuardianList from "../../../components/legal_guardians/GuardiansList";
+import { useSession } from "next-auth/react";
+import { use, useEffect } from "react";
+import { redirect, useRouter } from "next/navigation";
 
 export default function Legal_Guardians() {
+  const { data: session, status } = useSession();
+  useEffect(() => {
+    console.log("Llega al useEffect de about");
+  if (status == "unauthenticated"){
+    console.log("No autenticado");
+    redirect("/homepages/auth/login");
+  }
+},
+ [session, status]);
   const {
     register,
     handleSubmit,

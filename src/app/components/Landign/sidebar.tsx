@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { DarkThemeToggle } from "flowbite-react";
+import { Button, DarkThemeToggle } from "flowbite-react";
+import { signOut } from "next-auth/react";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -9,7 +10,9 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   const menuItems = [
-    { name: "Cursos", path: "/homepages/curses", icon: "/images/book.svg" },
+    { name: "Asistencia", 
+      path: "/homepages/curses", 
+      icon: "/images/book.svg" },
     {
       name: "Reportes",
       path: "/homepages/Reports",
@@ -91,7 +94,26 @@ const Sidebar = () => {
                 </span>
               )}
             </li>
-          ))}
+          )
+          )}
+          <li>
+            <Button className="flex items-center p-2 cursor-pointer w-full border-l-4 border-black my-2 hover:bg-red-600 hover:bg-opacity-20 transition-all duration-300 bg-red-600 hover:bg-red-700 "
+             onClick={async () => {
+              localStorage.removeItem("auth-store");
+              await signOut({ 
+                redirect: true, 
+                callbackUrl: "/homepages/auth/login" 
+              });
+              }}>
+              <img
+                src="/images/logout.svg"
+                alt="Logout icon"
+                className="h-6 w-6 mr-4"
+              />
+              {!isCollapsed && <span>Cerrar Sesión</span>}
+            </Button>
+              
+          </li>
         </ul>
       </nav>
     </aside>

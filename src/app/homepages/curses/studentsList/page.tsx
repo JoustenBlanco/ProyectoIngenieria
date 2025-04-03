@@ -6,6 +6,8 @@ import { useSearchParams } from "next/navigation";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { format, parseISO } from "date-fns";
+import { useSession } from "next-auth/react";
+import { redirect, useRouter } from "next/navigation";
 
 interface ExtendedStudent extends StudentType {
   Asistio: boolean;
@@ -13,6 +15,15 @@ interface ExtendedStudent extends StudentType {
 }
 
 const StudentsList: React.FC = () => {
+  const { data: session, status } = useSession();
+  useEffect(() => {
+    console.log("Llega al useEffect de about");
+  if (status == "unauthenticated"){
+    console.log("No autenticado");
+    redirect("/homepages/auth/login");
+  }
+},
+ [session, status]);
   const [comments, setComments] = useState<string | null>("");
   const [place, setPlace] = useState<string | null>("");
   const [startTime, setStartTime] = useState<Date | null>(null);

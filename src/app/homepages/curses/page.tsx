@@ -4,11 +4,22 @@ import { useState, useEffect } from "react";
 import useAuthStore from "../../../../provider/store";
 import Curse from "../../components/curses/curse";
 import { ClaseXSessiones } from "../../../../types";
+import { useSession } from "next-auth/react";
+import { redirect, useRouter } from "next/navigation";
 
 export default function Curses() {
   const user = useAuthStore((state) => state.user);
   const [clases, setClases] = useState<ClaseXSessiones[]>([]); 
   const idFuncionario = user?.Id;
+  const { data: session, status } = useSession();
+  useEffect(() => {
+    console.log("Llega al useEffect de about");
+  if (status == "unauthenticated"){
+    console.log("No autenticado");
+    redirect("/homepages/auth/login");
+  }
+},
+ [session, status]);
 
   
   useEffect(() => {

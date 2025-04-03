@@ -6,7 +6,19 @@ import Select from "../../../components/Atoms/select";
 import Modal from "../../../components/Atoms/modal";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Seccion, Clase, Materia, Funcionarios } from "../../../../../types";
+import { useSession } from "next-auth/react";
+import { redirect, useRouter } from "next/navigation";
+
 const MaintenancePage = () => {
+  const { data: session, status } = useSession();
+  useEffect(() => {
+    console.log("Llega al useEffect de about");
+  if (status == "unauthenticated"){
+    console.log("No autenticado");
+    redirect("/homepages/auth/login");
+  }
+},
+ [session, status]);
   const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
   const [isClassModalOpen, setIsClassModalOpen] = useState(false);
   const [isSubjectModalOpen, setIsSubjectModalOpen] = useState(false);

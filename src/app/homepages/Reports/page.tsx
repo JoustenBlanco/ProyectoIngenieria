@@ -7,6 +7,9 @@ import ReportTable from "@/app/components/Reports/reportTable";
 import ReportChart from "@/app/components/Reports/reportChart";
 import ExportButtons from "@/app/components/Reports/exportButtons";
 import { Student as StudentType } from "../../../../types";
+import { useSession } from "next-auth/react";
+import { use, useEffect } from "react";
+import { redirect, useRouter } from "next/navigation";
 
 interface ReportTableProps {
   reportType: string;
@@ -14,6 +17,15 @@ interface ReportTableProps {
 }
 
 export default function Reports() {
+  const { data: session, status } = useSession();
+  useEffect(() => {
+    console.log("Llega al useEffect de about");
+  if (status == "unauthenticated"){
+    console.log("No autenticado");
+    redirect("/homepages/auth/login");
+  }
+},
+ [session, status]);
   const [isHistorical, setIsHistorical] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);

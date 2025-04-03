@@ -1,7 +1,22 @@
 "use client";
 import Report from "../../components/Reports/report";
 import Carousel from "../../components/Atoms/carousel";
+import { useSession } from "next-auth/react";
+import { use, useEffect } from "react";
+import { redirect, useRouter } from "next/navigation";
+
+
 export default function Reports() {
+  const { data: session, status } = useSession();
+  useEffect(() => {
+    console.log("Llega al useEffect de about");
+  if (status == "unauthenticated"){
+    console.log("No autenticado");
+    redirect("/homepages/auth/login");
+  }
+},
+ [session, status]);
+
   const images = [
     "/images/escudo.svg",
     "/images/To-do-list.svg",

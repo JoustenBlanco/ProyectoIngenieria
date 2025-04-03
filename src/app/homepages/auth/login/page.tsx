@@ -3,11 +3,11 @@
 import React, { useState } from "react";
 import Input from "../../../components/Atoms/input";
 import Carousel from "../../../components/Atoms/carousel";
-import Footer from "../../../components/Landign/footer";
 import { useRouter } from "next/navigation";
 import { signIn, getSession } from "next-auth/react";
 import { Funcionarios, FuncionariosXRol, User } from "../../../../../types";
 import useAuthStore from "../../../../../provider/store";
+
 
 export default function LoginPage() {
   const router = useRouter();
@@ -54,6 +54,7 @@ export default function LoginPage() {
     });
     if (res?.error) {
       setError("Credenciales incorrectas, por favor intente de nuevo.");
+      console.log('El error es ' + res.error);
     } else {
       const session = await getSession();
       const urlUsuario = `/api/funcionarios/[id]?Id_funcionario=${session?.user.id}`;

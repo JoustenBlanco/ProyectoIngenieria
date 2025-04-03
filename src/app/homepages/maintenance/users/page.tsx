@@ -6,8 +6,20 @@ import Select from "../../../components/Atoms/select";
 import ActionButtons from "../../../components/Atoms/ActionButtons";
 import { Funcionarios } from "../../../../../types";
 import UserList from "../../../components/Users/UserList";
+import { useSession } from "next-auth/react";
+import { use, useEffect } from "react";
+import { redirect, useRouter } from "next/navigation";
 
 export default function Users() {
+  const { data: session, status } = useSession();
+  useEffect(() => {
+    console.log("Llega al useEffect de about");
+  if (status == "unauthenticated"){
+    console.log("No autenticado");
+    redirect("/homepages/auth/login");
+  }
+},
+ [session, status]);
   const {
     register,
     handleSubmit,
