@@ -1,10 +1,12 @@
 import { utils, writeFile } from 'xlsx';
+import { User } from '../../../types';
 
 export function exportToExcel(
   data: any[],
   reportType: string,
   studentName: string | null,
-  studentId: string | null
+  studentId: string | null,
+  user: User | null
 ) {
   if (data.length === 0) {
     alert("No hay datos para exportar.");
@@ -30,6 +32,7 @@ export function exportToExcel(
     [`Reporte de ${reportType}`],
     [`Estudiante: ${displayName}`],
     [`Cédula: ${displayId}`],
+    [`Generado por: ${user?.FirstName} ${user?.LastName} (${user?.Cedula})`],
     [`Generado el: ${formattedDate}`],
     [],
     Object.keys(data[0]).map(key =>

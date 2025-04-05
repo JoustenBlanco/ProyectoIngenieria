@@ -1,12 +1,9 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { User } from "../../../types";
 
 export async function exportToPDF(
-  data: any[],
-  reportType: string,
-  studentName: string | null,
-  studentId: string | null
-) {
+data: any[], reportType: string, studentName: string | null, studentId: string | null, user: User | null) {
   if (data.length === 0) {
     alert("No hay datos para exportar.");
     return;
@@ -21,6 +18,7 @@ export async function exportToPDF(
   const fontSizeMedium = 12;
   const fontSizeSmall = 10;
 
+
   doc.setFontSize(fontSizeLarge);
   doc.setTextColor(secondaryColor);
   doc.setFont("helvetica", "bold");
@@ -30,6 +28,13 @@ export async function exportToPDF(
   doc.setTextColor(primaryColor);
   doc.text(`Estudiante: ${studentName}`, 14, 35);
   doc.text(`Cedula: ${studentId}`, 14, 45);
+
+  const funcionarioText = user
+  ? `Generado por: ${user.FirstName} ${user.LastName} (${user.Cedula})`
+  : "Generado por: Sistema";
+
+  doc.text(funcionarioText, 14, 55);
+
 
   const now = new Date();
   const formattedDate = now.toLocaleDateString("es-ES", {
@@ -42,11 +47,11 @@ export async function exportToPDF(
 
   doc.setFontSize(fontSizeSmall);
   doc.setTextColor(100);
-  doc.text(`Generado el: ${formattedDate}`, 14, 55);
+  doc.text(`Generado el: ${formattedDate}`, 14, 65);
 
   doc.setDrawColor(primaryColor);
   doc.setLineWidth(0.5);
-  doc.line(14, 60, 196, 60);
+  doc.line(14, 70, 196, 70);
 
   const columns = Object.keys(data[0]).map((key) => ({
     title: key.charAt(0).toUpperCase() + key.slice(1),
@@ -61,7 +66,7 @@ export async function exportToPDF(
     return row;
   });
   autoTable(doc, {
-    startY: 65,
+    startY: 75,
     head: [columns.map((col) => col.title)],
     body: tableData.map((row) => columns.map((col) => row[col.dataKey])),
     headStyles: {

@@ -11,10 +11,6 @@ import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";
 
-interface ReportTableProps {
-  reportType: string;
-  data: any[];
-}
 
 export default function Reports() {
   const { data: session, status } = useSession();
@@ -51,7 +47,7 @@ export default function Reports() {
     if (type === "Por Curso") endpoint = `/api/cursos?descripcion=${query}`;
     if (type === "Por Sección") endpoint = `/api/secciones?nombre=${query}`;
     if (type === "Por Grado") endpoint = `/api/secciones?grado=${query}`;
-    if (type === "General LSP") endpoint = `/api/estudiantes`; // No necesita query
+    if (type === "General LSP") endpoint = `/api/estudiantes`;
 
     const response = await fetch(endpoint);
     const data = await response.json();
@@ -76,20 +72,25 @@ const fetchDataReportStudents = async () => {
     console.warn("No se ha seleccionado un estudiante.");
     alert("No se ha seleccionado un estudiante.");
     return;
-  } if (!startDate && !endDate){
-    alert("Seleccione un rango de fechas válido.");
   }
-  console.log("Este es el searchValue")
-  console.log(searchValue);
+
+  if (!isHistorical && (!startDate || !endDate)) {
+    alert("Seleccione un rango de fechas válido.");
+    return;
+  }
 
   try {
-    const response = await fetch(`/api/reportes/estudiantes/data?startDate=${startDate}&endDate=${endDate}&cedula=${cedulaEstudiante}`);
+    const url = isHistorical 
+      ? `/api/reportes/estudiantes/data?cedula=${cedulaEstudiante}&historical=true`
+      : `/api/reportes/estudiantes/data?startDate=${startDate}&endDate=${endDate}&cedula=${cedulaEstudiante}`;
+
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error("Error en la respuesta del servidor");
     }
     const data = await response.json();
     setReportData(data);
-    console.log(data)
+    console.log(data);
   } catch (error) {
     console.error("Error fetching data for report:", error);
   }
@@ -124,24 +125,6 @@ const fetchDataReportStudents = async () => {
     "General LSP",
   ];
 
-  // Datos simulados según el tipo de reporte
-  const getOptionsByReportType = () => {
-    switch (selectedReport) {
-      case "Por Estudiante":
-        return ["Juan Pérez", "María López", "Carlos Gómez"];
-      case "Por Curso":
-        return ["Matemáticas", "Historia", "Ciencias"];
-      case "Por Sección":
-        return ["Sección A", "Sección B", "Sección C"];
-      case "Por Docente":
-        return ["Prof. García", "Prof. Rodríguez", "Prof. Fernández"];
-      case "Por Grado":
-        return ["Primer Grado", "Segundo Grado", "Tercer Grado"];
-      default:
-        return [];
-    }
-  };
-
   return (
     <div className="p-6">
       <div className="grid grid-cols-1 gap-5">
@@ -166,7 +149,7 @@ const fetchDataReportStudents = async () => {
           </Select>
 
           {selectedReport &&
-            selectedReport !== "General LSP" && ( // Si no es "General LSP", se debe seleccionar algo
+            selectedReport !== "General LSP" && (
               <div className="max-w-md grid grid-cols-1 gap-2 items-center">
                 <Button onClick={() => setShowModal(true)}>
                   <svg

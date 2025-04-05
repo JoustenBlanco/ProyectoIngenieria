@@ -1,8 +1,10 @@
+import { User } from '../../../types';
 export function exportToCSV(
   data: any[],
   reportType: string,
   studentName: string | null,
-  studentId: string | null
+  studentId: string | null,
+  user: User | null
 ) {
   if (data.length === 0) {
     alert("No hay datos para exportar.");
@@ -25,6 +27,7 @@ export function exportToCSV(
   csvContent += `# Reporte de ${reportType}\n`;
   csvContent += `# Estudiante: ${displayName}\n`;
   csvContent += `# Cédula: ${displayId}\n`;
+  csvContent += `# Generado por: ${user?.FirstName} ${user?.LastName} (${user?.Cedula})\n`;
   csvContent += `# Generado el: ${formattedDate}\n\n`;
 
   const headers = Object.keys(data[0])
