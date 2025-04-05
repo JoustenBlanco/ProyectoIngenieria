@@ -1,6 +1,6 @@
 import * as XLSX from "xlsx";
 
-export function exportToCSV (data: any, reportType: string) {
+export function exportToCSV (data: any, reportType: string, studentName: string | null, studentId: string| null) {
     const ws = XLSX.utils.json_to_sheet(data);
     const csv = XLSX.utils.sheet_to_csv(ws);
     const blob = new Blob([csv], { type: "text/csv" });

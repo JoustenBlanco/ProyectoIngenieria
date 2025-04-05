@@ -42,18 +42,6 @@ export default function Reports() {
   const [items, setItems] = useState<any[]>([]);
   
 
-  const fetchStudents = async (cedula: string) => {
-    try {
-      const response = await fetch(
-        `/api/reportes/estudiantes?cedula=${cedula}`
-      );
-      const data = await response.json();
-      setStudents(data);
-    } catch (error) {
-      console.error("Error fetching students:", error);
-    }
-  };
-
   const fetchItems = async (query: string, type: string) => {
     let endpoint = "";
     if (type === "Por Estudiante")
@@ -76,6 +64,7 @@ const renderItem = (item: any, onSelect: (value: string) => void) => (
     className="p-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md text-gray-500 dark:text-gray-400"
     onClick={() => {
       onSelect(item.Primer_nombre ? `${item.Primer_nombre} ${item.Primer_apellido}` : item.Nombre || item.Descripcion);
+      setCedulaEstudiante(item.Cedula)
     }}
   >
     {item.Primer_nombre ? `${item.Primer_nombre} ${item.Primer_apellido}` : item.Nombre || item.Descripcion} - {item.Cedula || item.Id}
@@ -92,25 +81,15 @@ const fetchDataReportStudents = async () => {
   }
   console.log("Este es el searchValue")
   console.log(searchValue);
-  let cedula = searchValue;
 
   try {
-    const parsedValue = JSON.parse(searchValue);
-    if (parsedValue && parsedValue.Cedula) {
-      cedula = parsedValue.Cedula;
-    }
-  } catch (error) {
-    console.warn("searchValue no es un JSON válido, usando el valor como está.");
-    return;
-  }
-
-  try {
-    const response = await fetch(`/api/reportes/estudiantes/data?startdate=${startDate}&endDate=${endDate}&cedula=${encodeURIComponent(cedula)}`);
+    const response = await fetch(`/api/reportes/estudiantes/data?startDate=${startDate}&endDate=${endDate}&cedula=${cedulaEstudiante}`);
     if (!response.ok) {
       throw new Error("Error en la respuesta del servidor");
     }
     const data = await response.json();
     setReportData(data);
+    console.log(data)
   } catch (error) {
     console.error("Error fetching data for report:", error);
   }
@@ -261,8 +240,8 @@ const fetchDataReportStudents = async () => {
       {showTable && (
         <>
           <ReportTable reportType={selectedReport} data={reportData} />
-          <ReportChart reportType={selectedReport} data={reportData} />
-          <ExportButtons reportType={selectedReport} data={reportData} />
+          {/*<ReportChart reportType={selectedReport} data={reportData} />*/}
+          <ExportButtons reportType={selectedReport} data={reportData} studentId={cedulaEstudiante} studentName={searchValue}/>
         </>
       )}
       <SelectionModal
