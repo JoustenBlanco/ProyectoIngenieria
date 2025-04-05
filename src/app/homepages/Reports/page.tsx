@@ -40,7 +40,7 @@ export default function Reports() {
     useState<string>("Por Estudiante");
 
   const [items, setItems] = useState<any[]>([]);
-  
+
 
   const fetchItems = async (query: string, type: string) => {
     let endpoint = "";
@@ -63,7 +63,7 @@ const renderItem = (item: any, onSelect: (value: string) => void) => (
     key={item.Cedula || item.Id || item.Nombre}
     className="p-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md text-gray-500 dark:text-gray-400"
     onClick={() => {
-      onSelect(item.Primer_nombre ? `${item.Primer_nombre} ${item.Primer_apellido}` : item.Nombre || item.Descripcion);
+      onSelect(item.Primer_nombre ? `${item.Primer_nombre} ${item.Primer_apellido} ${item.Segundo_apellido}` : item.Nombre || item.Descripcion);
       setCedulaEstudiante(item.Cedula)
     }}
   >
