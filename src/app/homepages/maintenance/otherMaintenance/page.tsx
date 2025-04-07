@@ -355,7 +355,7 @@ const MaintenancePage = () => {
                 <td className="py-4 px-6 text-center">{section.Nombre}</td>
                 <td className="py-4 px-6 text-center">{section.Grado}</td>
                 <td className="py-4 px-6 text-center">
-                  {section.Id_funcionario}
+                  {section.RAE_Funcionarios.Primer_nombre}
                 </td>
                 <td className="py-4 px-6 text-center">{section.Estado}</td>
                 <td className="py-4 px-6">
@@ -406,10 +406,10 @@ const MaintenancePage = () => {
                 className="border-b dark:border-gray-700"
               >
                 <td className="py-4 px-6 text-center">{clase.Descripcion}</td>
-                <td className="py-4 px-6 text-center">{clase.Id_materia}</td>
-                <td className="py-4 px-6 text-center">{clase.Id_seccion}</td>
+                <td className="py-4 px-6 text-center">{clase.RAE_Materia.Nombre}</td>
+                <td className="py-4 px-6 text-center">{clase.RAE_Secciones.Nombre}</td>
                 <td className="py-4 px-6 text-center">
-                  {clase.Id_funcionario}
+                  {clase.RAE_Funcionarios.Primer_nombre + " " + clase.RAE_Funcionarios.Primer_apellido}
                 </td>
                 <td className="py-4 px-6 text-center">{clase.Estado}</td>
                 <td className="py-4 px-6 text-center">

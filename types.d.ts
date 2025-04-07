@@ -211,7 +211,18 @@ export interface ExportButtonsProps {
       Estado: string;                             
       Id_funcionario: number;           
       Id_materia: number;               
-      Id_seccion: number;                                   
+      Id_seccion: number;       
+      RAE_Funcionarios:FuncionariosXSeccion;  
+      RAE_Materia:MateriaLite;
+      RAE_Secciones: SeccionLite;                        
+    }
+
+    export interface SeccionLite{
+      Nombre:string,
+    }
+
+    export interface MateriaLite{
+      Nombre:string,
     }
 
     export interface CreateClase {                
@@ -255,7 +266,14 @@ export interface ExportButtonsProps {
       Comentarios?: string | null;      
       Grado: string;                    
       Nombre: string;                   
-      Id_funcionario: number;           
+      Id_funcionario: number;    
+      RAE_Funcionarios: FuncionariosXSeccion;
+    }
+
+    export interface FuncionarioXSeccion{
+      Primer_nombre: string;
+      Primer_apellido: string;
+      Segundo_apellido: string;       
     }
 
     interface CreateSeccion {             
