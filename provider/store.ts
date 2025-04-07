@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 import { User } from '../types';  
 
 const useAuthStore = create(
@@ -15,6 +15,7 @@ const useAuthStore = create(
     }),
     {
       name: 'auth-store', // Nombre del almacenamiento en localStorage
+      storage: createJSONStorage(() => sessionStorage), //Para evitar la bronca de que persista la info después de cerrar la pestaña
     }
   )
 );

@@ -3,6 +3,7 @@ export interface InputProps {
   name: string;
   type: string;
   label: string;
+  pattern?: string;
   placeholder?: string;
   required?: boolean;
   className?: string;
