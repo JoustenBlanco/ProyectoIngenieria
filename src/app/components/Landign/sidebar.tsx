@@ -97,7 +97,7 @@ const Sidebar = () => {
           )
           )}
           <li>
-            <Button className="flex items-center p-2 cursor-pointer w-full border-l-4 border-black my-2 hover:bg-red-600 hover:bg-opacity-20 transition-all duration-300 bg-red-600 hover:bg-red-700 "
+            <Button className="flex items-center p-2 cursor-pointer w-full border-l-4 my-2 transition-all duration-300 bg-lsp-blue dark:bg-[#00011f] hover:bg-red-700 "
              onClick={async () => {
               localStorage.removeItem("auth-store");
               await signOut({ 

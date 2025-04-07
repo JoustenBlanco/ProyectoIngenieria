@@ -427,7 +427,7 @@ const StudentsList: React.FC = () => {
                     type="checkbox"
                     id={`attendance-${student.Id_alumno}`}
                     name={`attendance-${student.Id_alumno}`}
-                    className="h-4 w-4 text-green-600 focus:ring-green-500 bg-green-600 border-gray-300 rounded"
+                    className="h-4 w-4 text-green-600 focus:gray-300 bg-red-600 border-gray-300 rounded"
                     checked={student.Asistio}
                     onChange={(e) =>
                       handleAttendanceChange(
