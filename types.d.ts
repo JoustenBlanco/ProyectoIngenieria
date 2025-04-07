@@ -15,6 +15,8 @@ export interface InputProps {
 export interface ExportButtonsProps {
   reportType: string;
   data: Record<string, string | number>[];
+  studentName: string | null
+  studentId: string | null
 }
 
   export interface CreateStudent { 

@@ -11,10 +11,6 @@ import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";
 
-interface ReportTableProps {
-  reportType: string;
-  data: any[];
-}
 
 export default function Reports() {
   const { data: session, status } = useSession();
@@ -40,19 +36,7 @@ export default function Reports() {
     useState<string>("Por Estudiante");
 
   const [items, setItems] = useState<any[]>([]);
-  
 
-  const fetchStudents = async (cedula: string) => {
-    try {
-      const response = await fetch(
-        `/api/reportes/estudiantes?cedula=${cedula}`
-      );
-      const data = await response.json();
-      setStudents(data);
-    } catch (error) {
-      console.error("Error fetching students:", error);
-    }
-  };
 
   const fetchItems = async (query: string, type: string) => {
     let endpoint = "";
@@ -63,7 +47,7 @@ export default function Reports() {
     if (type === "Por Curso") endpoint = `/api/cursos?descripcion=${query}`;
     if (type === "Por Sección") endpoint = `/api/secciones?nombre=${query}`;
     if (type === "Por Grado") endpoint = `/api/secciones?grado=${query}`;
-    if (type === "General LSP") endpoint = `/api/estudiantes`; // No necesita query
+    if (type === "General LSP") endpoint = `/api/estudiantes`;
 
     const response = await fetch(endpoint);
     const data = await response.json();
@@ -75,7 +59,8 @@ const renderItem = (item: any, onSelect: (value: string) => void) => (
     key={item.Cedula || item.Id || item.Nombre}
     className="p-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md text-gray-500 dark:text-gray-400"
     onClick={() => {
-      onSelect(item.Primer_nombre ? `${item.Primer_nombre} ${item.Primer_apellido}` : item.Nombre || item.Descripcion);
+      onSelect(item.Primer_nombre ? `${item.Primer_nombre} ${item.Primer_apellido} ${item.Segundo_apellido}` : item.Nombre || item.Descripcion);
+      setCedulaEstudiante(item.Cedula)
     }}
   >
     {item.Primer_nombre ? `${item.Primer_nombre} ${item.Primer_apellido}` : item.Nombre || item.Descripcion} - {item.Cedula || item.Id}
@@ -87,30 +72,25 @@ const fetchDataReportStudents = async () => {
     console.warn("No se ha seleccionado un estudiante.");
     alert("No se ha seleccionado un estudiante.");
     return;
-  } if (!startDate && !endDate){
-    alert("Seleccione un rango de fechas válido.");
   }
-  console.log("Este es el searchValue")
-  console.log(searchValue);
-  let cedula = searchValue;
 
-  try {
-    const parsedValue = JSON.parse(searchValue);
-    if (parsedValue && parsedValue.Cedula) {
-      cedula = parsedValue.Cedula;
-    }
-  } catch (error) {
-    console.warn("searchValue no es un JSON válido, usando el valor como está.");
+  if (!isHistorical && (!startDate || !endDate)) {
+    alert("Seleccione un rango de fechas válido.");
     return;
   }
 
   try {
-    const response = await fetch(`/api/reportes/estudiantes/data?startdate=${startDate}&endDate=${endDate}&cedula=${encodeURIComponent(cedula)}`);
+    const url = isHistorical 
+      ? `/api/reportes/estudiantes/data?cedula=${cedulaEstudiante}&historical=true`
+      : `/api/reportes/estudiantes/data?startDate=${startDate}&endDate=${endDate}&cedula=${cedulaEstudiante}`;
+
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error("Error en la respuesta del servidor");
     }
     const data = await response.json();
     setReportData(data);
+    console.log(data);
   } catch (error) {
     console.error("Error fetching data for report:", error);
   }
@@ -145,24 +125,6 @@ const fetchDataReportStudents = async () => {
     "General LSP",
   ];
 
-  // Datos simulados según el tipo de reporte
-  const getOptionsByReportType = () => {
-    switch (selectedReport) {
-      case "Por Estudiante":
-        return ["Juan Pérez", "María López", "Carlos Gómez"];
-      case "Por Curso":
-        return ["Matemáticas", "Historia", "Ciencias"];
-      case "Por Sección":
-        return ["Sección A", "Sección B", "Sección C"];
-      case "Por Docente":
-        return ["Prof. García", "Prof. Rodríguez", "Prof. Fernández"];
-      case "Por Grado":
-        return ["Primer Grado", "Segundo Grado", "Tercer Grado"];
-      default:
-        return [];
-    }
-  };
-
   return (
     <div className="p-6">
       <div className="grid grid-cols-1 gap-5">
@@ -187,7 +149,7 @@ const fetchDataReportStudents = async () => {
           </Select>
 
           {selectedReport &&
-            selectedReport !== "General LSP" && ( // Si no es "General LSP", se debe seleccionar algo
+            selectedReport !== "General LSP" && (
               <div className="max-w-md grid grid-cols-1 gap-2 items-center">
                 <Button onClick={() => setShowModal(true)}>
                   <svg
@@ -261,8 +223,8 @@ const fetchDataReportStudents = async () => {
       {showTable && (
         <>
           <ReportTable reportType={selectedReport} data={reportData} />
-          <ReportChart reportType={selectedReport} data={reportData} />
-          <ExportButtons reportType={selectedReport} data={reportData} />
+          {/*<ReportChart reportType={selectedReport} data={reportData} />*/}
+          <ExportButtons reportType={selectedReport} data={reportData} studentId={cedulaEstudiante} studentName={searchValue}/>
         </>
       )}
       <SelectionModal

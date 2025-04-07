@@ -11,7 +11,7 @@ interface SelectOption {
   required?: boolean;
   register: UseFormRegister<T>;
   error?: string;
-  value?: string; 
+  value?: string | number; 
 }
 
 const Select = <T extends FieldValues>({

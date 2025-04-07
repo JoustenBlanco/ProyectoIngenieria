@@ -10,7 +10,7 @@ export default function ReportTable({ reportType, data }: ReportTableProps) {
   if (!reportType) return null;
 
   const reportColumns: Record<string, string[]> = {
-    "Por Estudiante": ["Fecha", "Curso", "Asistencia"],
+    "Por Estudiante": ["fecha", "clase", "asistio"],
     "Por Curso": ["Fecha", "Estudiante", "Asistencia"],
     "Por Sección": ["Fecha", "Curso", "Estudiante", "Asistencia"],
     "Por Docente": ["Fecha", "Sección", "Curso", "Asistencia"],

@@ -5,31 +5,81 @@ import Input from "../../../components/Atoms/input";
 import Select from "../../../components/Atoms/select";
 import ActionButtons from "../../../components/Atoms/ActionButtons";
 import { Funcionarios } from "../../../../../types";
+import { RolFuncionario } from "../../../../../types";
+import { FuncionariosXRol } from "../../../../../types";
 import UserList from "../../../components/Users/UserList";
 import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";
 
+type FormValues = Funcionarios & {
+  rol_funcionario?: number;
+};
+
 export default function Users() {
   const { data: session, status } = useSession();
+  const [roles, setRoles] = useState<RolFuncionario[]>([]);
+  const [selectedRole, setSelectedRole] = useState<number | null>(null);
+  const [funcionarioRoles, setFuncionarioRoles] = useState<FuncionariosXRol[]>(
+    []
+  );
+
   useEffect(() => {
-    console.log("Llega al useEffect de about");
-  if (status == "unauthenticated"){
-    console.log("No autenticado");
-    redirect("/homepages/auth/login");
-  }
-},
- [session, status]);
+    if (status == "unauthenticated") {
+      console.log("No autenticado");
+      redirect("/homepages/auth/login");
+    } else if (status === "authenticated") {
+      fetchRoles();
+    }
+  }, [session, status]);
+
+  const fetchRoles = async () => {
+    try {
+      const response = await fetch("/api/rol_funcionario");
+      if (response.ok) {
+        const data = await response.json();
+        setRoles(data);
+      } else {
+        console.error("Error al obtener los roles");
+      }
+    } catch (error) {
+      console.error("Error en la petición de roles", error);
+    }
+  };
+
+  const fetchFuncionarioRoles = async (funcionarioId: number) => {
+    try {
+      const response = await fetch(
+        `/api/funcionarios_x_rol?Id_funcionario=${funcionarioId}`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setFuncionarioRoles(data);
+        console.log("Fuera del IF");
+        console.log(data);
+        // Establecer el primer rol como seleccionado (si existe)
+        if (data) {
+          console.log("Dentro del IF");
+          console.log(data);
+          setValue("rol_funcionario", data.Id_rol_funcionario);
+        } else {
+          setValue("rol_funcionario", undefined);
+        }
+      }
+    } catch (error) {
+      console.error("Error al obtener los roles del funcionario", error);
+    }
+  };
+
   const {
     register,
     handleSubmit,
     watch,
     reset,
+    setValue,
     formState: { errors },
-  } = useForm<Funcionarios>();
-  const [selectedUser, setSelectedUser] = useState<Funcionarios | null>(
-    null
-  );
+  } = useForm<FormValues >();
+  const [selectedUser, setSelectedUser] = useState<Funcionarios | null>(null);
   const [showUserList, setShowUserList] = useState(false);
 
   const handleOpenUserList = () => {
@@ -40,24 +90,75 @@ export default function Users() {
     setShowUserList(false);
   };
 
-  const handleSelectUser = (user: any) => {
+  const handleSelectUser = async (user: any) => {
     setSelectedUser(user);
     console.log(user);
     reset(user);
+    // Cargar los roles del funcionario seleccionado
+    if (user.Id_funcionario) {
+      await fetchFuncionarioRoles(user.Id_funcionario);
+    }
   };
 
-  const handleSave = async (data: Funcionarios) => {
-    console.log("Datos a enviar:", data);
+  // Función para guardar/actualizar la relación funcionario-rol
+  const handleFuncionarioRol = async (funcionarioId: number, rolId?: number) => {
+    if (!rolId) return;
     try {
-      const response = await fetch("/api/funcionarios", {
-        method: selectedUser? "PUT" : "POST",
+      const rolIdNumber = Number(rolId);
+      console.log(funcionarioId)
+      console.log(rolId)
+      // Eliminar relaciones existentes
+      const response2 = await fetch("/api/funcionarios_x_rol", {
+        method: "DELETE",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ Id_funcionario: funcionarioId}),
+      });
+      if(response2.ok){
+        const response = await fetch("/api/funcionarios_x_rol", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            Id_funcionario: funcionarioId,
+            Id_rol_funcionario: rolIdNumber,
+          }),
+        });
+        if (!response.ok) {
+          console.error("Error al guardar la relación funcionario-rol");
+        }
+  
+      } else {
+        console.error("Error al eliminar la relación funcionario-rol");
+      }
+
+    } catch (error) {
+      console.error("Error en la petición de relación funcionario-rol", error);
+    }
+  };
+
+  const handleSave = async (data: FormValues ) => {
+    console.log("Datos a enviar:", data);
+    try {
+      const rolId = data.rol_funcionario ? Number(data.rol_funcionario) : undefined;
+      const { rol_funcionario, ...funcionarioData } = data;
+      
+      const response = await fetch("/api/funcionarios", {
+        method: selectedUser ? "PUT" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(funcionarioData),
       });
       if (response.ok) {
+        const result = await response.json();
         alert("Funcionario guardado exitosamente");
+        if (rolId) {
+          const funcionarioId = selectedUser?.Id_funcionario || result.Id_funcionario;
+          await handleFuncionarioRol(funcionarioId, rolId);
+        }
         handleNew();
       } else {
         alert("Error al guardar el funcionario");
@@ -79,12 +180,14 @@ export default function Users() {
       Cedula: "",
       Estado: "",
       Suplente: "",
-      Password: ""
+      Password: "",
+      rol_funcionario: undefined
     });
     setSelectedUser(null);
+    setFuncionarioRoles([]);
   };
 
-  const onSubmit = (data: Funcionarios) => {
+  const onSubmit = (data: FormValues ) => {
     handleSave(data);
   };
 
@@ -93,8 +196,16 @@ export default function Users() {
       alert("Por favor selecciona un funcionario para eliminar");
       return;
     }
-  
+    
     try {
+      await fetch("/api/funcionarios_x_rol", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ Id_funcionario: selectedUser.Id_funcionario }),
+      });
+
       const response = await fetch("/api/funcionarios", {
         method: "DELETE",
         headers: {
@@ -102,7 +213,7 @@ export default function Users() {
         },
         body: JSON.stringify({ Id_funcionario: selectedUser.Id_funcionario }),
       });
-  
+
       if (response.ok) {
         alert("Funcionario eliminado exitosamente");
         handleNew();
@@ -115,6 +226,11 @@ export default function Users() {
       alert("Ocurrió un error al eliminar el funcionario");
     }
   };
+
+    const rolOptions = roles.map(rol => ({
+      value: Number(rol.Id_rol_funcionario),
+      label: rol.Nombre
+    }));
   
 
   return (
@@ -225,6 +341,16 @@ export default function Users() {
             register={register}
             error={errors.Suplente?.message}
             value={watch("Suplente")}
+            required={true}
+          />
+
+          <Select
+            id="rol_funcionario"
+            label="Rol del Funcionario"
+            options={rolOptions}
+            register={register}
+            error={errors.rol_funcionario?.message}
+            value={watch("rol_funcionario")}
             required={true}
           />
 
