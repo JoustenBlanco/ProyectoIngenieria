@@ -99,7 +99,8 @@ export default function LoginPage() {
             name="cedula"
             type="text"
             label="Cédula"
-            placeholder="Ingresa tu cédula"
+            placeholder="Solo números o letras"
+            pattern="[a-zA-Z0-9]+"
             required
             value={cedula}
             onChange={(e) => setCedula(e.target.value)}

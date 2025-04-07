@@ -4,6 +4,7 @@ import { InputProps } from "../../../../types";
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(({
   id,
+  pattern,
   name,
   type,
   label,
@@ -23,6 +24,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({
         ref={ref}
         type={type}
         id={id}
+        pattern={pattern}	
         name={name}
         placeholder={placeholder}
         className={`mt-1 block w-full bg-gray-100 dark:bg-gray-800 border-2 ${error ? 'border-red-500' : 'border-gray-100 dark:border-gray-700'} rounded-md focus:border-blue-100 dark:focus:border-blue-900 focus:ring-blue-200 dark:focus:ring-blue-900 shadow-sm text-lg h-10 hover:border-gray-200 dark:text-gray-400`}

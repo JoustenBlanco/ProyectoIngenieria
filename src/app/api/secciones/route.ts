@@ -6,7 +6,13 @@ export async function GET(_req:Request){
     try {
         const students = await prisma.rAE_Secciones.findMany({
           include: {
-          RAE_Funcionarios: true
+          RAE_Funcionarios: {
+            select: {
+              Primer_nombre: true,
+              Primer_apellido: true,
+              Segundo_apellido: true,
+            },
+          }
         }
       });
         return NextResponse.json(students, { status: 200 });

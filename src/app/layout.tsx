@@ -2,7 +2,6 @@ import './globals.css';
 import { Inter } from 'next/font/google';
 import Footer from './components/Landign/footer';
 import ClientWrapper from './components/ClientWrapper'; 
-import { SessionProvider } from "next-auth/react";
 import SessionProviderWrapper from './components/authProvider';
 
 

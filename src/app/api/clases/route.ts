@@ -4,7 +4,27 @@ import { Clase, CreateClase } from "../../../../types";
 
 export async function GET(){
     try {
-        const result = await prisma.rAE_Clases.findMany();
+        const result = await prisma.rAE_Clases.findMany({
+          include: {
+            RAE_Funcionarios: {
+              select: {
+                Primer_nombre: true,
+                Primer_apellido: true,
+                Segundo_apellido: true,
+              },
+            },
+            RAE_Materia: {
+              select: {
+                Nombre: true,
+              },
+            },
+            RAE_Secciones: {
+              select: {
+                Nombre: true,
+              },
+            },
+          },
+        });
         return NextResponse.json(result,{status:200});
     } catch (error) {
         return NextResponse.json({ error: 'Error fetching classes' }, { status: 500 });
