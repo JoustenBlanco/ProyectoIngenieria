@@ -2,39 +2,52 @@
 import Report from "../../components/Reports/report";
 import Carousel from "../../components/Atoms/carousel";
 import { useSession } from "next-auth/react";
-import { use, useEffect } from "react";
-import { redirect, useRouter } from "next/navigation";
-
+import { useEffect } from "react";
+import { redirect } from "next/navigation";
 
 export default function Reports() {
   const { data: session, status } = useSession();
+
   useEffect(() => {
-    console.log("Llega al useEffect de about");
-  if (status == "unauthenticated"){
-    console.log("No autenticado");
-    redirect("/homepages/auth/login");
-  }
-},
- [session, status]);
+    if (status === "unauthenticated") {
+      redirect("/homepages/auth/login");
+    }
+  }, [session, status]);
 
-  const images = [
-    "/images/escudo.svg",
-    "/images/To-do-list.svg",
-  ];
-
-  const titles = [
-    "Liceo San Pedro",
-    "Control de Asistencias LSP",
-  ];
+  const images = ["/images/escudo.svg", "/images/To-do-list.svg"];
+  const titles = ["Liceo San Pedro", "Control de Asistencias LSP"];
   const descriptions = [
     "Cada día es una nueva oportunidad para aprender, crecer y brillar",
     "Controla la asistencia de tus estudiantes",
   ];
+
   return (
-    <div className="p-6 flex flex-col justify-start items-center">
-      <h1 className="text-3xl font-bold mb-8 text-gray-500">Información</h1>
-      <div className="md:w-96 text-white p-7 flex items-center justify-center bg-gray-100 flex-col">
+    <div className="p-6 flex flex-col justify-start items-center gap-8">
+      <h1 className="text-3xl font-bold text-gray-700 dark:text-gray-100">Información</h1>
+
+      <div className="w-full max-w-md bg-white dark:bg-gray-900 shadow-lg dark:shadow-gray-800 rounded-2xl p-6 space-y-6 transition-colors duration-300">
         <Carousel images={images} titles={titles} descriptions={descriptions} />
+
+        <div className="text-gray-800 dark:text-gray-300 text-base leading-relaxed">
+          <p>
+            Este sistema fue desarrollado con el propósito de mejorar el control de asistencia
+            de los estudiantes del <strong>Liceo San Pedro</strong>, promoviendo una gestión
+            más organizada y eficiente para el cuerpo docente y administrativo.
+          </p>
+          <p className="mt-4">
+            El proyecto fue realizado por <strong>Jousten Blanco Fonseca</strong> y <strong>Sebastián Granados Barrantes</strong>,
+            en el periodo lectivo de <strong>2024</strong>, como parte de los cursos de <strong>Ingeniería en Sistemas I, II y III </strong>
+            de la <strong>Universidad Nacional de Costa Rica</strong>, <em>Sede Regional Brunca, Pérez Zeledón</em>.
+          </p>
+          <p className="mt-4">
+            Utilizando tecnologías modernas como <strong>React</strong>, <strong>Next.js</strong> y <strong>Tailwind CSS</strong>,
+            se logró desarrollar una interfaz intuitiva, segura y accesible para registrar asistencias, generar reportes
+            y facilitar la toma de decisiones dentro de la institución.
+          </p>
+          <p className="mt-4 italic text-sm text-gray-500 dark:text-gray-400">
+            “La educación no cambia el mundo: cambia a las personas que van a cambiar el mundo.” – Paulo Freire
+          </p>
+        </div>
       </div>
     </div>
   );

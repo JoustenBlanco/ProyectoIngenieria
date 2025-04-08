@@ -115,21 +115,7 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {error && <p className="text-red-500">{error}</p>}{" "} 
-          <div className="flex items-center mb-6">
-            <input
-              type="checkbox"
-              id="remember"
-              name="remember"
-              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-            />
-            <label
-              htmlFor="remember"
-              className="ml-2 text-lg font-medium text-gray-700"
-            >
-              Recordarme
-            </label>
-          </div>
+          {error && <p className="text-red-500">{error}</p>}{" "}
           <div className="flex items-center mb-6">
             <input
               type="checkbox"

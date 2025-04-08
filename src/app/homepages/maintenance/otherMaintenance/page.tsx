@@ -491,7 +491,7 @@ const MaintenancePage = () => {
             id="Nombre"
             type="text"
             {...registerSection("Nombre", {
-              required: "Debe seleccionar un funcionario",
+              required: "Debe nombrar la sección",
             })}
             error={errorsSection.Nombre?.message}
           />

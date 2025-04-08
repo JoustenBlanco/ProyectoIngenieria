@@ -33,7 +33,7 @@ export default function Reports() {
   const [students, setStudents] = useState<StudentType[]>([]);
   const [searchValue, setSearchValue] = useState<string | null>(null);
   const [selectedReport, setSelectedReport] =
-    useState<string>("Por Estudiante");
+    useState<string>("");
 
   const [items, setItems] = useState<any[]>([]);
 
@@ -118,11 +118,7 @@ const fetchDataReportStudents = async () => {
 
   const reportOptions = [
     "Por Estudiante",
-    "Por Curso",
     "Por Sección",
-    "Por Docente",
-    "Por Grado",
-    "General LSP",
   ];
 
   return (
