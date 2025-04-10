@@ -33,6 +33,11 @@ const Sidebar = () => {
       path: "/homepages/config",
       icon: "/images/config.svg",
     },
+    {
+      name: "Cerrar Sesión",
+      path: "",
+      icon: "/images/logout.svg",
+    },
   ];
 
   const toggleSidebar = () => {
@@ -75,7 +80,17 @@ const Sidebar = () => {
                     : "text-gray-400"
                 }
               `}
-              onClick={() => router.push(item.path)}
+              onClick={async() => {
+                if (item.name === "Cerrar Sesión") {
+                    sessionStorage.removeItem("auth-store");
+                    await signOut({ 
+                      redirect: true, 
+                      callbackUrl: "/homepages/auth/login" 
+                    });
+                }
+                else{
+                  router.push(item.path)}}
+                }
             >
               <img
                 src={item.icon}
@@ -96,24 +111,27 @@ const Sidebar = () => {
             </li>
           )
           )}
-          <li>
-            <Button className="flex items-center p-2 cursor-pointer w-full border-l-4 my-2 transition-all duration-300 bg-lsp-blue dark:bg-[#00011f] hover:bg-red-700 "
-             onClick={async () => {
-              sessionStorage.removeItem("auth-store");
-              await signOut({ 
-                redirect: true, 
-                callbackUrl: "/homepages/auth/login" 
-              });
-              }}>
-              <img
-                src="/images/logout.svg"
-                alt="Logout icon"
-                className="h-6 w-6 mr-4"
-              />
-              {!isCollapsed && <span>Cerrar Sesión</span>}
-            </Button>
-              
-          </li>
+          {/* <li onClick={async () => {
+      sessionStorage.removeItem("auth-store");
+      await signOut({ 
+        redirect: true, 
+        callbackUrl: "/homepages/auth/login" 
+      });
+    }}>
+  <Button className={`
+    flex items-center p-2 cursor-pointer w-full border-l-4 border-transparent my-2 
+    transition-all duration-300 bg-lsp-blue dark:bg-[#00011f] hover:bg-red-700
+    ${isCollapsed ? 'justify-center' : ''}
+  `}
+    >
+    <img
+      src="/images/logout.svg"
+      alt="Logout icon"
+      className="h-6 w-6 mr-4"
+    />
+    {!isCollapsed && <span>Cerrar Sesión</span>}
+  </Button>
+</li> */}
         </ul>
       </nav>
     </aside>
