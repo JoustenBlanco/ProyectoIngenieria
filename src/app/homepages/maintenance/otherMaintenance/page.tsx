@@ -355,9 +355,9 @@ const MaintenancePage = () => {
                 <td className="py-4 px-6 text-center">{section.Nombre}</td>
                 <td className="py-4 px-6 text-center">{section.Grado}</td>
                 <td className="py-4 px-6 text-center">
-                  {section.RAE_Funcionarios.Primer_nombre}
+                  {section.RAE_Funcionarios.Primer_nombre + " " + section.RAE_Funcionarios.Primer_apellido}
                 </td>
-                <td className="py-4 px-6 text-center">{section.Estado}</td>
+                <td className="py-4 px-6 text-center">{section.Estado == "A" ? "Activa" : "Cerrada"}</td>
                 <td className="py-4 px-6">
                   <ActionButtons
                     onEdit={() => {
@@ -411,7 +411,7 @@ const MaintenancePage = () => {
                 <td className="py-4 px-6 text-center">
                   {clase.RAE_Funcionarios.Primer_nombre + " " + clase.RAE_Funcionarios.Primer_apellido}
                 </td>
-                <td className="py-4 px-6 text-center">{clase.Estado}</td>
+                <td className="py-4 px-6 text-center">{clase.Estado == "A" ? "Activa":"Cancelada"}</td>
                 <td className="py-4 px-6 text-center">
                   <ActionButtons
                     onEdit={() => {
