@@ -11,14 +11,13 @@ import { redirect, useRouter } from "next/navigation";
 
 const MaintenancePage = () => {
   const { data: session, status } = useSession();
+  const [selectedSection, setSelectedSection] = useState<'sections' | 'classes' | 'subjects'>('sections');
+
   useEffect(() => {
-    console.log("Llega al useEffect de about");
-  if (status == "unauthenticated"){
-    console.log("No autenticado");
-    redirect("/homepages/auth/login");
-  }
-},
- [session, status]);
+    if (status === "unauthenticated") {
+      redirect("/homepages/auth/login");
+    }
+  }, [session, status]);
   const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
   const [isClassModalOpen, setIsClassModalOpen] = useState(false);
   const [isSubjectModalOpen, setIsSubjectModalOpen] = useState(false);
@@ -321,161 +320,145 @@ const MaintenancePage = () => {
       <h1 className="text-3xl font-semibold text-gray-900 dark:text-white mb-6">
         Mantenimiento de Secciones, Clases y Materias
       </h1>
-
-      {/* Secciones */}
-      <div className="mb-10">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            Secciones
-          </h2>
-          <button
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded dark:bg-blue-500 dark:hover:bg-blue-600"
-            onClick={() => setIsSectionModalOpen(true)}
-          >
-            + Agregar Sección
-          </button>
-        </div>
-
-        <table className="min-w-full bg-white dark:bg-gray-800 dark:text-gray-200">
-          <thead>
-            <tr className="w-full bg-gray-100 dark:bg-gray-700">
-              <th className="py-3 px-6">Nombre</th>
-              <th className="py-3 px-6">Grado</th>
-              <th className="py-3 px-6">Funcionario</th>
-              <th className="py-3 px-6">Estado</th>
-              <th className="py-3 px-6 text-right pr-20">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sections.map((section) => (
-              <tr
-                key={section.Id_seccion}
-                className="border-b dark:border-gray-700"
-              >
-                <td className="py-4 px-6 text-center">{section.Nombre}</td>
-                <td className="py-4 px-6 text-center">{section.Grado}</td>
-                <td className="py-4 px-6 text-center">
-                  {section.RAE_Funcionarios.Primer_nombre}
-                </td>
-                <td className="py-4 px-6 text-center">{section.Estado}</td>
-                <td className="py-4 px-6">
-                  <ActionButtons
-                    onEdit={() => {
-                      handleEditSection(section);
-                    }}
-                    onDelete={() => {
-                      handleDeleteSection(section);
-                    }}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      
+      {/* Selector de Sección */}
+      <div className="mb-8">
+        <select
+          className="w-full md:w-64 p-2 border rounded-lg bg-white dark:bg-gray-700 dark:text-white"
+          value={selectedSection}
+          onChange={(e) => setSelectedSection(e.target.value as 'sections' | 'classes' | 'subjects')}
+        >
+          <option value="sections">Secciones</option>
+          <option value="classes">Clases</option>
+          <option value="subjects">Materias</option>
+        </select>
       </div>
 
-      {/* Clases */}
-      <div className="mb-10">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            Clases
-          </h2>
+      {/* Contenido Dinámico */}
+      <div className="relative">
+        {/* Botón de Agregar */}
+        <div className="flex justify-end mb-4">
           <button
-            className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded dark:bg-green-500 dark:hover:bg-green-600"
-            onClick={() => setIsClassModalOpen(true)}
+            className={`font-bold py-2 px-4 rounded text-white ${selectedSection === 'sections' ? 'bg-blue-600 hover:bg-blue-700' : 
+              selectedSection === 'classes' ? 'bg-green-600 hover:bg-green-700' : 
+              'bg-purple-600 hover:bg-purple-700'}`}
+            onClick={() => {
+              if (selectedSection === 'sections') setIsSectionModalOpen(true);
+              else if (selectedSection === 'classes') setIsClassModalOpen(true);
+              else setIsSubjectModalOpen(true);
+            }}
           >
-            + Agregar Clase
+            + Agregar {selectedSection === 'sections' ? 'Sección' : 
+                      selectedSection === 'classes' ? 'Clase' : 'Materia'}
           </button>
         </div>
 
-        <table className="min-w-full bg-white dark:bg-gray-800 dark:text-gray-200">
-          <thead>
-            <tr className="w-full bg-gray-100 dark:bg-gray-700">
-              <th className="py-3 px-6">Descripción</th>
-              <th className="py-3 px-6">Materia</th>
-              <th className="py-3 px-6">Sección</th>
-              <th className="py-3 px-6">Funcionario</th>
-              <th className="py-3 px-6">Estado</th>
-              <th className="py-3 px-6 text-right pr-20">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {classes.map((clase) => (
-              <tr
-                key={clase.Id_clase}
-                className="border-b dark:border-gray-700"
-              >
-                <td className="py-4 px-6 text-center">{clase.Descripcion}</td>
-                <td className="py-4 px-6 text-center">{clase.RAE_Materia.Nombre}</td>
-                <td className="py-4 px-6 text-center">{clase.RAE_Secciones.Nombre}</td>
-                <td className="py-4 px-6 text-center">
-                  {clase.RAE_Funcionarios.Primer_nombre + " " + clase.RAE_Funcionarios.Primer_apellido}
-                </td>
-                <td className="py-4 px-6 text-center">{clase.Estado}</td>
-                <td className="py-4 px-6 text-center">
-                  <ActionButtons
-                    onEdit={() => {
-                        handleEditClass(clase);
-                    }}
-                    onDelete={() => {
-                        handleDeleteClass(clase);
-                    }}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+        {/* Tabla con scroll */}
+        <div className="overflow-x-auto shadow-md rounded-lg">
+          <div className="max-h-[calc(100vh-300px)] overflow-y-auto">
+            <table className="w-full bg-white dark:bg-gray-800 dark:text-gray-200">
+              {selectedSection === 'sections' && (
+                <>
+                  <thead className="sticky top-0 bg-gray-100 dark:bg-gray-700">
+                    <tr>
+                      <th className="py-3 px-6">Nombre</th>
+                      <th className="py-3 px-6">Grado</th>
+                      <th className="py-3 px-6">Funcionario</th>
+                      <th className="py-3 px-6">Estado</th>
+                      <th className="py-3 px-6 text-right pr-20">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sections.map((section) => (
+                      <tr key={section.Id_seccion} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                        <td className="py-4 px-6 text-center">{section.Nombre}</td>
+                        <td className="py-4 px-6 text-center">{section.Grado}</td>
+                        <td className="py-4 px-6 text-center">{section.RAE_Funcionarios.Primer_nombre}</td>
+                        <td className="py-4 px-6 text-center">
+                          <span className={`px-2 py-1 rounded-full text-xs ${section.Estado === 'A' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                            {section.Estado === 'A' ? 'Activo' : 'Inactivo'}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6">
+                          <ActionButtons
+                            onEdit={() => handleEditSection(section)}
+                            onDelete={() => handleDeleteSection(section)}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </>
+              )}
 
-      {/* Materias */}
-      <div>
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-            Materias
-          </h2>
-          <button
-            className="bg-purple-700 hover:bg-purple-800 text-white font-bold py-2 px-4 rounded dark:bg-purple-700 dark:hover:bg-purple-800"
-            onClick={() => setIsSubjectModalOpen(true)}
-          >
-            + Agregar Materia
-          </button>
+              {selectedSection === 'classes' && (
+                <>
+                  <thead className="sticky top-0 bg-gray-100 dark:bg-gray-700">
+                    <tr>
+                      <th className="py-3 px-6">Descripción</th>
+                      <th className="py-3 px-6">Materia</th>
+                      <th className="py-3 px-6">Sección</th>
+                      <th className="py-3 px-6">Funcionario</th>
+                      <th className="py-3 px-6">Estado</th>
+                      <th className="py-3 px-6 text-right pr-20">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {classes.map((clase) => (
+                      <tr key={clase.Id_clase} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                        <td className="py-4 px-6 text-center">{clase.Descripcion}</td>
+                        <td className="py-4 px-6 text-center">{clase.RAE_Materia.Nombre}</td>
+                        <td className="py-4 px-6 text-center">{clase.RAE_Secciones.Nombre}</td>
+                        <td className="py-4 px-6 text-center">
+                          {clase.RAE_Funcionarios.Primer_nombre + " " + clase.RAE_Funcionarios.Primer_apellido}
+                        </td>
+                        <td className="py-4 px-6 text-center">
+                          <span className={`px-2 py-1 rounded-full text-xs ${clase.Estado === 'A' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                            {clase.Estado === 'A' ? 'Activo' : 'Inactivo'}
+                          </span>
+                        </td>
+                        <td className="py-4 px-6 text-center">
+                          <ActionButtons
+                            onEdit={() => handleEditClass(clase)}
+                            onDelete={() => handleDeleteClass(clase)}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </>
+              )}
+
+              {selectedSection === 'subjects' && (
+                <>
+                  <thead className="sticky top-0 bg-gray-100 dark:bg-gray-700">
+                    <tr>
+                      <th className="py-3 px-6">Nombre</th>
+                      <th className="py-3 px-6">Tipo</th>
+                      <th className="py-3 px-6">Descripción</th>
+                      <th className="py-3 px-6 text-right pr-20">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {subjects.map((subject) => (
+                      <tr key={subject.Id_materia} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                        <td className="py-4 px-6 text-center">{subject.Nombre}</td>
+                        <td className="py-4 px-6 text-center">{subject.Tipo_materia}</td>
+                        <td className="py-4 px-6 text-center">{subject.Descripcion}</td>
+                        <td className="py-4 px-6 text-center">
+                          <ActionButtons
+                            onEdit={() => handleEditSubject(subject)}
+                            onDelete={() => handleDeleteSubject(subject)}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </>
+              )}
+            </table>
+          </div>
         </div>
-
-        <table className="min-w-full bg-white dark:bg-gray-800 dark:text-gray-200">
-          <thead>
-            <tr className="w-full bg-gray-100 dark:bg-gray-700">
-              <th className="py-3 px-6">Nombre</th>
-              <th className="py-3 px-6">Tipo</th>
-              <th className="py-3 px-6">Descripción</th>
-              <th className="py-3 px-6 text-right pr-20">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {subjects.map((subject) => (
-              <tr
-                key={subject.Id_materia}
-                className="border-b dark:border-gray-700"
-              >
-                <td className="py-4 px-6 text-center">{subject.Nombre}</td>
-                <td className="py-4 px-6 text-center">
-                  {subject.Tipo_materia}
-                </td>
-                <td className="py-4 px-6 text-center">{subject.Descripcion}</td>
-                <td className="py-4 px-6 text-center">
-                  <ActionButtons
-                    onEdit={() => {
-                        handleEditSubject(subject);
-                    }}
-                    onDelete={() => {
-                      handleDeleteSubject(subject);
-                    }}
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
 
       {/* Modales */}

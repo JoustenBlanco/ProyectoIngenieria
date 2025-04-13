@@ -36,10 +36,10 @@ const Carousel: React.FC<CarouselProps> = ({ images, titles, descriptions }) => 
   return (
     <div
       id="default-carousel"
-      className="relative w-full h-auto flex flex-col justify-center items-center gap-4"
+      className="relative w-full h-auto hidden md:flex flex-col justify-center items-center gap-4"
       data-carousel="slide"
     >
-      <div className="w-full h-96 overflow-hidden rounded-lg m-4 hidden sm:block md:block">
+      <div className="w-full h-96 overflow-hidden rounded-lg m-4">
         {images.map((image, index) => (
           <div
             key={index}
@@ -56,11 +56,11 @@ const Carousel: React.FC<CarouselProps> = ({ images, titles, descriptions }) => 
         ))}
       </div>
 
-      <div className="text-center mt-4 p-8 h-64 md:p-2">
-        <h2 className="text-2xl font-bold">
+      <div className="text-center mt-4 p-4 h-auto md:h-64">
+        <h2 className="text-xl md:text-2xl font-bold">
           {titles[currentIndex]}
         </h2>
-        <p className="text-lg text-gray-500 mt-2 p-10 mb-10 md:mb-2">
+        <p className="text-base md:text-lg text-gray-200 mt-2 px-4 md:px-8">
           {descriptions[currentIndex]}
         </p>
       </div>

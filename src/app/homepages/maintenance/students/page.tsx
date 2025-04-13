@@ -28,7 +28,20 @@ export default function Students() {
     reset,
     formState: { errors },
     setValue,
-  } = useForm<Student>();
+  } = useForm<Student>({
+    defaultValues: {
+      Primer_nombre: "",
+      Segundo_nombre: "",
+      Primer_apellido: "",
+      Segundo_apellido: "",
+      Fecha_nacimiento: "",
+      Grado: "7",
+      Cedula: "",
+      Correo_mep: "",
+      Estado: "A",
+      Id_seccion: 0,
+    }
+  });
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(
     null
   );
@@ -143,6 +156,9 @@ export default function Students() {
             placeholder="Ingresa el primer nombre"
             {...register("Primer_nombre", {
               required: "Este campo es requerido",
+              minLength: { value: 2, message: "El nombre debe tener al menos 2 caracteres" },
+              maxLength: { value: 50, message: "El nombre no puede exceder 50 caracteres" },
+              pattern: { value: /^[A-Za-záéíóúñÁÉÍÓÚÑ\s]+$/, message: "Solo se permiten letras y espacios" }
             })}
             error={errors.Primer_nombre?.message}
           />
@@ -152,7 +168,10 @@ export default function Students() {
             type="text"
             label="Segundo Nombre"
             placeholder="Ingresa el segundo nombre"
-            {...register("Segundo_nombre")}
+            {...register("Segundo_nombre", {
+              maxLength: { value: 50, message: "El nombre no puede exceder 50 caracteres" },
+              pattern: { value: /^[A-Za-záéíóúñÁÉÍÓÚÑ\s]*$/, message: "Solo se permiten letras y espacios" }
+            })}
           />
 
           <Input
@@ -162,6 +181,9 @@ export default function Students() {
             placeholder="Ingresa el primer apellido"
             {...register("Primer_apellido", {
               required: "Este campo es requerido",
+              minLength: { value: 2, message: "El apellido debe tener al menos 2 caracteres" },
+              maxLength: { value: 50, message: "El apellido no puede exceder 50 caracteres" },
+              pattern: { value: /^[A-Za-záéíóúñÁÉÍÓÚÑ\s]+$/, message: "Solo se permiten letras y espacios" }
             })}
             error={errors.Primer_apellido?.message}
           />
@@ -171,7 +193,10 @@ export default function Students() {
             type="text"
             label="Segundo Apellido"
             placeholder="Ingresa el segundo apellido"
-            {...register("Segundo_apellido")}
+            {...register("Segundo_apellido", {
+              maxLength: { value: 50, message: "El apellido no puede exceder 50 caracteres" },
+              pattern: { value: /^[A-Za-záéíóúñÁÉÍÓÚÑ\s]*$/, message: "Solo se permiten letras y espacios" }
+            })}
             error={errors.Segundo_apellido?.message}
           />
 
@@ -181,6 +206,14 @@ export default function Students() {
             value={watch("Fecha_nacimiento") || ""}
             {...register("Fecha_nacimiento", {
               required: "Este campo es requerido",
+              validate: (value) => {
+                const birthDate = new Date(value);
+                const today = new Date();
+                const age = today.getFullYear() - birthDate.getFullYear();
+                const minAge = 11;
+                const maxAge = 22;
+                return (age >= minAge && age <= maxAge) || `La edad debe estar entre ${minAge} y ${maxAge} años`;
+              }
             })}
             onChange={(e) => setValue("Fecha_nacimiento", e.target.value)}
             error={errors.Fecha_nacimiento?.message}
@@ -201,7 +234,10 @@ export default function Students() {
             type="text"
             label="Cédula"
             placeholder="Ingresa el número de cédula"
-            {...register("Cedula", { required: "Este campo es requerido" })}
+            {...register("Cedula", {
+              required: "Este campo es requerido",
+              pattern: { value: /^[1-9]-\d{4}-\d{4}$/, message: "Formato inválido. Use: #-####-#### (ejemplo: 1-1234-1234)" }
+            })}
             error={errors.Cedula?.message}
           />
 
@@ -212,6 +248,11 @@ export default function Students() {
             placeholder="Ingresa el correo MEP"
             {...register("Correo_mep", {
               required: "Este campo es requerido",
+              pattern: { 
+                value: /^[a-zA-Z0-9._-]+@(?:est\.)?mep\.go\.cr$/, 
+                message: "Debe ser un correo válido del MEP (@mep.go.cr o @est.mep.go.cr)" 
+              },
+              maxLength: { value: 100, message: "El correo no puede exceder 100 caracteres" }
             })}
             error={errors.Correo_mep?.message}
           />

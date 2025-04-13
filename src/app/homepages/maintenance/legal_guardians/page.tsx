@@ -152,6 +152,9 @@ export default function Legal_Guardians() {
             required
             {...register("Primer_nombre", {
               required: "Este campo es obligatorio",
+              minLength: { value: 2, message: "El nombre debe tener al menos 2 caracteres" },
+              maxLength: { value: 50, message: "El nombre no puede exceder 50 caracteres" },
+              pattern: { value: /^[A-Za-záéíóúñÁÉÍÓÚÑ\s]+$/, message: "Solo se permiten letras y espacios" }
             })}
             error={errors.Primer_nombre?.message}
           />
@@ -160,7 +163,10 @@ export default function Legal_Guardians() {
             label="Segundo Nombre"
             placeholder="Ingresa el segundo nombre"
             type="text"
-            {...register("Segundo_nombre")}
+            {...register("Segundo_nombre", {
+              maxLength: { value: 50, message: "El nombre no puede exceder 50 caracteres" },
+              pattern: { value: /^[A-Za-záéíóúñÁÉÍÓÚÑ\s]*$/, message: "Solo se permiten letras y espacios" }
+            })}
           />
           <Input
             id="firstLastName"
@@ -170,6 +176,9 @@ export default function Legal_Guardians() {
             required
             {...register("Primer_apellido", {
               required: "Este campo es obligatorio",
+              minLength: { value: 2, message: "El apellido debe tener al menos 2 caracteres" },
+              maxLength: { value: 50, message: "El apellido no puede exceder 50 caracteres" },
+              pattern: { value: /^[A-Za-záéíóúñÁÉÍÓÚÑ\s]+$/, message: "Solo se permiten letras y espacios" }
             })}
             error={errors.Primer_apellido?.message}
           />
@@ -178,7 +187,10 @@ export default function Legal_Guardians() {
             label="Segundo Apellido"
             placeholder="Ingresa el segundo apellido"
             type="text"
-            {...register("Segundo_apellido")}
+            {...register("Segundo_apellido", {
+              maxLength: { value: 50, message: "El apellido no puede exceder 50 caracteres" },
+              pattern: { value: /^[A-Za-záéíóúñÁÉÍÓÚÑ\s]*$/, message: "Solo se permiten letras y espacios" }
+            })}
           />
           <Input
             id="idNumber"
@@ -186,7 +198,10 @@ export default function Legal_Guardians() {
             placeholder="Ingresa el número de cédula"
             type="text"
             required
-            {...register("Cedula", { required: "Este campo es requerido" })}
+            {...register("Cedula", { 
+              required: "Este campo es requerido",
+              pattern: { value: /^[1-9]-\d{4}-\d{4}$/, message: "Formato inválido. Use: #-####-#### (ejemplo: 1-1234-1234)" }
+            })}
             error={errors.Cedula?.message}
           />
           <Input
@@ -195,7 +210,10 @@ export default function Legal_Guardians() {
             placeholder="Ingresa el número de teléfono"
             type="tel"
             required
-            {...register("Numero", { required: "Este campo es requerido" })}
+            {...register("Numero", { 
+              required: "Este campo es requerido",
+              pattern: { value: /^[2-8][0-9]{3}-[0-9]{4}$/, message: "Formato inválido. Use: ####-#### (ejemplo: 2222-3333)" }
+            })}
             error={errors.Numero?.message}
           />
           <Input
@@ -204,7 +222,14 @@ export default function Legal_Guardians() {
             placeholder="Ingresa el correo electrónico"
             type="email"
             required
-            {...register("Correo", { required: "Este campo es requerido" })}
+            {...register("Correo", { 
+              required: "Este campo es requerido",
+              pattern: { 
+                value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/, 
+                message: "Ingrese un correo electrónico válido" 
+              },
+              maxLength: { value: 100, message: "El correo no puede exceder 100 caracteres" }
+            })}
             error={errors.Correo?.message}
           />
           <Select

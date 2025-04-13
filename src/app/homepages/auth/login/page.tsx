@@ -80,11 +80,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden w-full max-w-6xl mx-auto shadow-2xl relative md:max-h-screen">
+    <div className="flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden w-full max-w-6xl mx-auto shadow-2xl relative">
       <div className="absolute top-4 right-4">
         <img src="/images/escudo.svg" alt="Logo de LSP" className="h-14 w-14" />
       </div>
-      <div className="w-full md:w-2/5 text-white p-7 flex items-center justify-center bg-lsp-blue flex-col">
+      <div className="w-full md:w-2/5 hidden md:flex text-white p-7 items-center justify-center bg-lsp-blue flex-col">
         <Carousel images={images} titles={titles} descriptions={descriptions} />
       </div>
       <div className="w-full md:w-3/5 bg-white p-16 flex flex-col items-center justify-start ">
