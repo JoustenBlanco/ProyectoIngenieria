@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Student from "@/app/components/students/student";
 import { Student as StudentType } from "../../../../../types";
+import { Textarea, Checkbox, Modal, Button } from "flowbite-react";
 import { useSearchParams } from "next/navigation";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -15,15 +16,38 @@ interface ExtendedStudent extends StudentType {
 }
 
 const StudentsList: React.FC = () => {
+  const [commentModalOpen, setCommentModalOpen] = useState(false);
+  const [activeCommentStudentId, setActiveCommentStudentId] = useState<number | null>(null);
+  const [modalComment, setModalComment] = useState("");
+
+  const handleOpenCommentModal = (studentId: number, comment: string) => {
+    setActiveCommentStudentId(studentId);
+    setModalComment(comment || "");
+    setCommentModalOpen(true);
+  };
+
+  const handleCloseCommentModal = () => {
+    setCommentModalOpen(false);
+    setActiveCommentStudentId(null);
+    setModalComment("");
+  };
+
+  const handleSaveComment = () => {
+    if (activeCommentStudentId !== null) {
+      handleCommentChange(activeCommentStudentId, modalComment);
+    }
+    handleCloseCommentModal();
+  };
+
   const { data: session, status } = useSession();
   useEffect(() => {
     console.log("Llega al useEffect de about");
-  if (status == "unauthenticated"){
-    console.log("No autenticado");
-    redirect("/homepages/auth/login");
-  }
-},
- [session, status]);
+    if (status == "unauthenticated") {
+      console.log("No autenticado");
+      redirect("/homepages/auth/login");
+    }
+  },
+    [session, status]);
   const [comments, setComments] = useState<string | null>("");
   const [place, setPlace] = useState<string | null>("");
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -278,181 +302,191 @@ const StudentsList: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-3xl font-bold mb-4 text-gray-500 dark:text-gray-400">
-        Registrar Asistencia
-      </h1>
-
-      {/* Formulario de Asistencia */}
-      <div className="bg-white p-6 rounded-lg shadow-md dark:bg-gray-800">
-        <div className="mb-4">
-          <label className="block text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
-            Fecha de Asistencia
-          </label>
-          <DatePicker
-            selected={selectedDate || new Date()}
-            onChange={(date: Date | null) => {
-              if (date) {
-                setSelectedDate(date);
-              }
-            }}
-            dateFormat="dd/MM/yyyy"
-            className="p-2 rounded-lg border border-gray-300 dark:bg-gray-700 dark:text-white w-full"
-          />
-          {errors.selectedDate && (
-            <p className="text-red-500 text-sm">{errors.selectedDate}</p>
-          )}
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
-            Lugar
-          </label>
-          <input
-            type="text"
-            value={place || ""}
-            onChange={(e) => setPlace(e.target.value)}
-            className="p-2 rounded-lg border border-gray-300 dark:bg-gray-700 dark:text-white w-full"
-            placeholder="Ingrese el lugar de la asistencia"
-          />
-          {errors.place && (
-            <p className="text-red-500 text-sm">{errors.place}</p>
-          )}
-        </div>
-
-        <div className="mb-4">
-          <label className="block text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
-            Comentarios
-          </label>
-          <textarea
-            value={comments || ""}
-            onChange={(e) => setComments(e.target.value)}
-            className="p-2 rounded-lg border border-gray-300 dark:bg-gray-700 dark:text-white w-full"
-            placeholder="Escriba comentarios adicionales (opcional)"
-            rows={3}
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
-              Hora de Inicio
-            </label>
-            <DatePicker
-              selected={startTime}
-              onChange={(date: Date | null) => setStartTime(date)}
-              showTimeSelect
-              showTimeSelectOnly
-              timeIntervals={15}
-              timeCaption="Hora"
-              dateFormat="h:mm aa"
-              className="p-2 rounded-lg border border-gray-300 dark:bg-gray-700 dark:text-white w-full"
-            />
-            {errors.startTime && (
-              <p className="text-red-500 text-sm">{errors.startTime}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-lg font-semibold text-gray-600 dark:text-gray-300 mb-2">
-              Hora de Finalización
-            </label>
-            <DatePicker
-              selected={endTime}
-              onChange={(date: Date | null) => setEndTime(date)}
-              showTimeSelect
-              showTimeSelectOnly
-              timeIntervals={15}
-              timeCaption="Hora"
-              dateFormat="h:mm aa"
-              className="p-2 rounded-lg border border-gray-300 dark:bg-gray-700 dark:text-white w-full"
-            />
-            {errors.endTime && (
-              <p className="text-red-500 text-sm">{errors.endTime}</p>
-            )}
+    <div className="flex flex-col w-full min-h-screen">
+      <h1 className="text-3xl font-bold mb-4 text-gray-500 dark:text-gray-400 text-center">Registrar Asistencia</h1>
+      <div className="flex flex-col md:flex-row gap-6 w-full flex-1">
+        {/* Students List - Main Panel */}
+        <div className="flex-1 bg-white rounded-2xl dark:bg-gray-800 shadow-md p-4 md:p-6 overflow-auto max-h-[70vh] min-w-[320px]">
+          <h2 className="text-2xl font-bold mb-4 text-gray-500 dark:text-gray-400">Lista de Estudiantes</h2>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white dark:bg-gray-800 dark:text-gray-200">
+              <thead>
+                <tr className="w-full bg-gray-100 dark:bg-gray-700">
+                  <th className="py-3 px-6">Nombre</th>
+                  <th className="py-3 px-6">Cédula</th>
+                  <th className="py-3 px-6 hidden 2xl:block">Estado</th>
+                  <th className="py-3 px-6">Presente</th>
+                  <th className="py-3 hidden xl:block">
+                    <div className="w-full h-full flex justify-center items-center">
+                      Comentarios
+                    </div>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {extendedStudents.map((student) => (
+                  <tr
+                    key={student.Id_alumno}
+                    className="border-b dark:border-gray-700 justify-center items-center py-4"
+                  >
+                    <td className="py-4">
+                      <h2 className="text-sm font-bold text-gray-500 pr-8 w-80 ml-4">{`${student.Primer_nombre} ${student.Segundo_nombre} ${student.Primer_apellido} ${student.Segundo_apellido}`}</h2>
+                    </td>
+                    <td className="justify-center items-center py-4">
+                      <p className="text-sm text-gray-500 w-full text-center">
+                        {student.Cedula}
+                      </p>
+                    </td>
+                    <td className="hidden 2xl:block py-4">
+                      <div className="flex justify-center items-center">
+                        <div className="w-14 text-center px-4">
+                          <p
+                            className={`rounded-full ${getStatusColor(
+                              student.Estado
+                            )} text-sm p-1`}
+                          >
+                            {student.Estado}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4">
+                      <div className="flex justify-center items-center h-full w-full">
+                        <input
+                          type="checkbox"
+                          id={`attendance-${student.Id_alumno}`}
+                          name={`attendance-${student.Id_alumno}`}
+                          className="h-4 w-4 text-green-600 focus:gray-300 bg-red-600 border-gray-300 rounded"
+                          checked={student.Asistio}
+                          onChange={(e) =>
+                            handleAttendanceChange(
+                              student.Id_alumno,
+                              e.target.checked
+                            )
+                          }
+                        />
+                      </div>
+                    </td>
+                    <td className="hidden xl:block h-full w-full py-4">
+                      <div className="flex justify-center items-center h-full w-full">
+                        <Button
+                          size="xs"
+                          className="w-auto h-auto p-0 m-0 min-w-0 min-h-0"
+                          color="blue"
+                          onClick={() => handleOpenCommentModal(student.Id_alumno, student.Comentarios)}
+                        >
+                          <img src={`/images/new.svg`} alt="Add" className="w-4 h-4 m-0" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-
-        <button
-          onClick={handleSaveAttendance}
-          className="mt-6 bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition-all"
-        >
-          Guardar Asistencia
-        </button>
+        {/* Attendance Form - Side Panel */}
+        <div className="w-full md:w-[340px] flex-shrink-0 bg-white p-4 md:p-6 rounded-lg shadow-md dark:bg-gray-800 h-fit self-start">
+          <div className="mb-4">
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha de Asistencia</label>
+            <DatePicker
+              selected={selectedDate || new Date()}
+              onChange={(date: Date | null) => {
+                if (date) {
+                  setSelectedDate(date);
+                }
+              }}
+              dateFormat="dd/MM/yyyy"
+              className="p-2 rounded-lg border border-gray-300 dark:bg-gray-700 dark:text-white w-full"
+            />
+            {errors.selectedDate && (
+              <p className="text-red-500 text-sm">{errors.selectedDate}</p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Lugar</label>
+            <input
+              type="text"
+              value={place || ""}
+              onChange={(e) => setPlace(e.target.value)}
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Ingrese el lugar de la asistencia"
+            />
+            {errors.place && (
+              <p className="text-red-500 text-sm">{errors.place}</p>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comentarios</label>
+            <textarea
+              value={comments || ""}
+              onChange={(e) => setComments(e.target.value)}
+              className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Escriba comentarios adicionales (opcional)"
+              rows={3}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Inicio</label>
+              <DatePicker
+                selected={startTime}
+                onChange={(date: Date | null) => setStartTime(date)}
+                showTimeSelect
+                showTimeSelectOnly
+                timeIntervals={15}
+                timeCaption="Hora"
+                dateFormat="h:mm aa"
+                className="p-2 rounded-lg border border-gray-300 dark:bg-gray-700 dark:text-white w-full"
+              />
+              {errors.startTime && (
+                <p className="text-red-500 text-sm">{errors.startTime}</p>
+              )}
+            </div>
+            <div>
+              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Finalización</label>
+              <DatePicker
+                selected={endTime}
+                onChange={(date: Date | null) => setEndTime(date)}
+                showTimeSelect
+                showTimeSelectOnly
+                timeIntervals={15}
+                timeCaption="Hora"
+                dateFormat="h:mm aa"
+                className="p-2 rounded-lg border border-gray-300 dark:bg-gray-700 dark:text-white w-full"
+              />
+              {errors.endTime && (
+                <p className="text-red-500 text-sm">{errors.endTime}</p>
+              )}
+            </div>
+          </div>
+          <button
+            onClick={handleSaveAttendance}
+            className="mt-6 bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition-all w-full"
+          >
+            Guardar Asistencia
+          </button>
+        </div>
       </div>
-
-      {/* Lista de Estudiantes */}
-      <div className="bg-white rounded-2xl dark:bg-gray-800 mt-6">
-        <h2 className="text-2xl font-bold mb-4 text-gray-500 dark:text-gray-400">
-          Lista de Estudiantes
-        </h2>
-
-        <table className="min-w-full bg-white dark:bg-gray-800 dark:text-gray-200">
-          <thead>
-            <tr className="w-full bg-gray-100 dark:bg-gray-700">
-              <th className="py-3 px-6">Nombre</th>
-              <th className="py-3 px-6">Cédula</th>
-              <th className="py-3 px-6">Estado</th>
-              <th className="py-3 px-6">Presente</th>
-              <th className="py-3 px-6 text-right pr-20">Comentarios</th>
-            </tr>
-          </thead>
-          <tbody>
-            {extendedStudents.map((student) => (
-              <tr
-                key={student.Id_alumno}
-                className="border-b dark:border-gray-700 justify-center items-center"
-              >
-                <td>
-                  <h2 className="text-sm font-bold text-gray-500 pr-8 w-80 ml-4">{`${student.Primer_nombre} ${student.Segundo_nombre} ${student.Primer_apellido} ${student.Segundo_apellido}`}</h2>
-                </td>
-                <td className="justify-center items-center">
-                  <p className="text-sm text-gray-500 w-full text-center">
-                    {student.Cedula}
-                  </p>
-                </td>
-                <td className="justify-center items-center">
-                  <div className="w-full text-center px-4">
-                    <p
-                      className={`rounded-full ${getStatusColor(
-                        student.Estado
-                      )} text-sm p-1`}
-                    >
-                      {student.Estado}
-                    </p>
-                  </div>
-                </td>
-                <td className="flex justify-center items-center">
-                  <input
-                    type="checkbox"
-                    id={`attendance-${student.Id_alumno}`}
-                    name={`attendance-${student.Id_alumno}`}
-                    className="h-4 w-4 text-green-600 focus:gray-300 bg-red-600 border-gray-300 rounded"
-                    checked={student.Asistio}
-                    onChange={(e) =>
-                      handleAttendanceChange(
-                        student.Id_alumno,
-                        e.target.checked
-                      )
-                    }
-                  />
-                </td>
-                <td>
-                  <input
-                    type="text"
-                    placeholder="NO hay comentarios"
-                    value={student.Comentarios}
-                    onChange={(e) =>
-                      handleCommentChange(student.Id_alumno, e.target.value)
-                    }
-                    className="w-full text-sm px-2 py-1 border border-gray-300 rounded dark:bg-gray-700 dark:text-white focus:outline-none focus:border-green-500 "
-                  />
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* Modal for editing comments */}
+      <Modal show={commentModalOpen} onClose={handleCloseCommentModal} size="md" popup>
+        <Modal.Header />
+        <Modal.Body>
+          <div className="space-y-6">
+            <h3 className="text-xl font-medium text-gray-900 dark:text-white">Editar Comentario</h3>
+            <Textarea
+              value={modalComment}
+              onChange={(e) => setModalComment(e.target.value)}
+              placeholder="Escriba el comentario"
+              rows={4}
+            />
+            <div className="flex justify-end gap-2 mt-4">
+              <Button color="gray" onClick={handleCloseCommentModal}>Cancelar</Button>
+              <Button color="blue" onClick={handleSaveComment}>Guardar</Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };

@@ -80,16 +80,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row bg-white rounded-2xl overflow-hidden w-full max-w-6xl mx-auto shadow-2xl relative">
+    <div className="app-scaled flex flex-col md:flex-row bg-white dark:bg-gray-900 rounded-2xl overflow-hidden w-full max-w-6xl mx-auto shadow-2xl relative">
       <div className="absolute top-4 right-4">
         <img src="/images/escudo.svg" alt="Logo de LSP" className="h-14 w-14" />
       </div>
-      <div className="w-full md:w-2/5 hidden md:flex text-white p-7 items-center justify-center bg-lsp-blue flex-col">
+      <div className="w-full md:w-2/5 hidden md:flex text-white p-7 items-center justify-center bg-lsp-blue dark:bg-gray-900 flex-col border-r border-blue-100 dark:border-gray-800">
         <Carousel images={images} titles={titles} descriptions={descriptions} />
       </div>
-      <div className="w-full md:w-3/5 bg-white p-16 flex flex-col items-center justify-start ">
+      <div className="w-full md:w-3/5 bg-white dark:bg-gray-800 p-16 flex flex-col items-center justify-start ">
         <div className="w-full mb-8 text-left max-w-md">
-          <h1 className="text-lg font-bold ">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
             Iniciar Sesión <br /> en el Sistema
           </h1>
         </div>
@@ -126,19 +126,19 @@ export default function LoginPage() {
             />
             <label
               htmlFor="showPassword"
-              className="ml-2 text-lg font-medium text-gray-700"
+              className="ml-2 text-lg font-medium text-gray-700 dark:text-gray-300"
             >
               Mostrar contraseña
             </label>
           </div>
           <button
             type="submit"
-            className="w-full bg-[#2783B1] text-white py-3 px-6 rounded-md shadow-sm hover:bg-[#03075E] text-lg"
+            className="w-full bg-[#2783B1] dark:bg-blue-900 text-white py-3 px-6 rounded-md shadow-sm hover:bg-[#03075E] dark:hover:bg-blue-950 text-lg"
           >
             Iniciar sesión
           </button>
           <div className="mt-4 text-left">
-            <a href="#" className="text-gray-700 hover:underline">
+            <a href="#" className="text-gray-700 dark:text-gray-300 hover:underline">
               ¿Olvidaste tu contraseña?
             </a>
           </div>

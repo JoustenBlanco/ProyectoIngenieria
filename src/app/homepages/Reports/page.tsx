@@ -4,7 +4,6 @@ import { Datepicker, Select, Checkbox, Button } from "flowbite-react";
 import { useState } from "react";
 import SelectionModal from "@/app/components/Reports/selectionModal";
 import ReportTable from "@/app/components/Reports/reportTable";
-import ReportChart from "@/app/components/Reports/reportChart";
 import ExportButtons from "@/app/components/Reports/exportButtons";
 import { Student as StudentType } from "../../../../types";
 import { useSession } from "next-auth/react";
@@ -42,12 +41,7 @@ export default function Reports() {
     let endpoint = "";
     if (type === "Por Estudiante")
       endpoint = `/api/reportes/estudiantes?cedula=${query}`;
-    if (type === "Por Docente")
-      endpoint = `/api/reportes/estudiantes?cedula=${query}`;
-    if (type === "Por Curso") endpoint = `/api/cursos?descripcion=${query}`;
     if (type === "Por Sección") endpoint = `/api/secciones?nombre=${query}`;
-    if (type === "Por Grado") endpoint = `/api/secciones?grado=${query}`;
-    if (type === "General LSP") endpoint = `/api/estudiantes`;
 
     const response = await fetch(endpoint);
     const data = await response.json();
@@ -103,7 +97,7 @@ const fetchDataReportStudents = async () => {
       return;
     }
 
-    if (selectedReport !== "General LSP" && !searchValue) {
+    if (!searchValue) {
       alert(`Seleccione ${selectedReport.replace("Por ", "")}`);
       return;
     }
@@ -144,8 +138,7 @@ const fetchDataReportStudents = async () => {
             ))}
           </Select>
 
-          {selectedReport &&
-            selectedReport !== "General LSP" && (
+          {selectedReport && (
               <div className="max-w-md grid grid-cols-1 gap-2 items-center">
                 <Button onClick={() => setShowModal(true)}>
                   <svg
@@ -197,24 +190,21 @@ const fetchDataReportStudents = async () => {
             </div>
           )}
         </div>
-        <Button onClick={validateAndFetchData} className="mt-6">
-          <svg
-            className="w-6 h-6 text-gray-800 dark:text-white"
-            aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke="currentColor"
-              stroke-width="2"
-              d="M3 11h18M3 15h18m-9-4v8m-8 0h16a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1Z"
-            />
-          </svg>
-          Ver Vista Previa
-        </Button>
+        {(() => {
+          const isReportSelected = !!selectedReport;
+          const isSearchSelected = !!searchValue;
+          const isDateRequired = !isHistorical;
+          const isDateSelected = !isHistorical ? (startDate && endDate) : true;
+          const canShowPreviewButton = isReportSelected && isSearchSelected && isDateSelected;
+          return (
+            canShowPreviewButton && (
+              <Button onClick={validateAndFetchData} className="mt-6 max-w-md">
+                Ver Vista Previa
+              </Button>
+            )
+          );
+        })()}
+
       </div>
       {showTable && (
         <>

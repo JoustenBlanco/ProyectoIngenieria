@@ -2,12 +2,22 @@
 
 import { usePathname } from 'next/navigation';
 import Sidebar from './Landign/sidebar';
-
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 
 export default function ClientWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-
   const isAuthRoute = pathname.startsWith('/homepages/auth');
+  const { status } = useSession();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted || (!isAuthRoute && status === 'loading')) {
+    return <div className="flex flex-1 justify-center items-center w-full h-full">Cargando...</div>;
+  }
 
   return (
     <div className="flex flex-1 overflow-hidden w-full h-full">

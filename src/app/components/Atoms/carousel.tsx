@@ -36,10 +36,10 @@ const Carousel: React.FC<CarouselProps> = ({ images, titles, descriptions }) => 
   return (
     <div
       id="default-carousel"
-      className="relative w-full h-auto hidden md:flex flex-col justify-center items-center gap-4"
+      className="relative w-full h-auto hidden md:flex flex-col justify-center items-center gap-4 bg-lsp-blue dark:bg-gray-900 rounded-2xl"
       data-carousel="slide"
     >
-      <div className="w-full h-96 overflow-hidden rounded-lg m-4">
+      <div className="w-full h-96 overflow-hidden rounded-lg m-4 bg-lsp-blue dark:bg-gray-900">
         {images.map((image, index) => (
           <div
             key={index}
@@ -57,10 +57,10 @@ const Carousel: React.FC<CarouselProps> = ({ images, titles, descriptions }) => 
       </div>
 
       <div className="text-center mt-4 p-4 h-auto md:h-64">
-        <h2 className="text-xl md:text-2xl font-bold">
+        <h2 className="text-xl md:text-2xl font-bold text-white dark:text-gray-100">
           {titles[currentIndex]}
         </h2>
-        <p className="text-base md:text-lg text-gray-200 mt-2 px-4 md:px-8">
+        <p className="text-base md:text-lg text-white dark:text-gray-300 mt-2 px-4 md:px-8">
           {descriptions[currentIndex]}
         </p>
       </div>
@@ -70,9 +70,7 @@ const Carousel: React.FC<CarouselProps> = ({ images, titles, descriptions }) => 
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`w-3 h-3 rounded-full ${
-              index === currentIndex ? "bg-gray-300 w-5 h-5" : "bg-gray-300"
-            }`}
+            className={`w-3 h-3 rounded-full ${index === currentIndex ? "bg-gray-300 dark:bg-blue-900 w-5 h-5" : "bg-gray-300 dark:bg-gray-600"}`}
             aria-label={`Slide ${index + 1}`}
           />
         ))}
