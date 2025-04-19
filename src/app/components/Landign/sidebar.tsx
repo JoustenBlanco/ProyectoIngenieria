@@ -3,6 +3,8 @@ import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Button, DarkThemeToggle } from "flowbite-react";
 import { signOut } from "next-auth/react";
+import useAuthStore from "../../../../provider/store";
+import { User } from "../../../../types";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -44,6 +46,8 @@ const Sidebar = () => {
     setIsCollapsed(!isCollapsed);
   };
 
+  const user = useAuthStore((state) => state.user) as User | null;
+
   return (
     <aside
       className={`${
@@ -70,7 +74,12 @@ const Sidebar = () => {
       </div>
       <nav className="pt-6">
         <ul>
-          {menuItems.map((item) => (
+          {menuItems.map((item) => {
+            if(item.name === "Mantenimiento" && user?.Rol !== "Administrador"){
+              return null; 
+            }
+            else{
+              return(
             <li
               key={item.path}
               className={`flex items-center p-2 cursor-pointer w-full border-l-4 border-black my-2 hover:bg-gray-500 hover:bg-opacity-20 transition-all duration-300
@@ -109,7 +118,9 @@ const Sidebar = () => {
                 </span>
               )}
             </li>
-          )
+              )
+            }
+          }
           )}
         </ul>
       </nav>

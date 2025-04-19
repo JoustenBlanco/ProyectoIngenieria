@@ -292,5 +292,5 @@ export interface ExportButtonsProps {
     Cedula: string;
     Status: string;
     PhoneNumber:string;
-    Rol:number;
+    Rol: string;
   }

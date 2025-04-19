@@ -5,7 +5,7 @@ import Input from "../../../components/Atoms/input";
 import Carousel from "../../../components/Atoms/carousel";
 import { useRouter } from "next/navigation";
 import { signIn, getSession } from "next-auth/react";
-import { Funcionarios, FuncionariosXRol, User } from "../../../../../types";
+import { Funcionarios, FuncionariosXRol, User, RolFuncionario } from "../../../../../types";
 import useAuthStore from "../../../../../provider/store";
 
 
@@ -60,10 +60,12 @@ export default function LoginPage() {
       const urlUsuario = `/api/funcionarios/[id]?Id_funcionario=${session?.user.id}`;
       const resultUsuario = await fetch(urlUsuario);
       const funcionario: Funcionarios = await resultUsuario.json();
-      const urlRol = `/api/funcionarios_x_rol?Id_funcionario=${session?.user.id}`;
-      const resultRol = await fetch(urlRol);
-      console.log('El rol del  ');
-      const rol: FuncionariosXRol = await resultRol.json();
+      const urlRolxFuncionario = `/api/funcionarios_x_rol?Id_funcionario=${session?.user.id}`;
+      const resultRolXFuncionario = await fetch(urlRolxFuncionario);
+      const rol_x_funcionario: FuncionariosXRol = await resultRolXFuncionario.json();
+      const rolUrl = `/api/rol_funcionario/[Id]?Id_rol_funcionario=${rol_x_funcionario.Id_rol_funcionario}`;
+      const resultRol = await fetch(rolUrl);
+      const rol: RolFuncionario = await resultRol.json();
       const usuario: User = {
         Id: funcionario.Id_funcionario,
         FirstName: funcionario.Primer_nombre,
@@ -72,7 +74,7 @@ export default function LoginPage() {
         Cedula: funcionario.Cedula,
         Status: funcionario.Estado,
         PhoneNumber: funcionario.Numero_telefono,
-        Rol: rol.Id_funcionario,
+        Rol: rol.Nombre,
       };
       setUser(usuario);
       router.push("/homepages/curses");
