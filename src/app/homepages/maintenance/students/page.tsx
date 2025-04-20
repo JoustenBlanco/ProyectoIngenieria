@@ -5,22 +5,49 @@ import Input from "../../../components/Atoms/input";
 import Select from "../../../components/Atoms/select";
 import DateInput from "../../../components/Atoms/dateInput";
 import ActionButtons from "../../../components/Atoms/ActionButtons";
-import { Student } from "../../../../../types";
+import { Student, Seccion } from "../../../../../types";
 import StudentList from "../../../components/studentMaintenance/StudentsList";
 import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";
+import { set } from "date-fns";
 
 export default function Students() {
   const { data: session, status } = useSession();
+  const [sections, setSections] = useState<Seccion[]>([]);
+  const fetchSections = async () => {
+    const response = await fetch(`/api/secciones`,
+      {
+        cache: "no-store",
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Error fetching sections");
+    }
+    const data: Seccion[] = await response.json();
+    return data;
+  }
+
   useEffect(() => {
-    console.log("Llega al useEffect de about");
   if (status == "unauthenticated"){
     console.log("No autenticado");
     redirect("/homepages/auth/login");
   }
 },
  [session, status]);
+ useEffect(() => {
+  const loadSections = async () => {
+    try {
+      const fetchedSections = await fetchSections(); 
+      setSections(fetchedSections);
+    } catch (err) {
+      throw new Error(err instanceof Error ? err.message : "Error desconocido");
+    } 
+  };
+
+  loadSections();
+}, []);
+
   const {
     register,
     handleSubmit,
@@ -62,6 +89,7 @@ export default function Students() {
   };
 
   const handleSave = async (data: Student) => {
+    console.log("Datos del formulario:", data);
     const studentData = {
       ...data,
       Id_seccion: Number(data.Id_seccion),
@@ -256,17 +284,20 @@ export default function Students() {
             })}
             error={errors.Correo_mep?.message}
           />
-
-          <Input
-            id="section"
-            type="text"
+          {/* Todo hay que cambiar esto por un select */}
+          <Select
+            id="Id_seccion"
             label="Sección"
-            placeholder="Ingresa la sección"
-            {...register("Id_seccion", {
-              required: "Este campo es requerido",
-            })}
+            options={sections.map((section) => ({
+              label: section.Nombre,  // Muestra el nombre
+              value: section.Id_seccion,      // Guarda el ID (asegúrate de que sea number)
+            }))}
+            register={register}
             error={errors.Id_seccion?.message}
+            value={watch("Id_seccion")?.toString()} 
+            required={true}
           />
+
 
           <Select
             id="Estado" // Ahora es una clave válida de CrearFuncionarios
