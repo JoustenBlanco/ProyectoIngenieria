@@ -529,12 +529,13 @@ const MaintenancePage = () => {
             })}
             error={errorsSection.Nombre?.message}
           />
-          <Input
+          <Select
             id="Grado"
-            type="text"
+            register={registerSection}
             label="Grado"
+            options={["Setimo", "Octavo", "Noveno", "Decimo", "Undecimo"]}
             {...registerSection("Grado", { required: true })}
-            error={errorsSection.Grado?.message}
+            error={errorsSection.Estado?.message}
           />
           <Select
             id="Id_funcionario"
@@ -551,7 +552,7 @@ const MaintenancePage = () => {
             id="Estado"
             register={registerSection}
             label="Estado"
-            options={["A", "I"]}
+            options={[{label: "Activo", value: "A"}, {label: "Inactivo", value: "I"}]}
             {...registerSection("Estado", { required: true })}
             error={errorsSection.Estado?.message}
           />

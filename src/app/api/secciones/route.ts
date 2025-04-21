@@ -25,7 +25,6 @@ export async function GET(_req:Request){
 export async function POST(_req: Request) {
   try {
     const data: CreateSeccion = await _req.json();  
-    console.log(data);
     const newStudent = await prisma.rAE_Secciones.create({
       data: {
         Estado: data.Estado,                   
@@ -70,6 +69,9 @@ export async function PUT(req: Request) {
       });
       return NextResponse.json(deletedStudent, { status: 200 });
     } catch (error) {
+      if ((error as any).code === 'P2003'){
+        return NextResponse.json({ error: 'No se puede eliminar la sección proque tiene alumnos, reubique o elimine los alumnos primero y vuelva a intentar' }, { status: 409 });
+      }
       return NextResponse.json({ error: 'Error deleting seccion' }, { status: 500 });
     }
   }
