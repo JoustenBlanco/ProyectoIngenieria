@@ -294,3 +294,19 @@ export interface ExportButtonsProps {
     PhoneNumber:string;
     Rol: string;
   }
+
+  export interface ExcelData {
+    [key: string]: string | number | boolean | Date;
+  }
+
+  export interface ExcelKeyValuePair {
+    key: string;
+    value: string | number;
+  }
+
+  export interface ActionButtonsProps {
+    onEdit?: () => void;
+    onDelete?: () => void;
+    onSubmit?: () => void;
+    onExcel?: () => void;
+  }

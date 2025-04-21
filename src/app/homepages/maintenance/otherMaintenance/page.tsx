@@ -5,9 +5,13 @@ import ActionButtons from "../../../components/Atoms/ActionButtonsSimplified";
 import Select from "../../../components/Atoms/select";
 import Modal from "../../../components/Atoms/modal";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Seccion, Clase, Materia, Funcionarios } from "../../../../../types";
+import { Seccion, Clase, Materia, Funcionarios, CreateSeccion, CreateStudent, ExcelData } from "../../../../../types";
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
+import ExcelFilePicker from "@/app/components/maintenance/excelFilePicker";
+import { parseSectionExcelFormat, parseStudentsExcelFormat } from "@/app/utils/xlsxParser";
+import { createStudentPerSeccion, getFunctionaryIdByCedula } from "@/app/services/create_session_excel";
+import { convertToISODate } from "@/app/utils/dateCast";
 
 const MaintenancePage = () => {
   const { data: session, status } = useSession();
@@ -25,12 +29,34 @@ const MaintenancePage = () => {
   const [sections, setSections] = useState<Seccion[]>([]);
   const [classes, setClasses] = useState<Clase[]>([]);
   const [subjects, setSubjects] = useState<Materia[]>([]);
+  const [ExcelSStudentsData, setExcelStudentsData] = useState<ExcelData[]>([]);
 
   const [funcionarios, setFuncionarios] = useState<Funcionarios[]>([]);
 
   const [sectionToEdit, setSectionToEdit] = useState<Seccion | null>(null);
   const [classToEdit, setClassToEdit] = useState<Clase | null>(null);
   const [subjectToEdit, setSubjectToEdit] = useState<Materia | null>(null);
+  const handleExcelSectionData = async (arrayBuffer: ArrayBuffer) => {
+    const jsonSectionData = await parseSectionExcelFormat(Buffer.from(arrayBuffer));
+    const functionaryId = await getFunctionaryIdByCedula(Number(jsonSectionData[2].value));
+    const jsonStudentsData = await parseStudentsExcelFormat(Buffer.from(arrayBuffer));
+    console.log("jsonStudentsData", jsonStudentsData);
+    setExcelStudentsData(jsonStudentsData);
+
+    const dataFromExcel: CreateSeccion = {
+      Id_funcionario: functionaryId,
+      Nombre: String(jsonSectionData[0].value),
+      Grado: String(jsonSectionData[1].value),
+      Estado: String(jsonSectionData[3].value),
+      Comentarios: String(jsonSectionData[4].value),
+    };
+    setValue("Nombre", dataFromExcel.Nombre);
+    setValue("Grado", dataFromExcel.Grado);
+    setValue("Id_funcionario", dataFromExcel.Id_funcionario);
+    setValue("Estado", dataFromExcel.Estado);
+    setValue("Comentarios", dataFromExcel.Comentarios);
+
+  };
 
   // Formulario para Sección
   const {
@@ -38,6 +64,7 @@ const MaintenancePage = () => {
     handleSubmit: handleSubmitSection,
     formState: { errors: errorsSection },
     reset: resetSection,
+    setValue,
   } = useForm<Seccion>();
 
   // Formulario para Clase
@@ -121,7 +148,6 @@ const MaintenancePage = () => {
 
   const handleCreateSection = async (data: Seccion) => {
     data.Id_funcionario = Number(data.Id_funcionario);
-    console.log("Datos a enviar:", data);
     try {
       const response = await fetch("/api/secciones", {
         method: sectionToEdit ? "PUT" : "POST",
@@ -131,6 +157,31 @@ const MaintenancePage = () => {
         body: JSON.stringify(data),
       });
       if (response.ok) {
+        const bodyResponse: Seccion = await response.json();
+        if (ExcelSStudentsData.length > 0 && bodyResponse.Id_seccion !== null) {
+          const sectionStudents: CreateStudent[] = ExcelSStudentsData.map((student: ExcelData) => ({
+            Id_seccion: bodyResponse.Id_seccion,
+            Primer_nombre: String(student.Primer_nombre),
+            Segundo_nombre: String(student.Segundo_Nombre),
+            Primer_apellido: String(student.Primer_apellido),
+            Segundo_apellido: String(student.Segundo_apellido),
+            Cedula: String(student.Cedula),
+            Fecha_nacimiento: convertToISODate(String(student.Fecha_nacimiento)),
+            Grado: String(student.Grado),
+            Estado: String(student.Estado),
+            Correo_mep: String(student.Correo_mep),
+          }));
+          console.log("Datos de estudiantes:", sectionStudents);
+          try {
+            createStudentPerSeccion(sectionStudents, bodyResponse.Id_seccion);
+            setExcelStudentsData([]);
+          }
+          catch (error) {
+            console.error("Error al crear estudiantes:", error);
+            alert("Error al crear estudiantes de la seccion desde documento Excel");
+          }
+
+        }
         alert("Seccion guardada exitosamente");
         fetchSections();
         handleNew();
@@ -185,15 +236,15 @@ const MaintenancePage = () => {
       Grado: "",
       Nombre: "",
     });
-    resetClass({               
-      Descripcion: "",         
-      Estado: "",      
+    resetClass({
+      Descripcion: "",
+      Estado: "",
     });
-    resetSubject({               
-        Descripcion: "",         
-        Tipo_materia: "", 
-        Nombre: "",     
-      });
+    resetSubject({
+      Descripcion: "",
+      Tipo_materia: "",
+      Nombre: "",
+    });
   };
 
   const handleCreateClass = async (data: Clase) => {
@@ -320,7 +371,7 @@ const MaintenancePage = () => {
       <h1 className="text-3xl font-semibold text-gray-900 dark:text-white mb-6">
         Mantenimiento de Secciones, Clases y Materias
       </h1>
-      
+
       {/* Selector de Sección */}
       <div className="mb-8">
         <select
@@ -339,17 +390,17 @@ const MaintenancePage = () => {
         {/* Botón de Agregar */}
         <div className="flex justify-end mb-4">
           <button
-            className={`font-bold py-2 px-4 rounded text-white ${selectedSection === 'sections' ? 'bg-blue-600 hover:bg-blue-700' : 
-              selectedSection === 'classes' ? 'bg-green-600 hover:bg-green-700' : 
-              'bg-purple-600 hover:bg-purple-700'}`}
+            className={`font-bold py-2 px-4 rounded text-white ${selectedSection === 'sections' ? 'bg-blue-600 hover:bg-blue-700' :
+              selectedSection === 'classes' ? 'bg-green-600 hover:bg-green-700' :
+                'bg-purple-600 hover:bg-purple-700'}`}
             onClick={() => {
               if (selectedSection === 'sections') setIsSectionModalOpen(true);
               else if (selectedSection === 'classes') setIsClassModalOpen(true);
               else setIsSubjectModalOpen(true);
             }}
           >
-            + Agregar {selectedSection === 'sections' ? 'Sección' : 
-                      selectedSection === 'classes' ? 'Clase' : 'Materia'}
+            + Agregar {selectedSection === 'sections' ? 'Sección' :
+              selectedSection === 'classes' ? 'Clase' : 'Materia'}
           </button>
         </div>
 
@@ -510,11 +561,12 @@ const MaintenancePage = () => {
             type="text"
             {...registerSection("Comentarios")}
           />
-          <ActionButtons
-            onSubmit={() => {
-              /* Logica de editar */
-            }}
-          />
+          <div className='flex items-center justify-end gap-4'>
+            <ExcelFilePicker onFileLoaded={handleExcelSectionData} />
+            <ActionButtons
+              onSubmit={() => { }}
+            />
+          </div>
         </form>
       </Modal>
 

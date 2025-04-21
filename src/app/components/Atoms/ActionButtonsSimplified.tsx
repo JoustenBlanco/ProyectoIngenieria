@@ -1,10 +1,5 @@
 import React from 'react';
-
-interface ActionButtonsProps {
-  onEdit?: () => void;
-  onDelete?: () => void;
-  onSubmit?: () => void;
-}
+import { ActionButtonsProps } from '../../../../types';
 
 const ActionButtons: React.FC<ActionButtonsProps> = ({ onEdit, onDelete, onSubmit }) => {
   return (
