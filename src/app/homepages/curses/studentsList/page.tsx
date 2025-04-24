@@ -327,17 +327,17 @@ const StudentsList: React.FC = () => {
                 {extendedStudents.map((student) => (
                   <tr
                     key={student.Id_alumno}
-                    className="border-b dark:border-gray-700 justify-center items-center py-4"
+                    className="border-b dark:border-gray-700 justify-center items-center py-1"
                   >
-                    <td className="py-4">
+                    <td className="py-2">
                       <h2 className="text-sm font-bold text-gray-500 pr-8 w-80 ml-4">{`${student.Primer_nombre} ${student.Segundo_nombre} ${student.Primer_apellido} ${student.Segundo_apellido}`}</h2>
                     </td>
-                    <td className="justify-center items-center py-4">
+                    <td className="justify-center items-center py-1">
                       <p className="text-sm text-gray-500 w-full text-center">
                         {student.Cedula}
                       </p>
                     </td>
-                    <td className="hidden 2xl:block py-4">
+                    <td className="hidden 2xl:block py-1">
                       <div className="flex justify-center items-center">
                         <div className="w-14 text-center px-4">
                           <p
@@ -350,7 +350,7 @@ const StudentsList: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="py-4">
+                    <td className="py-1">
                       <div className="flex justify-center items-center h-full w-full">
                         <input
                           type="checkbox"
@@ -367,7 +367,7 @@ const StudentsList: React.FC = () => {
                         />
                       </div>
                     </td>
-                    <td className="hidden xl:block h-full w-full py-4">
+                    <td className="hidden xl:block h-full w-full py-1">
                       <div className="flex justify-center items-center h-full w-full">
                         <Button
                           size="xs"

@@ -84,7 +84,7 @@ data: any[], reportType: string, studentName: string | null, studentId: string |
     },
     margin: { horizontal: 14 },
     styles: {
-      cellPadding: 4,
+      cellPadding: 2,
       overflow: "linebreak",
       valign: "middle",
     },
