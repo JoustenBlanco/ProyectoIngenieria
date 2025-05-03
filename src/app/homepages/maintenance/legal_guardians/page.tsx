@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import Input from "../../../components/Atoms/input";
 import ActionButtons from "../../../components/Atoms/ActionButtons";
 import Select from "../../../components/Atoms/select";
-import { Parents } from "../../../../../types";
+
 import GuardianList from "../../../components/legal_guardians/GuardiansList";
 import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";

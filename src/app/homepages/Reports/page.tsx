@@ -5,7 +5,7 @@ import { useState } from "react";
 import SelectionModal from "@/app/components/Reports/selectionModal";
 import ReportTable from "@/app/components/Reports/reportTable";
 import ExportButtons from "@/app/components/Reports/exportButtons";
-import { Student as StudentType } from "../../../../types";
+
 import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";
@@ -29,7 +29,7 @@ export default function Reports() {
   const [reportData, setReportData] = useState<any[]>([]);
   const [showTable, setShowTable] = useState(false);
   const [cedulaEstudiante, setCedulaEstudiante] = useState<string | null>(null);
-  const [students, setStudents] = useState<StudentType[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
   const [searchValue, setSearchValue] = useState<string | null>(null);
   const [selectedReport, setSelectedReport] =
     useState<string>("");

@@ -1,5 +1,4 @@
 import React from 'react';
-import { ActionButtonsProps } from '../../../../types';
 
 const ActionButtons: React.FC<ActionButtonsProps> = ({ onEdit, onDelete, onSubmit }) => {
   return (

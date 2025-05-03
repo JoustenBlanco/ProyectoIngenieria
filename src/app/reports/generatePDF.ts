@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import { User } from "../../../types";
+
 
 export async function exportToPDF(
 data: any[], reportType: string, studentName: string | null, studentId: string | null, user: User | null) {

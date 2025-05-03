@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server"
 import prisma from '../../../../lib/prisma'
-import { CrearFuncionarios, Funcionarios } from "../../../../types";
+
 import bcrypt from 'bcryptjs';
 
 export async function GET(){

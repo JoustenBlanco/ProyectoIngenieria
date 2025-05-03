@@ -1,4 +1,4 @@
-import { CreateStudent, Funcionarios, Student } from "../../../types";
+
 
 export const getFunctionaryIdByCedula = async (cedula: number) => {
     const uri = `/api/funcionarios/cedula/[ced]?cedula=${cedula}`;

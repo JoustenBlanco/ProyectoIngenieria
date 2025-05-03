@@ -1,5 +1,5 @@
 import { utils, writeFile } from 'xlsx';
-import { User } from '../../../types';
+
 
 export function exportToExcel(
   data: any[],

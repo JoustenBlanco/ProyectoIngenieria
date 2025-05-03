@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server"
 import prisma from '../../../../../lib/prisma'
-import { CrearFuncionarios, Funcionarios } from "../../../../../types";
+
 
 //ejemplo de uso del endpoint
 //api/funcionarios/[id]?Id_funcionario=1

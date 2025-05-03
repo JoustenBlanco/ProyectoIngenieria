@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../lib/prisma";
-import { FuncionariosXRol } from "../../../../types";
+
 
 //filtra por funcionarios de momento no le veo sentido al findMany
 //api/funcionarios_x_rol?Id_funcionario=1

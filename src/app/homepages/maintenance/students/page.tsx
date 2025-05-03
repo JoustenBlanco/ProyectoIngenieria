@@ -5,7 +5,7 @@ import Input from "../../../components/Atoms/input";
 import Select from "../../../components/Atoms/select";
 import DateInput from "../../../components/Atoms/dateInput";
 import ActionButtons from "../../../components/Atoms/ActionButtons";
-import { Student, Seccion } from "../../../../../types";
+
 import StudentList from "../../../components/studentMaintenance/StudentsList";
 import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";

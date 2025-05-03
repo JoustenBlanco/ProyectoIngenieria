@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server"
 import prisma from '../../../../lib/prisma'
-import { CreateSeccion, Seccion } from "../../../../types";
+
 
 export async function GET(_req:Request){
     try {

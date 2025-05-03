@@ -4,7 +4,6 @@ import { useRouter, usePathname } from "next/navigation";
 import { Button, DarkThemeToggle } from "flowbite-react";
 import { signOut } from "next-auth/react";
 import useAuthStore from "../../../../provider/store";
-import { User } from "../../../../types";
 
 const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);

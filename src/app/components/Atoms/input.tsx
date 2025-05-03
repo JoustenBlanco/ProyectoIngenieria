@@ -1,6 +1,5 @@
 "use client";
 import React from 'react';
-import { InputProps } from "../../../../types";
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(({
   id,

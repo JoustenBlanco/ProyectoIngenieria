@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Student from "@/app/components/students/student";
-import { Student as StudentType } from "../../../../../types";
+
 import { Textarea, Checkbox, Modal, Button } from "flowbite-react";
 import { useSearchParams } from "next/navigation";
 import DatePicker from "react-datepicker";
@@ -10,7 +10,7 @@ import { format, parseISO } from "date-fns";
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
 
-interface ExtendedStudent extends StudentType {
+interface ExtendedStudent extends Student {
   Asistio: boolean;
   Comentarios: string;
 }
@@ -57,7 +57,7 @@ const StudentsList: React.FC = () => {
     null
   );
 
-  const [students, setStudents] = useState<StudentType[]>([]);
+  const [students, setStudents] = useState<Student[]>([]);
   const [extendedStudents, setExtendedStudents] = useState<ExtendedStudent[]>(
     []
   );

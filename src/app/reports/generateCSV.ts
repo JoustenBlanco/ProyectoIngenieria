@@ -1,4 +1,4 @@
-import { User } from '../../../types';
+
 export function exportToCSV(
   data: any[],
   reportType: string,

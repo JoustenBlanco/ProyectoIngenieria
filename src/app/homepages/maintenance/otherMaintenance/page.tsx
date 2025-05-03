@@ -5,7 +5,7 @@ import ActionButtons from "../../../components/Atoms/ActionButtonsSimplified";
 import Select from "../../../components/Atoms/select";
 import Modal from "../../../components/Atoms/modal";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Seccion, Clase, Materia, Funcionarios, CreateSeccion, CreateStudent, ExcelData } from "../../../../../types";
+
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
 import ExcelFilePicker from "@/app/components/maintenance/excelFilePicker";

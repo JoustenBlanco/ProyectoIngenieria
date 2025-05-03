@@ -1,11 +1,10 @@
 import { exportToExcel } from "@/app/reports/generateExcel"
-import { ExportButtonsProps } from "../../../../types"
 import {exportToPDF} from "@/app/reports/generatePDF"
 import {exportToCSV} from "@/app/reports/generateCSV"
 import useAuthStore from "../../../../provider/store";
 
 
-export default function ExportButtons({ reportType, data, studentName, studentId }: ExportButtonsProps) {
+export default function ExportButtons({ reportType, data, studentName, studentId }: ButtonsProps) {
   const user = useAuthStore((state) => state.user);
 
   return (

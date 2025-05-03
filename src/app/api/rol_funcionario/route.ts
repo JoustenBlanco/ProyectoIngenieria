@@ -1,6 +1,6 @@
 import {NextResponse} from "next/server"
 import prisma from '../../../../lib/prisma'
-import { CreateRolFuncionario, RolFuncionario } from "../../../../types";
+
 
 export async function GET(){
     try {
