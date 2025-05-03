@@ -1,4 +1,4 @@
-export interface InputProps {
+interface InputProps {
   id: string;
   name: string;
   type: string;
@@ -12,14 +12,26 @@ export interface InputProps {
   error?: string;
 }
 
-export interface ExportButtonsProps {
+interface ButtonsProps {
   reportType: string;
   data: Record<string, string | number>[];
   studentName: string | null
   studentId: string | null
 }
 
-  export interface CreateStudent { 
+interface CreateStudent { 
+  Primer_nombre: string,
+  Segundo_nombre?: string,
+  Primer_apellido: string,
+  Segundo_apellido?: string,
+  Fecha_nacimiento: string,
+  Grado: string,
+  Cedula: string,
+  Correo_mep: string,
+  Estado: string,
+  Id_seccion: number,
+}
+  interface CreateStudent { 
     Primer_nombre: string,
     Segundo_nombre?: string,
     Primer_apellido: string,
@@ -32,7 +44,7 @@ export interface ExportButtonsProps {
     Id_seccion: number,
   }
 
-  export interface Student { 
+  interface Student { 
     Id_alumno: number,
     Primer_nombre: string,
     Segundo_nombre?: string,
@@ -46,7 +58,7 @@ export interface ExportButtonsProps {
     Id_seccion: number,
   }
 
-  export interface College {
+  interface College {
     Id_colegio:Int,              
     Nombre:string, 
     Direccion:string,  
@@ -54,14 +66,14 @@ export interface ExportButtonsProps {
     Correo:string 
   }
 
-  export interface CreateCollege {
+  interface CreateCollege {
     Nombre:string, 
     Direccion:string,  
     Telefono?:string,
     Correo:string 
   }
 
-  export interface CreateSchoolYear{
+  interface CreateSchoolYear{
   Anno:number,
   Comentarios?:string,                         
   Estado:string,                               
@@ -71,7 +83,7 @@ export interface ExportButtonsProps {
   Fecha_Finalizacion:string,                         
   }
 
-  export interface SchoolYear{
+  interface SchoolYear{
     Id_anno_lectivo:number,
     Anno:number,
     Comentarios?:string,                         
@@ -82,7 +94,7 @@ export interface ExportButtonsProps {
     Fecha_Finalizacion:string,  
   }
 
-  export interface EarlyWarning{
+  interface EarlyWarning{
     Id_alerta:number,          
     Id_alumno:number,
     Descripcion:string,          
@@ -91,7 +103,7 @@ export interface ExportButtonsProps {
     Id_funcionario:int,
   }
 
-  export interface CreateEarlyWarning{          
+  interface CreateEarlyWarning{          
     Id_alumno:number,
     Descripcion:string,          
     Fecha:string,
@@ -99,7 +111,7 @@ export interface ExportButtonsProps {
     Id_funcionario:int,
   }
 
-  export interface Record{ //Es la misma vara que asistencia
+  interface AttendanceRecord { //Es la misma vara que asistencia
     Id_asistencia:number,                   
     Comentarios?:string,                 
     Fecha :string,          
@@ -109,7 +121,7 @@ export interface ExportButtonsProps {
     Id_clase: int                          
   }
 
-  export interface CreateRecord{                  
+  interface CreateRecord{                  
     Comentarios?:string,                 
     Fecha :string,          
     Lugar: string,
@@ -118,20 +130,20 @@ export interface ExportButtonsProps {
     Id_clase: int                 
   }
 
-  export interface RecordXStudent{
+  interface RecordXStudent{
     Id_asistencia:number,
     Id_alumno:number,
     Asistio:string,
     Comentarios?:string,
   }
 
-  export interface ClasesXAlumnos{
+  interface ClasesXAlumnos{
     Id_alumno:number,
     Id_Clase:number,
     Id_dia_lectivo:number,
   }
 
-  export interface Funcionarios{
+  interface Funcionarios{
     Id_funcionario:number,                                      
     Primer_nombre:string,                                        
     Segundo_nombre?:string,                                         
@@ -145,7 +157,7 @@ export interface ExportButtonsProps {
     Password:string,                                              
   }
 
-  export interface CrearFuncionarios{                                     
+  interface CrearFuncionarios{                                     
     Primer_nombre:string,                                        
     Segundo_nombre?:string,                                         
     Primer_apellido:string,                                          
@@ -158,7 +170,7 @@ export interface ExportButtonsProps {
     Password:string,                                             
   }
 
-  export interface Parents{
+  interface Parents{
   Id_encargado_legal:int,               
   Primer_nombre:string,
   Segundo_nombre?:string,        
@@ -170,7 +182,7 @@ export interface ExportButtonsProps {
   Estado:string,                
   }
 
-  export interface CreateParents{           
+  interface CreateParents{           
     Primer_nombre:string,
     Segundo_nombre?:string,        
     Primer_apellido:string,      
@@ -181,31 +193,31 @@ export interface ExportButtonsProps {
     Estado:string,           
     }
 
-    export interface Materia{
+    interface Materia{
       Id_materia:number,        
       Nombre:string,       
       Descripcion?:string,      
       Tipo_materia:string,   
     }
 
-    export interface CrearMateria{     
+    interface CrearMateria{     
       Nombre:string,       
       Descripcion?:string,      
       Tipo_materia:string,   
     }
 
-    export interface RolFuncionario{
+    interface RolFuncionario{
       Id_rol_funcionario:number,                      
       Descripcion:string ,     
       Nombre:string,     
     }
 
-    export interface CreateRolFuncionario{                     
+    interface CreateRolFuncionario{                     
       Descripcion:string ,     
       Nombre:string,     
     }
 
-    export interface Clase {
+    interface Clase {
       Id_clase: number;                 
       Descripcion?: string | null;            
       Estado: string;                             
@@ -217,15 +229,15 @@ export interface ExportButtonsProps {
       RAE_Secciones: SeccionLite;                        
     }
 
-    export interface SeccionLite{
+    interface SeccionLite{
       Nombre:string,
     }
 
-    export interface MateriaLite{
+    interface MateriaLite{
       Nombre:string,
     }
 
-    export interface CreateClase {                
+    interface CreateClase {                
       Descripcion?: string | null;             
       Estado: string;                             
       Id_funcionario: number;           
@@ -233,7 +245,7 @@ export interface ExportButtonsProps {
       Id_seccion: number;                                   
     }
 
-    export interface ClaseXSessiones{
+    interface ClaseXSessiones{
       Id_clase: number;
       Descripcion: string;
       Estado: string;
@@ -245,17 +257,17 @@ export interface ExportButtonsProps {
        
     }
 
-    export interface EncargadoXAlumno{
+    interface EncargadoXAlumno{
       Id_encargado_legal:number,
       Id_alumno:number,
     }
 
-    export interface FuncionariosXAnnolectivo{
+    interface FuncionariosXAnnolectivo{
       Id_funcionario:number,
       Id_anno_lectivo:number,
     }
 
-    export interface FuncionariosXRol{
+    interface FuncionariosXRol{
       Id_funcionario:number,
       Id_rol_funcionario:number,
     }
@@ -270,7 +282,7 @@ export interface ExportButtonsProps {
       RAE_Funcionarios: FuncionariosXSeccion;
     }
 
-    export interface FuncionarioXSeccion{
+    interface FuncionarioXSeccion{
       Primer_nombre: string;
       Primer_apellido: string;
       Segundo_apellido: string;       
@@ -284,7 +296,7 @@ export interface ExportButtonsProps {
       Id_funcionario: number;           
     }
     
-  export interface User {
+  interface User {
     Id: number;
     FirstName: string;
     LastName: string;
@@ -295,16 +307,16 @@ export interface ExportButtonsProps {
     Rol: string;
   }
 
-  export interface ExcelData {
+  interface ExcelData {
     [key: string]: string | number | boolean | Date;
   }
 
-  export interface ExcelKeyValuePair {
+  interface ExcelKeyValuePair {
     key: string;
     value: string | number;
   }
 
-  export interface ActionButtonsProps {
+  interface ActionButtonsProps {
     onEdit?: () => void;
     onDelete?: () => void;
     onSubmit?: () => void;

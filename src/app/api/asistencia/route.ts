@@ -1,6 +1,5 @@
 import {NextResponse} from "next/server"
 import prisma from '../../../../lib/prisma'
-import { CreateRecord, Record } from "../../../../types";
 
 export async function GET(){
     try {
@@ -33,7 +32,7 @@ export async function POST(_req: Request) {
 
   export async function PUT(req: Request) {
     try {
-      const data : Record = await req.json();
+      const data : AttendanceRecord = await req.json();
       const result = await prisma.rAE_Asistencia.update({
         where: { Id_asistencia: data.Id_asistencia }, 
         data: {

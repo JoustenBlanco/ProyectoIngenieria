@@ -1,7 +1,5 @@
 import {NextResponse} from "next/server"
 import prisma from '../../../../lib/prisma'
-import { CreateStudent, Student } from "../../../../types";
-
 export async function GET(_req:Request){
     try {
         const students = await prisma.rAE_Alumnos.findMany({});
