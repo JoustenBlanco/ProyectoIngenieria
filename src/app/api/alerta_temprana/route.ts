@@ -1,4 +1,4 @@
-import {NextResponse} from "next/server"
+/*import {NextResponse} from "next/server"
 import prisma from '../../../../lib/prisma'
 import { CreateEarlyWarning, EarlyWarning } from "../../../../types";
 
@@ -61,7 +61,7 @@ La es estructura del body es
   "Id_alumno": 1,
   "Id_Funcionario": 1
 }
-*/
+
 
 export async function DELETE(_req: Request) {
     try {
@@ -76,4 +76,4 @@ export async function DELETE(_req: Request) {
       return NextResponse.json({ error: 'Error deleting the early warning' }, { status: 500 });
     }
   }
-  
+  */

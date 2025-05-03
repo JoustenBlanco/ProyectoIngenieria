@@ -8,7 +8,7 @@ const IconButton: React.FC<{ iconType: 'user' | 'section' | 'history'; label: st
       type="button"
       name={label}
       iconName={iconType}
-      bgColor="#007bff" // Cambia el color según tu diseño
+      bgColor="#007bff"
       onClick={() => {}}
     />
   );
