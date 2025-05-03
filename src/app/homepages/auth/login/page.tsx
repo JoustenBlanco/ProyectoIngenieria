@@ -5,7 +5,6 @@ import Input from "../../../components/Atoms/input";
 import Carousel from "../../../components/Atoms/carousel";
 import { useRouter } from "next/navigation";
 import { signIn, getSession } from "next-auth/react";
-import { Funcionarios, FuncionariosXRol, User, RolFuncionario } from "../../../../../types";
 import useAuthStore from "../../../../../provider/store";
 
 
