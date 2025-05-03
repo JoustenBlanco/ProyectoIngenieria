@@ -1,5 +1,4 @@
 import * as XLSX from 'xlsx';
-import { ExcelData, ExcelKeyValuePair } from '../../../types';
 
 export const parseStudentsExcelFormat = (fileBuffer: Buffer): ExcelData[] => {
   try {
