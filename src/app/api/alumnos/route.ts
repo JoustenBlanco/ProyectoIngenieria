@@ -1,5 +1,5 @@
 import {NextResponse} from "next/server"
-import prisma from '../../../../lib/prisma'
+import {prisma} from '../../../../lib/prisma'
 export async function GET(_req:Request){
     try {
         const students = await prisma.rAE_Alumnos.findMany({});

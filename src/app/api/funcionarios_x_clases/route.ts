@@ -1,5 +1,5 @@
 import {NextResponse} from "next/server"
-import prisma from '../../../../lib/prisma'
+import {prisma} from '../../../../lib/prisma'
 
 //ejemplo de uso del endpoint
 ///api/clases/[id]?Id_funcionario=1

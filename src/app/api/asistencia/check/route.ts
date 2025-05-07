@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from '../../../../../lib/prisma';
+import {prisma} from '../../../../../lib/prisma';
 
 // Función para verificar si ya existe una asistencia para la sección, clase y fecha dadas
 export async function GET(req: Request) {
