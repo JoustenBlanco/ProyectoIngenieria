@@ -2,9 +2,9 @@
 
 import { Datepicker, Select, Checkbox, Button } from "flowbite-react";
 import { useState } from "react";
-import SelectionModal from "@/app/components/Reports/selectionModal";
-import ReportTable from "@/app/components/Reports/reportTable";
-import ExportButtons from "@/app/components/Reports/exportButtons";
+import SelectionModal from "@/app/_components/Reports/selectionModal";
+import ReportTable from "@/app/_components/Reports/reportTable";
+import ExportButtons from "@/app/_components/Reports/exportButtons";
 
 import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import useAuthStore from "../../../../provider/store";
-import Curse from "../../components/curses/curse";
+import Curse from "../../_components/curses/curse";
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
 

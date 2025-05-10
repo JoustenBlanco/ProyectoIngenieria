@@ -1,5 +1,5 @@
 "use client";
-import Mainten from "../../components/maintenance/maintenance";
+import Mainten from "../../_components/maintenance/maintenance";
 import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";

@@ -1,5 +1,5 @@
 "use client";
-import DarkMode from "../../components/config/config";
+import DarkMode from "../../_components/config/config";
 import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";

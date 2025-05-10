@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Student from "@/app/components/students/student";
+import Student from "@/app/_components/students/student";
 
 import { Textarea, Checkbox, Modal, Button } from "flowbite-react";
 import { useSearchParams } from "next/navigation";

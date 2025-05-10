@@ -1,10 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import Input from "../../../components/Atoms/input";
-import Select from "../../../components/Atoms/select";
-import ActionButtons from "../../../components/Atoms/ActionButtons";
-import UserList from "../../../components/Users/UserList";
+import Input from "../../../_components/Atoms/input";
+import Select from "../../../_components/Atoms/select";
+import ActionButtons from "../../../_components/Atoms/ActionButtons";
+import UserList from "../../../_components/Users/UserList";
 import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";

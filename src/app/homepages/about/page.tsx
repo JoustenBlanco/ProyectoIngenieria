@@ -1,6 +1,6 @@
 "use client";
-import Report from "../../components/Reports/report";
-import Carousel from "../../components/Atoms/carousel";
+import Report from "../../_components/Reports/report";
+import Carousel from "../../_components/Atoms/carousel";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { redirect } from "next/navigation";

@@ -1,12 +1,12 @@
 "use client";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import Input from "../../../components/Atoms/input";
-import Select from "../../../components/Atoms/select";
-import DateInput from "../../../components/Atoms/dateInput";
-import ActionButtons from "../../../components/Atoms/ActionButtons";
+import Input from "../../../_components/Atoms/input";
+import Select from "../../../_components/Atoms/select";
+import DateInput from "../../../_components/Atoms/dateInput";
+import ActionButtons from "../../../_components/Atoms/ActionButtons";
 
-import StudentList from "../../../components/studentMaintenance/StudentsList";
+import StudentList from "../../../_components/studentMaintenance/StudentsList";
 import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";

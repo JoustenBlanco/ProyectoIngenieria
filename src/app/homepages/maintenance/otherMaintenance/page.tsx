@@ -1,14 +1,14 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Input from "../../../components/Atoms/input";
-import ActionButtons from "../../../components/Atoms/ActionButtonsSimplified";
-import Select from "../../../components/Atoms/select";
-import Modal from "../../../components/Atoms/modal";
+import Input from "../../../_components/Atoms/input";
+import ActionButtons from "../../../_components/Atoms/ActionButtonsSimplified";
+import Select from "../../../_components/Atoms/select";
+import Modal from "../../../_components/Atoms/modal";
 import { SubmitHandler, useForm } from "react-hook-form";
 
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
-import ExcelFilePicker from "@/app/components/maintenance/excelFilePicker";
+import ExcelFilePicker from "@/app/_components/maintenance/excelFilePicker";
 import { parseSectionExcelFormat, parseStudentsExcelFormat } from "@/app/utils/xlsxParser";
 import { createStudentPerSeccion, getFunctionaryIdByCedula } from "@/app/services/create_session_excel";
 import { convertToISODate } from "@/app/utils/dateCast";

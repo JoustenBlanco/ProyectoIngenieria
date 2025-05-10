@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Input from "../../../components/Atoms/input";
-import Carousel from "../../../components/Atoms/carousel";
+import Input from "../../../_components/Atoms/input";
+import Carousel from "../../../_components/Atoms/carousel";
 import { useRouter } from "next/navigation";
 import { signIn, getSession } from "next-auth/react";
 import useAuthStore from "../../../../../provider/store";

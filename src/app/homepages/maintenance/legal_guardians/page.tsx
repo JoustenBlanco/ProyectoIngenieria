@@ -1,11 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import Input from "../../../components/Atoms/input";
-import ActionButtons from "../../../components/Atoms/ActionButtons";
-import Select from "../../../components/Atoms/select";
+import Input from "../../../_components/Atoms/input";
+import ActionButtons from "../../../_components/Atoms/ActionButtons";
+import Select from "../../../_components/Atoms/select";
 
-import GuardianList from "../../../components/legal_guardians/GuardiansList";
+import GuardianList from "../../../_components/legal_guardians/GuardiansList";
 import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";
