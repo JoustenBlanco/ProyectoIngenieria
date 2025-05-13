@@ -327,9 +327,8 @@ const StudentsList: React.FC = () => {
         {/* Students List - Main Panel */}
         <div className="flex-1 bg-white rounded-2xl dark:bg-gray-800 shadow-md p-4 md:p-6 overflow-auto max-h-[70vh] min-w-[320px]">
           <h2 className="text-2xl font-bold mb-4 text-gray-500 dark:text-gray-400">Lista de Estudiantes</h2>
-          {/* Marcar todos checkbox moved above the table, right-aligned */}
           <div className="flex justify-end items-center mb-2">
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               Marcar todos
               <input
                 type="checkbox"
