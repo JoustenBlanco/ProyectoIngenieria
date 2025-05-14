@@ -407,7 +407,93 @@ const MaintenancePage = () => {
         {/* Tabla con scroll */}
         <div className="overflow-x-auto shadow-md rounded-lg">
           <div className="max-h-[calc(100vh-300px)] overflow-y-auto">
-            <table className="w-full bg-white dark:bg-gray-800 dark:text-gray-200">
+            {/* Vista tipo tarjetas para sm */}
+            <div className="block md:hidden">
+              {selectedSection === 'sections' && sections.map((section) => (
+                <div key={section.Id_seccion} className="mb-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-700 shadow flex flex-col gap-2">
+                  <div>
+                    <span className="font-semibold text-gray-700 dark:text-gray-200">Nombre: </span>
+                    <span className="text-gray-600 dark:text-gray-300">{section.Nombre}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700 dark:text-gray-200">Grado: </span>
+                    <span className="text-gray-600 dark:text-gray-300">{section.Grado}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700 dark:text-gray-200">Funcionario: </span>
+                    <span className="text-gray-600 dark:text-gray-300">{section.RAE_Funcionarios.Primer_nombre}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700 dark:text-gray-200">Estado: </span>
+                    <span className={`px-2 py-1 rounded-full text-xs ${section.Estado === 'A' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                      {section.Estado === 'A' ? 'Activo' : 'Inactivo'}
+                    </span>
+                  </div>
+                  <div className="flex justify-end">
+                    <ActionButtons
+                      onEdit={() => handleEditSection(section)}
+                      onDelete={() => handleDeleteSection(section)}
+                    />
+                  </div>
+                </div>
+              ))}
+              {selectedSection === 'classes' && classes.map((clase) => (
+                <div key={clase.Id_clase} className="mb-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-700 shadow flex flex-col gap-2">
+                  <div>
+                    <span className="font-semibold text-gray-700 dark:text-gray-200">Descripción: </span>
+                    <span className="text-gray-600 dark:text-gray-300">{clase.Descripcion}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700 dark:text-gray-200">Materia: </span>
+                    <span className="text-gray-600 dark:text-gray-300">{clase.RAE_Materia.Nombre}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700 dark:text-gray-200">Sección: </span>
+                    <span className="text-gray-600 dark:text-gray-300">{clase.RAE_Secciones.Nombre}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700 dark:text-gray-200">Funcionario: </span>
+                    <span className="text-gray-600 dark:text-gray-300">{clase.RAE_Funcionarios.Primer_nombre + " " + clase.RAE_Funcionarios.Primer_apellido}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700 dark:text-gray-200">Estado: </span>
+                    <span className={`px-2 py-1 rounded-full text-xs ${clase.Estado === 'A' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                      {clase.Estado === 'A' ? 'Activo' : 'Inactivo'}
+                    </span>
+                  </div>
+                  <div className="flex justify-end">
+                    <ActionButtons
+                      onEdit={() => handleEditClass(clase)}
+                      onDelete={() => handleDeleteClass(clase)}
+                    />
+                  </div>
+                </div>
+              ))}
+              {selectedSection === 'subjects' && subjects.map((subject) => (
+                <div key={subject.Id_materia} className="mb-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-700 shadow flex flex-col gap-2">
+                  <div>
+                    <span className="font-semibold text-gray-700 dark:text-gray-200">Nombre: </span>
+                    <span className="text-gray-600 dark:text-gray-300">{subject.Nombre}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700 dark:text-gray-200">Tipo: </span>
+                    <span className="text-gray-600 dark:text-gray-300">{subject.Tipo_materia}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-700 dark:text-gray-200">Descripción: </span>
+                    <span className="text-gray-600 dark:text-gray-300">{subject.Descripcion}</span>
+                  </div>
+                  <div className="flex justify-end">
+                    <ActionButtons
+                      onEdit={() => handleEditSubject(subject)}
+                      onDelete={() => handleDeleteSubject(subject)}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Tabla tradicional para md+ */}
+            <table className="w-full bg-white dark:bg-gray-800 dark:text-gray-200 hidden md:table">
               {selectedSection === 'sections' && (
                 <>
                   <thead className="sticky top-0 bg-gray-100 dark:bg-gray-700">
