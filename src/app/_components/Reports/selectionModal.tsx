@@ -42,7 +42,7 @@ export default function SelectionModal<T>({
           <input
             type="text"
             placeholder={getPlaceholder()}
-            className="w-full p-2 border rounded-md dark:bg-gray-800"
+            className="w-full p-2 border rounded-md dark:bg-gray-800 text-gray-700 dark:text-gray-200"
             value={searchValue || ""}
             onChange={(e) => {
               setSearchValue(e.target.value);
