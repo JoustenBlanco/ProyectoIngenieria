@@ -339,7 +339,59 @@ const StudentsList: React.FC = () => {
               />
             </label>
           </div>
-          <div className="overflow-x-auto">
+          {/* Tabla responsiva para sm: usa bloques en vez de filas */}
+          <div className="block md:hidden">
+            {extendedStudents.map((student) => (
+              <div
+                key={student.Id_alumno}
+                className="mb-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-700 shadow flex flex-col gap-2"
+              >
+                <div>
+                  <span className="font-semibold text-gray-700 dark:text-gray-200">Nombre: </span>
+                  <span className="text-gray-600 dark:text-gray-300">{`${student.Primer_nombre} ${student.Segundo_nombre} ${student.Primer_apellido} ${student.Segundo_apellido}`}</span>
+                </div>
+                <div>
+                  <span className="font-semibold text-gray-700 dark:text-gray-200">Cédula: </span>
+                  <span className="text-gray-600 dark:text-gray-300">{student.Cedula}</span>
+                </div>
+                <div>
+                  <span className="font-semibold text-gray-700 dark:text-gray-200">Estado: </span>
+                  <span className={`rounded-full ${getStatusColor(student.Estado)} text-xs px-2 py-1`}>
+                    {student.Estado}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-gray-700 dark:text-gray-200">Presente:</span>
+                  <input
+                    type="checkbox"
+                    id={`attendance-${student.Id_alumno}`}
+                    name={`attendance-${student.Id_alumno}`}
+                    className="h-4 w-4 text-green-600 border-gray-300 rounded"
+                    checked={student.Asistio}
+                    onChange={(e) =>
+                      handleAttendanceChange(
+                        student.Id_alumno,
+                        e.target.checked
+                      )
+                    }
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-semibold text-gray-700 dark:text-gray-200">Comentarios:</span>
+                  <Button
+                    size="xs"
+                    className="w-auto h-auto p-0 m-0 min-w-0 min-h-0"
+                    color="blue"
+                    onClick={() => handleOpenCommentModal(student.Id_alumno, student.Comentarios)}
+                  >
+                    <img src={`/images/new.svg`} alt="Add" className="w-4 h-4 m-0" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+          {/* Tabla tradicional para md+ */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="min-w-full bg-white dark:bg-gray-800 dark:text-gray-200">
               <thead>
                 <tr className="w-full bg-gray-100 dark:bg-gray-700">
