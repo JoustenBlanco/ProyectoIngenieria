@@ -17,7 +17,10 @@ interface StudentListProps {
   onSelectStudent: (student: Student) => void;
 }
 
-const StudentList: React.FC<StudentListProps> = ({ onClose, onSelectStudent }) => {
+const StudentList: React.FC<StudentListProps> = ({
+  onClose,
+  onSelectStudent,
+}) => {
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,17 +48,22 @@ const StudentList: React.FC<StudentListProps> = ({ onClose, onSelectStudent }) =
   return (
     <DarkModeWrapper>
       <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
-        <div className="bg-white dark:bg-gray-800 w-4/5 max-w-3xl p-6 rounded-lg shadow-lg">
+        <div className="bg-white dark:bg-gray-800 w-4/5 max-w-3xl p-6 rounded-lg shadow-lg max-h-[90vh] flex flex-col">
           <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
             Lista de Estudiantes
           </h2>
 
           {isLoading ? (
-            <p className="text-center text-gray-600 dark:text-gray-300">Cargando...</p>
+            <p className="text-center text-gray-600 dark:text-gray-300">
+              Cargando...
+            </p>
           ) : error ? (
             <p className="text-center text-red-500">{error}</p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div
+              className="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-y-auto flex-1"
+              style={{ maxHeight: "55vh" }}
+            >
               {students.map((student) => (
                 <StudentListItem
                   key={student.Id_alumno}
