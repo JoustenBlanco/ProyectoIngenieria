@@ -7,46 +7,73 @@ import DateInput from "../../../_components/Atoms/dateInput";
 import ActionButtons from "../../../_components/Atoms/ActionButtons";
 
 import StudentList from "../../../_components/studentMaintenance/StudentsList";
+import ParentList from "../../../_components/studentMaintenance/ParentsList";
+import ParentCardList from "@/app/_components/studentMaintenance/ParentCardList";
 import { useSession } from "next-auth/react";
-import { use, useEffect } from "react";
+import { useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";
 import { set } from "date-fns";
 
 export default function Students() {
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [studentParentsList, setStudentParentsList] = useState<Parents[]>([]);
+  const [removeStudentParentList, setRemoveStudentParentLis] = useState<
+    Parents[]
+  >([]);
+  const [newStudentParentsList, newSetStudentParentsList] = useState<Parents[]>(
+    []
+  );
+  const [showStudentList, setShowStudentList] = useState(false);
   const { data: session, status } = useSession();
   const [sections, setSections] = useState<Seccion[]>([]);
+  const [showParentList, setShowParentList] = useState(false);
+  const [parentsChanged, setParentsChanged] = useState(false);
+
   const fetchSections = async () => {
-    const response = await fetch(`/api/secciones`,
-      {
-        cache: "no-store",
-      }
-    );
+    const response = await fetch(`/api/secciones`, {
+      cache: "no-store",
+    });
     if (!response.ok) {
       throw new Error("Error fetching sections");
     }
     const data: Seccion[] = await response.json();
     return data;
-  }
-
-  useEffect(() => {
-  if (status == "unauthenticated"){
-    console.log("No autenticado");
-    redirect("/homepages/auth/login");
-  }
-},
- [session, status]);
- useEffect(() => {
-  const loadSections = async () => {
-    try {
-      const fetchedSections = await fetchSections(); 
-      setSections(fetchedSections);
-    } catch (err) {
-      throw new Error(err instanceof Error ? err.message : "Error desconocido");
-    } 
   };
 
-  loadSections();
-}, []);
+  const fetchParentsByStuden = async (id: number) => {
+    const response = await fetch(
+      `/api/encargados_x_alumnos/[id]?Id_estudiante=${id}`,
+      {
+        cache: "no-store",
+      }
+    );
+    if (!response.ok && response.status != 404) {
+      throw new Error("Error fetching parents");
+    }
+    const data: Parents[] = await response.json();
+    return data;
+  };
+
+  useEffect(() => {
+    if (status == "unauthenticated") {
+      console.log("No autenticado");
+      redirect("/homepages/auth/login");
+    }
+  }, [session, status]);
+  useEffect(() => {
+    const loadSections = async () => {
+      try {
+        const fetchedSections = await fetchSections();
+        setSections(fetchedSections);
+      } catch (err) {
+        throw new Error(
+          err instanceof Error ? err.message : "Error desconocido"
+        );
+      }
+    };
+
+    loadSections();
+  }, []);
 
   const {
     register,
@@ -67,12 +94,8 @@ export default function Students() {
       Correo_mep: "",
       Estado: "A",
       Id_seccion: 0,
-    }
+    },
   });
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(
-    null
-  );
-  const [showStudentList, setShowStudentList] = useState(false);
 
   const handleOpenStudentList = () => {
     setShowStudentList(true);
@@ -82,33 +105,130 @@ export default function Students() {
     setShowStudentList(false);
   };
 
-  const handleSelectStudent = (student: any) => {
+  const handleSelectStudent = async (student: any) => {
     setSelectedStudent(student);
+    const fetchedParents = await fetchParentsByStuden(student.Id_alumno);
+    setStudentParentsList(fetchedParents);
     console.log(student);
     reset(student);
   };
 
+  const handleOpenParentsList = async () => {
+    if (selectedStudent != null) {
+      const parents: Parents[] = await fetchParentsByStuden(
+        selectedStudent.Id_alumno
+      );
+      setStudentParentsList(parents);
+      console.log(parents);
+    }
+    setShowParentList(true);
+  };
+
+  const handleCloseParentList = () => {
+    setShowParentList(false);
+  };
+
+  const handleRemoveParent = (idAEliminar: number) => {
+    setStudentParentsList((prevList) => {
+      if (prevList.length - 1 > 0) {
+        setRemoveStudentParentLis((prevListRemove) => [
+          ...prevListRemove,
+          prevList.find((parent) => parent.Id_encargado_legal === idAEliminar)!,
+        ]);
+
+        return prevList.filter(
+          (parent) => parent.Id_encargado_legal !== idAEliminar
+        );
+      }
+      alert("El estudiante debe tener por lo menos un encargado legal");
+      return prevList;
+    });
+  };
+
+  const handleSelectedParent = (parents: Parents[]) => {
+    if (parents.length === 0) return;
+
+    const nuevos = parents.filter(
+      (nuevo) =>
+        !studentParentsList.some(
+          (p) => p.Id_encargado_legal === nuevo.Id_encargado_legal
+        )
+    );
+    setStudentParentsList((prevLista) => [...prevLista, ...nuevos]);
+    if (selectedStudent) {
+      newSetStudentParentsList((prevLista) => [...prevLista, ...nuevos]);
+    }
+  };
+
   const handleSave = async (data: Student) => {
-    console.log("Datos del formulario:", data);
+    if (studentParentsList.length === 0) {
+      alert("El estudiante debe tener por lo menos un encargado legal");
+      return;
+    }
+
     const studentData = {
       ...data,
       Id_seccion: Number(data.Id_seccion),
     };
-    console.log("Datos a enviar:", studentData);
+
     try {
       const response = await fetch("/api/alumnos", {
-        method: selectedStudent? "PUT" : "POST",
+        method: selectedStudent ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(studentData),
       });
-      if (response.ok) {
-        alert("Estudiante guardado exitosamente");
-        handleNew();
-      } else {
+
+      if (!response.ok) {
         alert("Error al guardar el estudiante");
+        return;
       }
+
+      let studentId: number;
+      if (selectedStudent) {
+        studentId = selectedStudent.Id_alumno;
+      } else {
+        const result = await response.json();
+        studentId = result.Id_alumno;
+      }
+
+      if (newStudentParentsList.length > 0) {
+        await Promise.all(
+          newStudentParentsList.map((encargado) =>
+            fetch("/api/encargados_x_alumnos", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                Id_alumno: studentId,
+                Id_encargado_legal: encargado.Id_encargado_legal,
+              }),
+            })
+          )
+        );
+      }
+
+      if (removeStudentParentList.length > 0) {
+        await Promise.all(
+          removeStudentParentList.map((encargado) =>
+            fetch("/api/encargados_x_alumnos", {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                Id_alumno: studentId,
+                Id_encargado_legal: encargado.Id_encargado_legal,
+              }),
+            })
+          )
+        );
+      }
+
+      alert("Estudiante y encargados actualizados exitosamente");
+      handleNew();
     } catch (error) {
       console.error("Error en la petición", error);
       alert("Ocurrió un error");
@@ -116,7 +236,7 @@ export default function Students() {
   };
 
   const handleNew = () => {
-    reset({ 
+    reset({
       Primer_nombre: "",
       Segundo_nombre: "",
       Primer_apellido: "",
@@ -128,6 +248,9 @@ export default function Students() {
       Estado: "",
       Id_seccion: 0,
     });
+    newSetStudentParentsList([]);
+    setStudentParentsList([]);
+    setShowParentList(false);
     setSelectedStudent(null);
   };
 
@@ -136,7 +259,7 @@ export default function Students() {
       alert("Por favor selecciona un estudiante para eliminar");
       return;
     }
-  
+
     try {
       const response = await fetch("/api/alumnos", {
         method: "DELETE",
@@ -145,7 +268,7 @@ export default function Students() {
         },
         body: JSON.stringify({ Id_alumno: selectedStudent.Id_alumno }),
       });
-  
+
       if (response.ok) {
         alert("Estudiante eliminado exitosamente");
         handleNew();
@@ -175,6 +298,27 @@ export default function Students() {
           onSelectStudent={handleSelectStudent}
         />
       )}
+
+      <button
+        onClick={handleOpenParentsList}
+        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded"
+      >
+        Agregar Encargados Legales
+      </button>
+      {showParentList && (
+        <ParentList
+          onClose={handleCloseParentList}
+          onSelectParents={handleSelectedParent}
+        />
+      )}
+
+      {studentParentsList.length > 0 && (
+        <ParentCardList
+          parents={studentParentsList}
+          onRemove={handleRemoveParent}
+        />
+      )}
+
       <form onSubmit={handleSubmit(handleSave)}>
         <div className="grid md:grid-cols-2 sm:grid-cols-1 gap-3 w-full gap-x-10">
           <Input
@@ -184,9 +328,18 @@ export default function Students() {
             placeholder="Ingresa el primer nombre"
             {...register("Primer_nombre", {
               required: "Este campo es requerido",
-              minLength: { value: 2, message: "El nombre debe tener al menos 2 caracteres" },
-              maxLength: { value: 50, message: "El nombre no puede exceder 50 caracteres" },
-              pattern: { value: /^[A-Za-záéíóúñÁÉÍÓÚÑ\s]+$/, message: "Solo se permiten letras y espacios" }
+              minLength: {
+                value: 2,
+                message: "El nombre debe tener al menos 2 caracteres",
+              },
+              maxLength: {
+                value: 50,
+                message: "El nombre no puede exceder 50 caracteres",
+              },
+              pattern: {
+                value: /^[A-Za-záéíóúñÁÉÍÓÚÑ\s]+$/,
+                message: "Solo se permiten letras y espacios",
+              },
             })}
             error={errors.Primer_nombre?.message}
           />
@@ -197,8 +350,14 @@ export default function Students() {
             label="Segundo Nombre"
             placeholder="Ingresa el segundo nombre"
             {...register("Segundo_nombre", {
-              maxLength: { value: 50, message: "El nombre no puede exceder 50 caracteres" },
-              pattern: { value: /^[A-Za-záéíóúñÁÉÍÓÚÑ\s]*$/, message: "Solo se permiten letras y espacios" }
+              maxLength: {
+                value: 50,
+                message: "El nombre no puede exceder 50 caracteres",
+              },
+              pattern: {
+                value: /^[A-Za-záéíóúñÁÉÍÓÚÑ\s]*$/,
+                message: "Solo se permiten letras y espacios",
+              },
             })}
           />
 
@@ -209,9 +368,18 @@ export default function Students() {
             placeholder="Ingresa el primer apellido"
             {...register("Primer_apellido", {
               required: "Este campo es requerido",
-              minLength: { value: 2, message: "El apellido debe tener al menos 2 caracteres" },
-              maxLength: { value: 50, message: "El apellido no puede exceder 50 caracteres" },
-              pattern: { value: /^[A-Za-záéíóúñÁÉÍÓÚÑ\s]+$/, message: "Solo se permiten letras y espacios" }
+              minLength: {
+                value: 2,
+                message: "El apellido debe tener al menos 2 caracteres",
+              },
+              maxLength: {
+                value: 50,
+                message: "El apellido no puede exceder 50 caracteres",
+              },
+              pattern: {
+                value: /^[A-Za-záéíóúñÁÉÍÓÚÑ\s]+$/,
+                message: "Solo se permiten letras y espacios",
+              },
             })}
             error={errors.Primer_apellido?.message}
           />
@@ -222,8 +390,14 @@ export default function Students() {
             label="Segundo Apellido"
             placeholder="Ingresa el segundo apellido"
             {...register("Segundo_apellido", {
-              maxLength: { value: 50, message: "El apellido no puede exceder 50 caracteres" },
-              pattern: { value: /^[A-Za-záéíóúñÁÉÍÓÚÑ\s]*$/, message: "Solo se permiten letras y espacios" }
+              maxLength: {
+                value: 50,
+                message: "El apellido no puede exceder 50 caracteres",
+              },
+              pattern: {
+                value: /^[A-Za-záéíóúñÁÉÍÓÚÑ\s]*$/,
+                message: "Solo se permiten letras y espacios",
+              },
             })}
             error={errors.Segundo_apellido?.message}
           />
@@ -240,8 +414,11 @@ export default function Students() {
                 const age = today.getFullYear() - birthDate.getFullYear();
                 const minAge = 11;
                 const maxAge = 22;
-                return (age >= minAge && age <= maxAge) || `La edad debe estar entre ${minAge} y ${maxAge} años`;
-              }
+                return (
+                  (age >= minAge && age <= maxAge) ||
+                  `La edad debe estar entre ${minAge} y ${maxAge} años`
+                );
+              },
             })}
             onChange={(e) => setValue("Fecha_nacimiento", e.target.value)}
             error={errors.Fecha_nacimiento?.message}
@@ -264,7 +441,11 @@ export default function Students() {
             placeholder="Ingresa el número de cédula"
             {...register("Cedula", {
               required: "Este campo es requerido",
-              pattern: { value: /^[1-9]-\d{4}-\d{4}$/, message: "Formato inválido. Use: #-####-#### (ejemplo: 1-1234-1234)" }
+              pattern: {
+                value: /^[1-9]-\d{4}-\d{4}$/,
+                message:
+                  "Formato inválido. Use: #-####-#### (ejemplo: 1-1234-1234)",
+              },
             })}
             error={errors.Cedula?.message}
           />
@@ -276,36 +457,38 @@ export default function Students() {
             placeholder="Ingresa el correo MEP"
             {...register("Correo_mep", {
               required: "Este campo es requerido",
-              pattern: { 
-                value: /^[a-zA-Z0-9._-]+@(?:est\.)?mep\.go\.cr$/, 
-                message: "Debe ser un correo válido del MEP (@mep.go.cr o @est.mep.go.cr)" 
+              pattern: {
+                value: /^[a-zA-Z0-9._-]+@(?:est\.)?mep\.go\.cr$/,
+                message:
+                  "Debe ser un correo válido del MEP (@mep.go.cr o @est.mep.go.cr)",
               },
-              maxLength: { value: 100, message: "El correo no puede exceder 100 caracteres" }
+              maxLength: {
+                value: 100,
+                message: "El correo no puede exceder 100 caracteres",
+              },
             })}
             error={errors.Correo_mep?.message}
           />
-          {/* Todo hay que cambiar esto por un select */}
           <Select
             id="Id_seccion"
             label="Sección"
             options={sections.map((section) => ({
-              label: section.Nombre,  // Muestra el nombre
-              value: section.Id_seccion,      // Guarda el ID (asegúrate de que sea number)
+              label: section.Nombre,
+              value: section.Id_seccion,
             }))}
             register={register}
             error={errors.Id_seccion?.message}
-            value={watch("Id_seccion")?.toString()} 
+            value={watch("Id_seccion")?.toString()}
             required={true}
           />
 
-
           <Select
-            id="Estado" // Ahora es una clave válida de CrearFuncionarios
+            id="Estado"
             label="Estado"
             options={["A", "I"]}
             register={register}
             error={errors.Estado?.message}
-            value={watch("Estado")} // Usamos el valor observado para mantener el estado
+            value={watch("Estado")}
             required={true}
           />
         </div>
