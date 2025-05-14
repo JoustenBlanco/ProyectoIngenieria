@@ -216,7 +216,7 @@ const fetchDataReportStudents = async () => {
       <SelectionModal
         show={showModal}
         onClose={() => setShowModal(false)}
-        title="Seleccionar Filtro"
+        title="estudiante"
         searchValue={searchValue}
         setSearchValue={setSearchValue}
         fetchItems={fetchItems}

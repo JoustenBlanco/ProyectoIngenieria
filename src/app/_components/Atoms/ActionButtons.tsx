@@ -14,7 +14,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({
   onDelete,
 }) => {
   return (
-    <div className="flex space-x-24 mt-16 justify-center items-center">
+    <div className="flex space-x-2 md:space-x-24 mt-16 justify-center items-center">
       <Button
         type="button"
         name="Nuevo"
