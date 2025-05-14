@@ -19,6 +19,7 @@ const StudentsList: React.FC = () => {
   const [commentModalOpen, setCommentModalOpen] = useState(false);
   const [activeCommentStudentId, setActiveCommentStudentId] = useState<number | null>(null);
   const [modalComment, setModalComment] = useState("");
+  const [selectAll, setSelectAll] = useState(false);
 
   const handleOpenCommentModal = (studentId: number, comment: string) => {
     setActiveCommentStudentId(studentId);
@@ -196,6 +197,24 @@ const StudentsList: React.FC = () => {
     );
   };
 
+  const handleSelectAll = (checked: boolean) => {
+    setSelectAll(checked);
+    setExtendedStudents((prevStudents) =>
+      prevStudents.map((student) => ({
+        ...student,
+        Asistio: checked,
+      }))
+    );
+  };
+
+  useEffect(() => {
+    // Keep selectAll in sync with individual checkboxes
+    if (extendedStudents.length > 0) {
+      const allChecked = extendedStudents.every((student) => student.Asistio);
+      setSelectAll(allChecked);
+    }
+  }, [extendedStudents]);
+
   const validateFields = () => {
     const newErrors: { [key: string]: string } = {};
 
@@ -308,6 +327,18 @@ const StudentsList: React.FC = () => {
         {/* Students List - Main Panel */}
         <div className="flex-1 bg-white rounded-2xl dark:bg-gray-800 shadow-md p-4 md:p-6 overflow-auto max-h-[70vh] min-w-[320px]">
           <h2 className="text-2xl font-bold mb-4 text-gray-500 dark:text-gray-400">Lista de Estudiantes</h2>
+          <div className="flex justify-end items-center mb-2">
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Marcar todos
+              <input
+                type="checkbox"
+                checked={selectAll}
+                onChange={(e) => handleSelectAll(e.target.checked)}
+                className="h-4 w-4 text-green-600 border-gray-300 rounded"
+                title="Marcar todos"
+              />
+            </label>
+          </div>
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white dark:bg-gray-800 dark:text-gray-200">
               <thead>

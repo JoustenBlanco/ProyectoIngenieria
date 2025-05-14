@@ -36,7 +36,7 @@ export default function Reports() {
           </p>
           <p className="mt-4">
             El proyecto fue realizado por <strong>Jousten Blanco Fonseca</strong> y <strong>Sebastián Granados Barrantes</strong>,
-            en el periodo lectivo de <strong>2024</strong>, como parte de los cursos de <strong>Ingeniería en Sistemas I, II y III </strong>
+            en los periodos lectivos de <strong>2024-2025</strong>, como parte de los cursos de <strong>Ingeniería en Sistemas I, II y III </strong>
             de la <strong>Universidad Nacional de Costa Rica</strong>, <em>Sede Regional Brunca, Pérez Zeledón</em>.
           </p>
           <p className="mt-4">

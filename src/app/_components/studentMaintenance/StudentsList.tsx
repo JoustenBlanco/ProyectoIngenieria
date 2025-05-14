@@ -17,55 +17,89 @@ interface StudentListProps {
   onSelectStudent: (student: Student) => void;
 }
 
-const StudentList: React.FC<StudentListProps> = ({ onClose, onSelectStudent }) => {
+const StudentList: React.FC<StudentListProps> = ({
+  onClose,
+  onSelectStudent,
+}) => {
   const [students, setStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [searchValue, setSearchValue] = useState<string>("");
 
   useEffect(() => {
     const fetchStudents = async () => {
       try {
-        const response = await fetch("/api/alumnos");
+        const response = await fetch(
+          `/api/alumnos/like?cedula=${searchValue}`,
+          {
+            method: "GET",
+          }
+        );
         if (response.ok) {
           const data = await response.json();
           setStudents(data);
         } else {
+          setStudents([]);
           throw new Error("Error al obtener los alumnos");
         }
       } catch (err) {
-        setError("Hubo un problema al cargar los datos.");
+        console.log("Hubo un problema al cargar los datos:", err);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchStudents();
-  }, []);
+  }, [searchValue]);
 
   return (
     <DarkModeWrapper>
       <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
-        <div className="bg-white dark:bg-gray-800 w-4/5 max-w-3xl p-6 rounded-lg shadow-lg">
+        <div className="bg-white dark:bg-gray-800 w-4/5 max-w-3xl p-6 rounded-lg shadow-lg max-h-[90vh] flex flex-col">
           <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
-            Lista de Estudiantes
+            Buscar estudiante
           </h2>
 
+          <input
+            type="text"
+            placeholder={"Buscar por cédula..."}
+            className="w-full p-2 mb-4 border rounded-md dark:bg-gray-800"
+            value={searchValue || ""}
+            onChange={(e) => {
+              setSearchValue(e.target.value);
+            }}
+          />
+
           {isLoading ? (
-            <p className="text-center text-gray-600 dark:text-gray-300">Cargando...</p>
-          ) : error ? (
-            <p className="text-center text-red-500">{error}</p>
+            <p className="text-center text-gray-600 dark:text-gray-300">
+              Cargando...
+            </p>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {students.map((student) => (
-                <StudentListItem
-                  key={student.Id_alumno}
-                  student={student}
-                  onSelect={() => {
-                    onSelectStudent(student);
-                    onClose();
-                  }}
-                />
-              ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-y-auto flex-1 max-h55vh">
+              {students.length === 0 ? (
+                <div className="p-2 text-gray-500 dark:text-gray-400">
+                  <p>No se encontraron resultados</p>
+                </div>
+              ) : (
+                students
+                  .filter(
+                    (student) =>
+                      searchValue === "" ||
+                      (student.Cedula &&
+                        student.Cedula.toLowerCase().includes(
+                          searchValue.toLowerCase()
+                        ))
+                  )
+                  .map((student) => (
+                    <StudentListItem
+                      key={student.Id_alumno}
+                      student={student}
+                      onSelect={() => {
+                        onSelectStudent(student);
+                        onClose();
+                      }}
+                    />
+                  ))
+              )}
             </div>
           )}
 

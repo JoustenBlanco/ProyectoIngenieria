@@ -10,17 +10,15 @@ import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";
 
-
 export default function Reports() {
   const { data: session, status } = useSession();
   useEffect(() => {
     console.log("Llega al useEffect de about");
-  if (status == "unauthenticated"){
-    console.log("No autenticado");
-    redirect("/homepages/auth/login");
-  }
-},
- [session, status]);
+    if (status == "unauthenticated") {
+      console.log("No autenticado");
+      redirect("/homepages/auth/login");
+    }
+  }, [session, status]);
   const [isHistorical, setIsHistorical] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -31,11 +29,8 @@ export default function Reports() {
   const [cedulaEstudiante, setCedulaEstudiante] = useState<string | null>(null);
   const [students, setStudents] = useState<Student[]>([]);
   const [searchValue, setSearchValue] = useState<string | null>(null);
-  const [selectedReport, setSelectedReport] =
-    useState<string>("");
-
+  const [selectedReport, setSelectedReport] = useState<string>("");
   const [items, setItems] = useState<any[]>([]);
-
 
   const fetchItems = async (query: string, type: string) => {
     let endpoint = "";
@@ -48,48 +43,54 @@ export default function Reports() {
     setItems(data);
   };
 
-const renderItem = (item: any, onSelect: (value: string) => void) => (
-  <li
-    key={item.Cedula || item.Id || item.Nombre}
-    className="p-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md text-gray-500 dark:text-gray-400"
-    onClick={() => {
-      onSelect(item.Primer_nombre ? `${item.Primer_nombre} ${item.Primer_apellido} ${item.Segundo_apellido}` : item.Nombre || item.Descripcion);
-      setCedulaEstudiante(item.Cedula)
-    }}
-  >
-    {item.Primer_nombre ? `${item.Primer_nombre} ${item.Primer_apellido}` : item.Nombre || item.Descripcion} - {item.Cedula || item.Id}
-  </li>
-);
+  const renderItem = (item: any, onSelect: (value: string) => void) => (
+    <li
+      key={item.Cedula || item.Id || item.Nombre}
+      className="p-2 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 rounded-md text-gray-500 dark:text-gray-400"
+      onClick={() => {
+        onSelect(
+          item.Primer_nombre
+            ? `${item.Primer_nombre} ${item.Primer_apellido} ${item.Segundo_apellido}`
+            : item.Nombre || item.Descripcion
+        );
+        setCedulaEstudiante(item.Cedula);
+      }}
+    >
+      {item.Primer_nombre
+        ? `${item.Primer_nombre} ${item.Primer_apellido}`
+        : item.Nombre || item.Descripcion}{" "}
+      - {item.Cedula || item.Id}
+    </li>
+  );
 
-const fetchDataReportStudents = async () => {
-  if (!searchValue) {
-    console.warn("No se ha seleccionado un estudiante.");
-    alert("No se ha seleccionado un estudiante.");
-    return;
-  }
-
-  if (!isHistorical && (!startDate || !endDate)) {
-    alert("Seleccione un rango de fechas válido.");
-    return;
-  }
-
-  try {
-    const url = isHistorical 
-      ? `/api/reportes/estudiantes/data?cedula=${cedulaEstudiante}&historical=true`
-      : `/api/reportes/estudiantes/data?startDate=${startDate}&endDate=${endDate}&cedula=${cedulaEstudiante}`;
-
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error("Error en la respuesta del servidor");
+  const fetchDataReportStudents = async () => {
+    if (!searchValue) {
+      console.warn("No se ha seleccionado un estudiante.");
+      alert("No se ha seleccionado un estudiante.");
+      return;
     }
-    const data = await response.json();
-    setReportData(data);
-    console.log(data);
-  } catch (error) {
-    console.error("Error fetching data for report:", error);
-  }
-};
 
+    if (!isHistorical && (!startDate || !endDate)) {
+      alert("Seleccione un rango de fechas válido.");
+      return;
+    }
+
+    try {
+      const url = isHistorical
+        ? `/api/reportes/estudiantes/data?cedula=${cedulaEstudiante}&historical=true`
+        : `/api/reportes/estudiantes/data?startDate=${startDate}&endDate=${endDate}&cedula=${cedulaEstudiante}`;
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Error en la respuesta del servidor");
+      }
+      const data = await response.json();
+      setReportData(data);
+      console.log(data);
+    } catch (error) {
+      console.error("Error fetching data for report:", error);
+    }
+  };
 
   const validateAndFetchData = () => {
     if (!selectedReport) {
@@ -110,68 +111,70 @@ const fetchDataReportStudents = async () => {
     setShowTable(true);
   };
 
-  const reportOptions = [
-    "Por Estudiante",
-    "Por Sección",
-  ];
+  const reportOptions = ["Por Estudiante", "Por Sección"];
 
   return (
     <div className="p-6">
-      <div className="grid grid-cols-1 gap-5">
-        <h1 className="text-3xl font-bold mb-8 text-gray-500 dark:text-gray-400">
-          Reportes de Asistenia
-        </h1>
-        <div className="max-w-md grid grid-cols-1 gap-2">
-          <span className="text-gray-500 dark:text-gray-400">
-            Tipo de Reporte
-          </span>
-          <Select
-            id="reports"
-            required
-            onChange={(e) => setSelectedReport(e.target.value)}
-          >
-            <option value="">Seleccione un tipo</option>
-            {reportOptions.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </Select>
-
+      <h1 className="text-3xl font-bold mb-8 text-gray-500 dark:text-gray-400">
+        Reportes de Asistenia
+      </h1>
+      <div className="max-w-2xl mx-auto space-y-8">
+        {/* Selección de tipo de reporte y búsqueda */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 space-y-6">
+          <div>
+            <span className="block text-gray-500 dark:text-gray-400 mb-2 font-medium">
+              Tipo de Reporte
+            </span>
+            <Select
+              id="reports"
+              required
+              onChange={(e) => setSelectedReport(e.target.value)}
+            >
+              <option value="">Seleccione un tipo</option>
+              {reportOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </Select>
+          </div>
           {selectedReport && (
-              <div className="max-w-md grid grid-cols-1 gap-2 items-center">
-                <Button onClick={() => setShowModal(true)}>
-                  <svg
-                    className="w-6 h-6 text-gray-800 dark:text-white"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-width="2"
-                      d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
-                    />
-                  </svg>
-                  Seleccionar {selectedReport.replace("Por ", "")}{" "}
-                  {selectedReport}
-                </Button>
-
-                {searchValue && (
-                  <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-md">
-                    <span className="text-gray-700 dark:text-gray-300">
-                      {selectedReport.replace("Por ", "")}: {searchValue}
-                    </span>
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="space-y-2">
+              <Button
+                onClick={() => setShowModal(true)}
+                className="flex items-center gap-2"
+              >
+                <svg
+                  className="w-6 h-6 text-gray-800 dark:text-white"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-width="2"
+                    d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"
+                  />
+                </svg>
+                Seleccionar {selectedReport.replace("Por ", "")}
+              </Button>
+              {searchValue && (
+                <div className="p-3 bg-gray-100 dark:bg-gray-700 rounded-md">
+                  <span className="text-gray-700 dark:text-gray-300">
+                    {selectedReport.replace("Por ", "")}: {searchValue}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
-        <div className="grid grid-cols-1 gap-2">
+
+        {/* Filtros de histórico y fechas */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 space-y-4">
           <div className="flex items-center gap-2">
             <Checkbox
               id="history"
@@ -182,41 +185,63 @@ const fetchDataReportStudents = async () => {
             <span className="text-gray-500 dark:text-gray-400">Histórico</span>
           </div>
           {!isHistorical && (
-            <div className="flex span  items-center justify-start gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <span className="text-gray-500 dark:text-gray-400">Entre</span>
-              <Datepicker title="Desde" value={startDate} onChange={setStartDate} />
+              <Datepicker
+                title="Desde"
+                value={startDate}
+                onChange={setStartDate}
+              />
               <span className="text-gray-500 dark:text-gray-400">y</span>
-              <Datepicker title="Hasta" value={endDate} onChange={setEndDate}/>
+              <Datepicker
+                title="Hasta"
+                value={endDate}
+                onChange={setEndDate}
+              />
             </div>
           )}
         </div>
+
+        {/* Botón de vista previa */}
         {(() => {
           const isReportSelected = !!selectedReport;
           const isSearchSelected = !!searchValue;
           const isDateRequired = !isHistorical;
-          const isDateSelected = !isHistorical ? (startDate && endDate) : true;
-          const canShowPreviewButton = isReportSelected && isSearchSelected && isDateSelected;
+          const isDateSelected = !isHistorical
+            ? startDate && endDate
+            : true;
+          const canShowPreviewButton =
+            isReportSelected && isSearchSelected && isDateSelected;
           return (
             canShowPreviewButton && (
-              <Button onClick={validateAndFetchData} className="mt-6 max-w-md">
-                Ver Vista Previa
-              </Button>
+              <div className="flex justify-end">
+                <Button onClick={validateAndFetchData} className="mt-2">
+                  Ver Vista Previa
+                </Button>
+              </div>
             )
           );
         })()}
 
+        {/* Tabla y exportación */}
+        {showTable && (
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 space-y-4">
+            <ReportTable reportType={selectedReport} data={reportData} />
+            {/*<ReportChart reportType={selectedReport} data={reportData} />*/}
+            <ExportButtons
+              reportType={selectedReport}
+              data={reportData}
+              studentId={cedulaEstudiante}
+              studentName={searchValue}
+            />
+          </div>
+        )}
       </div>
-      {showTable && (
-        <>
-          <ReportTable reportType={selectedReport} data={reportData} />
-          {/*<ReportChart reportType={selectedReport} data={reportData} />*/}
-          <ExportButtons reportType={selectedReport} data={reportData} studentId={cedulaEstudiante} studentName={searchValue}/>
-        </>
-      )}
+      {/* Modal de selección */}
       <SelectionModal
         show={showModal}
         onClose={() => setShowModal(false)}
-        title="Seleccionar Filtro"
+        title="estudiante"
         searchValue={searchValue}
         setSearchValue={setSearchValue}
         fetchItems={fetchItems}

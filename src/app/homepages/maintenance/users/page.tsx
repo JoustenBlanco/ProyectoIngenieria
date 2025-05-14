@@ -243,6 +243,8 @@ export default function Users() {
       value: Number(rol.Id_rol_funcionario),
       label: rol.Nombre
     }));
+
+    
   
 
   return (
