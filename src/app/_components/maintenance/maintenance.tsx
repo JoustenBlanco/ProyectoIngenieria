@@ -30,7 +30,7 @@ const Mainten: React.FC<CurseProps> = ({ image, title, route }) => {
 
   return (
     <div
-      className="flex flex-col items-center justify-between w-52 h-60 md:w-64 md:h-72 bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-6 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:bg-gradient-to-br hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-800 dark:hover:to-gray-900"
+      className="flex flex-col items-center justify-between w-40 h-56 md:w-64 md:h-72 bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-6 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:bg-gradient-to-br hover:from-gray-100 hover:to-gray-200 dark:hover:from-gray-800 dark:hover:to-gray-900"
       onClick={handleClick}
     >
       <div className={`flex items-center justify-center w-28 h-28 md:w-40 md:h-40 ${getPaddingColor(title)} rounded-full mb-6 shadow-lg`}>
