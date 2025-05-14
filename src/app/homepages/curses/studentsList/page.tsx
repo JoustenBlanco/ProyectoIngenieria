@@ -17,7 +17,9 @@ interface ExtendedStudent extends Student {
 
 const StudentsList: React.FC = () => {
   const [commentModalOpen, setCommentModalOpen] = useState(false);
-  const [activeCommentStudentId, setActiveCommentStudentId] = useState<number | null>(null);
+  const [activeCommentStudentId, setActiveCommentStudentId] = useState<
+    number | null
+  >(null);
   const [modalComment, setModalComment] = useState("");
   const [selectAll, setSelectAll] = useState(false);
 
@@ -47,8 +49,7 @@ const StudentsList: React.FC = () => {
       console.log("No autenticado");
       redirect("/homepages/auth/login");
     }
-  },
-    [session, status]);
+  }, [session, status]);
   const [comments, setComments] = useState<string | null>("");
   const [place, setPlace] = useState<string | null>("");
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -68,6 +69,20 @@ const StudentsList: React.FC = () => {
   const searchParams = useSearchParams();
   const sectionId = searchParams.get("sectionId");
   const claseId = searchParams.get("claseId");
+
+  const fetchParentsByStuden = async (id: number) => {
+    const response = await fetch(
+      `/api/encargados_x_alumnos/[id]?Id_estudiante=${id}`,
+      {
+        cache: "no-store",
+      }
+    );
+    if (!response.ok && response.status != 404) {
+      throw new Error("Error fetching parents");
+    }
+    const data: Parents[] = await response.json();
+    return data;
+  };
 
   const checkExistingAttendance = async (date: Date) => {
     try {
@@ -282,32 +297,86 @@ const StudentsList: React.FC = () => {
     }
   };
 
-  const handleSaveStudentAttendance = async (attendanceId: number) => {
-    try {
-      await Promise.all(
-        extendedStudents.map(async (student) => {
-          const { Id_alumno, Asistio, Comentarios } = student;
-          const response = await fetch("/api/asistencia_x_alumnos", {
-            method: isExistingAttendance ? "PUT" : "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              Id_asistencia: attendanceId,
-              Id_alumno: Id_alumno,
-              Asistio: Asistio ? "S" : "N",
-              Comentarios: Comentarios || "",
-            }),
-          });
-          return response.json();
-        })
-      );
-      alert("Asistencia guardada exitosamente.");
-    } catch (error) {
-      console.error("Error guardando la asistencia de estudiantes:", error);
-      alert("Hubo un error al guardar la asistencia de los estudiantes.");
-    }
-  };
+ const handleSaveStudentAttendance = async (attendanceId: number) => {
+  try {
+    await Promise.all(
+      extendedStudents.map(async (student) => {
+        const { Id_alumno, Asistio, Comentarios } = student;
+
+        // 1. Guardar asistencia
+        await fetch("/api/asistencia_x_alumnos", {
+          method: isExistingAttendance ? "PUT" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            Id_asistencia: attendanceId,
+            Id_alumno,
+            Asistio: Asistio ? "S" : "N",
+            Comentarios: Comentarios || "",
+          }),
+        });
+
+        // 2. Si el estudiante no asistió, enviar correo
+        if (!Asistio) {
+          const studentRes = await fetch(`/api/alumnos/[id]?Id_estudiante=${Id_alumno}`);
+          const student: Student = await studentRes.json();
+
+          const parents = await fetchParentsByStuden(Id_alumno);
+          const parentEmail = parents?.[0]?.Correo;
+
+          if (parentEmail) {
+            const htmlMessage = `
+              <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; background-color: #f9f9f9; border-radius: 8px;">
+                <h2 style="color: #2c3e50;">Aviso de ausencia a clases</h2>
+                <p>Estimado/a padre, madre o encargado:</p>
+                <p>
+                  Le informamos que el/la estudiante
+                  <strong style="color: #c0392b;">${student.Primer_nombre} ${student.Segundo_nombre} ${student.Primer_apellido} ${student.Segundo_apellido}</strong>
+                  no asistió a clases el día <strong>${new Date().toLocaleDateString()}</strong>.
+                </p>
+                <p style="margin-top: 20px;">
+                  Lo invitamos cordialmente a acercarse a las instalaciones para justificar la ausencia o esclarecer cualquier duda. 
+                  Si ya justificaron la ausencia con antelación ignoren este mensaje, es genera aútomaticamente.
+                  Le recordamos que las ausencias se pueden justificar en 5 días naturales y que el proceso se puede hacer mediante
+                  el estudiante.
+                </p>
+
+                <div style="margin-top: 30px; padding: 15px; background-color: #ffdddd; border-left: 6px solid #e74c3c;">
+                  <strong>Nota:</strong> Este mensaje ha sido generado automáticamente. Por favor, no responda a este correo.
+                  Si tiene alguna duda contactese con nosotros mediante el número telefonico que está abajo. 
+                </div>
+
+                <p style="margin-top: 40px; font-size: 0.9em; color: #888;">
+                  Liceo San Pedro<br>
+                  Tel: [número del colegio] | Dirección: [San Pedro centro, Pérez Zeledón San José Costa Rica]
+                </p>
+              </div>
+            `;
+
+            await fetch("/api/send_email", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                to: parentEmail,
+                subject: "Ausencia de estudiante a clases",
+                html: htmlMessage,
+              }),
+            });
+          }
+        }
+      })
+    );
+
+    alert("Asistencia guardada exitosamente.");
+  } catch (error) {
+    console.error("Error guardando la asistencia de estudiantes:", error);
+    alert("Hubo un error al guardar la asistencia de los estudiantes.");
+  }
+};
+
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -322,11 +391,15 @@ const StudentsList: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full min-h-screen">
-      <h1 className="text-3xl font-bold mb-4 text-gray-500 dark:text-gray-400 text-center">Registrar Asistencia</h1>
+      <h1 className="text-3xl font-bold mb-4 text-gray-500 dark:text-gray-400 text-center">
+        Registrar Asistencia
+      </h1>
       <div className="flex flex-col md:flex-row gap-6 w-full flex-1">
         {/* Students List - Main Panel */}
         <div className="flex-1 bg-white rounded-2xl dark:bg-gray-800 shadow-md p-4 md:p-6 overflow-auto max-h-[70vh] min-w-[320px]">
-          <h2 className="text-2xl font-bold mb-4 text-gray-500 dark:text-gray-400">Lista de Estudiantes</h2>
+          <h2 className="text-2xl font-bold mb-4 text-gray-500 dark:text-gray-400">
+            Lista de Estudiantes
+          </h2>
           <div className="flex justify-end items-center mb-2">
             <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300">
               Marcar todos
@@ -404,9 +477,18 @@ const StudentsList: React.FC = () => {
                           size="xs"
                           className="w-auto h-auto p-0 m-0 min-w-0 min-h-0"
                           color="blue"
-                          onClick={() => handleOpenCommentModal(student.Id_alumno, student.Comentarios)}
+                          onClick={() =>
+                            handleOpenCommentModal(
+                              student.Id_alumno,
+                              student.Comentarios
+                            )
+                          }
                         >
-                          <img src={`/images/new.svg`} alt="Add" className="w-4 h-4 m-0" />
+                          <img
+                            src={`/images/new.svg`}
+                            alt="Add"
+                            className="w-4 h-4 m-0"
+                          />
                         </Button>
                       </div>
                     </td>
@@ -419,7 +501,9 @@ const StudentsList: React.FC = () => {
         {/* Attendance Form - Side Panel */}
         <div className="w-full md:w-[340px] flex-shrink-0 bg-white p-4 md:p-6 rounded-lg shadow-md dark:bg-gray-800 h-fit self-start">
           <div className="mb-4">
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Fecha de Asistencia</label>
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              Fecha de Asistencia
+            </label>
             <DatePicker
               selected={selectedDate || new Date()}
               onChange={(date: Date | null) => {
@@ -435,7 +519,9 @@ const StudentsList: React.FC = () => {
             )}
           </div>
           <div className="mb-4">
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Lugar</label>
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              Lugar
+            </label>
             <input
               type="text"
               value={place || ""}
@@ -448,7 +534,9 @@ const StudentsList: React.FC = () => {
             )}
           </div>
           <div className="mb-4">
-            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comentarios</label>
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+              Comentarios
+            </label>
             <textarea
               value={comments || ""}
               onChange={(e) => setComments(e.target.value)}
@@ -459,7 +547,9 @@ const StudentsList: React.FC = () => {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Inicio</label>
+              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Inicio
+              </label>
               <DatePicker
                 selected={startTime}
                 onChange={(date: Date | null) => setStartTime(date)}
@@ -475,7 +565,9 @@ const StudentsList: React.FC = () => {
               )}
             </div>
             <div>
-              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Finalización</label>
+              <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                Finalización
+              </label>
               <DatePicker
                 selected={endTime}
                 onChange={(date: Date | null) => setEndTime(date)}
@@ -500,11 +592,18 @@ const StudentsList: React.FC = () => {
         </div>
       </div>
       {/* Modal for editing comments */}
-      <Modal show={commentModalOpen} onClose={handleCloseCommentModal} size="md" popup>
+      <Modal
+        show={commentModalOpen}
+        onClose={handleCloseCommentModal}
+        size="md"
+        popup
+      >
         <Modal.Header />
         <Modal.Body>
           <div className="space-y-6">
-            <h3 className="text-xl font-medium text-gray-900 dark:text-white">Editar Comentario</h3>
+            <h3 className="text-xl font-medium text-gray-900 dark:text-white">
+              Editar Comentario
+            </h3>
             <Textarea
               value={modalComment}
               onChange={(e) => setModalComment(e.target.value)}
@@ -512,8 +611,12 @@ const StudentsList: React.FC = () => {
               rows={4}
             />
             <div className="flex justify-end gap-2 mt-4">
-              <Button color="gray" onClick={handleCloseCommentModal}>Cancelar</Button>
-              <Button color="blue" onClick={handleSaveComment}>Guardar</Button>
+              <Button color="gray" onClick={handleCloseCommentModal}>
+                Cancelar
+              </Button>
+              <Button color="blue" onClick={handleSaveComment}>
+                Guardar
+              </Button>
             </div>
           </div>
         </Modal.Body>
