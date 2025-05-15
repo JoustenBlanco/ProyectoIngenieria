@@ -21,7 +21,28 @@ export async function GET(req: NextRequest) {
       },
     };
 
-    const classes = await prisma.rAE_Clases.findMany({ where: whereClause });
+    const classes = await prisma.rAE_Clases.findMany({
+      where: whereClause,
+      include: {
+        RAE_Funcionarios: {
+          select: {
+            Primer_nombre: true,
+            Primer_apellido: true,
+            Segundo_apellido: true,
+          },
+        },
+        RAE_Materia: {
+          select: {
+            Nombre: true,
+          },
+        },
+        RAE_Secciones: {
+          select: {
+            Nombre: true,
+          },
+        },
+      },
+    });
     if (classes.length === 0) {
       return NextResponse.json(
         { error: "No se encontraron clases" },

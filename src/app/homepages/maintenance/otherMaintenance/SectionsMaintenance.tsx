@@ -12,11 +12,12 @@ import { useSecciones } from "../../../hooks/useSecciones";
 import { useFuncionarios } from "../../../hooks/useFuncionarios";
 
 const SectionsMaintenance = () => {
-  const { sections, fetchSections } = useSecciones();
+  const { sections, fetchSections, setSections } = useSecciones();
   const { funcionarios } = useFuncionarios();
   const [ExcelSStudentsData, setExcelStudentsData] = React.useState<ExcelData[]>([]);
   const [isSectionModalOpen, setIsSectionModalOpen] = React.useState(false);
   const [sectionToEdit, setSectionToEdit] = React.useState<Seccion | null>(null);
+  const [searchTerm, setSearchTerm] = React.useState("");
 
   const {
     register: registerSection,
@@ -133,9 +134,41 @@ const SectionsMaintenance = () => {
     });
   };
 
+  const handleSearchSections = async (nombre: string) => {
+    try {
+      const response = await fetch(`/api/secciones/like?nombre=${encodeURIComponent(nombre)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setSections(data);
+      } else {
+        setSections([]);
+      }
+    } catch (error) {
+      setSections([]);
+    }
+  };
+
   return (
     <>
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-between mb-4 items-center">
+        <Input
+          id="searchSection"
+          name="searchSection"
+          label="Buscar Sección"
+          type="text"
+          placeholder="Por nombre..."
+          className="mr-2 w-52 md:w-72"
+          value={searchTerm}
+          onChange={e => {
+            const value = e.target.value;
+            setSearchTerm(value);
+            if (value.trim() === "") {
+              fetchSections();
+            } else {
+              handleSearchSections(value);
+            }
+          }}
+        />
         <button
           className="font-bold py-2 px-4 rounded text-white bg-blue-600 hover:bg-blue-700"
           onClick={() => setIsSectionModalOpen(true)}
@@ -145,7 +178,8 @@ const SectionsMaintenance = () => {
       </div>
 
       <div className="overflow-x-auto shadow-md rounded-lg">
-        <div className="max-h-[calc(100vh-300px)] overflow-y-auto">
+        {/* Tabla para md+ */}
+        <div className="max-h-[calc(100vh-300px)] overflow-y-auto hidden sm:block">
           <table className="w-full bg-white dark:bg-gray-800 dark:text-gray-200">
             <thead className="sticky top-0 bg-gray-100 dark:bg-gray-700">
               <tr>
@@ -157,27 +191,82 @@ const SectionsMaintenance = () => {
               </tr>
             </thead>
             <tbody>
-              {sections.map((section) => (
-                <tr key={section.Id_seccion} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                  <td className="py-4 px-6 text-center">{section.Nombre}</td>
-                  <td className="py-4 px-6 text-center">{section.Grado}</td>
-                  <td className="py-4 px-6 text-center">{section.RAE_Funcionarios.Primer_nombre}</td>
-                  <td className="py-4 px-6 text-center">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        section.Estado === "A" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {section.Estado === "A" ? "Activo" : "Inactivo"}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6">
-                    <ActionButtons onEdit={() => handleEditSection(section)} onDelete={() => handleDeleteSection(section)} />
+              {sections.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-gray-400 dark:text-gray-500">
+                    <div className="flex flex-col items-center gap-2">
+                      <span>No se encontraron secciones</span>
+                    </div>
                   </td>
                 </tr>
-              ))}
+              ) : (
+                sections.map((section) => (
+                  <tr key={section.Id_seccion} className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <td className="py-4 px-6 text-center">{section.Nombre}</td>
+                    <td className="py-4 px-6 text-center">{section.Grado}</td>
+                    <td className="py-4 px-6 text-center">{section.RAE_Funcionarios.Primer_nombre}</td>
+                    <td className="py-4 px-6 text-center">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          section.Estado === "A" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {section.Estado === "A" ? "Activo" : "Inactivo"}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6">
+                      <ActionButtons onEdit={() => handleEditSection(section)} onDelete={() => handleDeleteSection(section)} />
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
+        </div>
+        {/* Tarjetas para sm */}
+        <div className="sm:hidden flex flex-col gap-4 p-2 max-h-[calc(100vh-300px)] overflow-y-auto">
+          {sections.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-40 text-gray-400 dark:text-gray-500">
+              <img src="/images/search-empty.svg" alt="Sin resultados" className="w-20 h-20 mb-2 opacity-70" />
+              <span>No se encontraron secciones</span>
+            </div>
+          ) : (
+            sections.map((section) => (
+              <div
+                key={section.Id_seccion}
+                className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col gap-2 text-gray-600 dark:text-gray-200"
+              >
+                <div>
+                  <span className="font-semibold">Nombre: </span>
+                  <span>{section.Nombre}</span>
+                </div>
+                <div>
+                  <span className="font-semibold">Grado: </span>
+                  <span>{section.Grado}</span>
+                </div>
+                <div>
+                  <span className="font-semibold">Funcionario: </span>
+                  <span>{section.RAE_Funcionarios.Primer_nombre}</span>
+                </div>
+                <div>
+                  <span className="font-semibold">Estado: </span>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs ${
+                      section.Estado === "A" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                    }`}
+                  >
+                    {section.Estado === "A" ? "Activo" : "Inactivo"}
+                  </span>
+                </div>
+                <div className="flex justify-end">
+                  <ActionButtons
+                    onEdit={() => handleEditSection(section)}
+                    onDelete={() => handleDeleteSection(section)}
+                  />
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 

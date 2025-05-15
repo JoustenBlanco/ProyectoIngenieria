@@ -17,6 +17,7 @@ const ClassesMaintenance = () => {
 
   const [isClassModalOpen, setIsClassModalOpen] = React.useState(false);
   const [classToEdit, setClassToEdit] = React.useState<Clase | null>(null);
+  const [searchTerm, setSearchTerm] = React.useState("");
 
   const {
     register: registerClass,
@@ -29,6 +30,20 @@ const ClassesMaintenance = () => {
     fetchClasses();
     // Los otros hooks ya hacen fetch en su propio useEffect
   }, [fetchClasses]);
+
+  const handleSearchClasses = async (descripcion: string) => {
+    try {
+      const response = await fetch(`/api/clases/like?descripcion=${encodeURIComponent(descripcion)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setClasses(data);
+      } else {
+        setClasses([]);
+      }
+    } catch (error) {
+      setClasses([]);
+    }
+  };
 
   const handleCreateClass = async (data: Clase) => {
     data.Id_funcionario = Number(data.Id_funcionario);
@@ -97,8 +112,26 @@ const ClassesMaintenance = () => {
 
   return (
     <>
-      {/* Botón de Agregar */}
-      <div className="flex justify-end mb-4">
+      {/* Buscador y botón de Agregar */}
+      <div className="flex justify-between mb-4 items-center">
+        <Input
+          id="searchClass"
+          name="searchClass"
+          label="Buscar Clase"
+          type="text"
+          placeholder="Por descripción..."
+          className="mr-2 w-52 md:w-72"
+          value={searchTerm}
+          onChange={e => {
+            const value = e.target.value;
+            setSearchTerm(value);
+            if (value.trim() === "") {
+              fetchClasses();
+            } else {
+              handleSearchClasses(value);
+            }
+          }}
+        />
         <button
           className="font-bold py-2 px-4 rounded text-white bg-green-600 hover:bg-green-700"
           onClick={() => setIsClassModalOpen(true)}
@@ -109,52 +142,44 @@ const ClassesMaintenance = () => {
 
       {/* Tabla con scroll */}
       <div className="overflow-x-auto shadow-md rounded-lg">
-        <div className="max-h-[calc(100vh-300px)] overflow-y-auto">
-          {/* Vista tipo tarjetas para sm */}
-          <div className="block md:hidden">
-            {classes.map((clase) => (
+        {/* Tarjetas para sm */}
+        <div className="sm:hidden flex flex-col gap-4 p-2 max-h-[calc(100vh-300px)] overflow-y-auto">
+          {classes.length === 0 ? (
+            <tr>
+                  <td colSpan={5} className="py-8 text-center text-gray-400 dark:text-gray-500">
+                    <div className="flex flex-col items-center gap-2">
+                      <span>No se encontraron clases</span>
+                    </div>
+                  </td>
+                </tr>
+          ) : (
+            classes.map((clase) => (
               <div
                 key={clase.Id_clase}
-                className="mb-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-700 shadow flex flex-col gap-2"
+                className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col gap-2 text-gray-600 dark:text-gray-200"
               >
                 <div>
-                  <span className="font-semibold text-gray-700 dark:text-gray-200">
-                    Descripción:{" "}
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-300">
-                    {clase.Descripcion}
-                  </span>
+                  <span className="font-semibold">Descripción: </span>
+                  <span>{clase.Descripcion}</span>
                 </div>
                 <div>
-                  <span className="font-semibold text-gray-700 dark:text-gray-200">
-                    Materia:{" "}
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-300">
-                    {clase.RAE_Materia.Nombre}
-                  </span>
+                  <span className="font-semibold">Materia: </span>
+                  <span>{clase.RAE_Materia.Nombre}</span>
                 </div>
                 <div>
-                  <span className="font-semibold text-gray-700 dark:text-gray-200">
-                    Sección:{" "}
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-300">
-                    {clase.RAE_Secciones.Nombre}
-                  </span>
+                  <span className="font-semibold">Sección: </span>
+                  <span>{clase.RAE_Secciones.Nombre}</span>
                 </div>
                 <div>
-                  <span className="font-semibold text-gray-700 dark:text-gray-200">
-                    Funcionario:{" "}
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-300">
+                  <span className="font-semibold">Funcionario: </span>
+                  <span>
                     {clase.RAE_Funcionarios.Primer_nombre +
                       " " +
                       clase.RAE_Funcionarios.Primer_apellido}
                   </span>
                 </div>
                 <div>
-                  <span className="font-semibold text-gray-700 dark:text-gray-200">
-                    Estado:{" "}
-                  </span>
+                  <span className="font-semibold">Estado: </span>
                   <span
                     className={`px-2 py-1 rounded-full text-xs ${
                       clase.Estado === "A"
@@ -172,10 +197,12 @@ const ClassesMaintenance = () => {
                   />
                 </div>
               </div>
-            ))}
-          </div>
-          {/* Tabla tradicional para md+ */}
-          <table className="w-full bg-white dark:bg-gray-800 dark:text-gray-200 hidden md:table">
+            ))
+          )}
+        </div>
+        {/* Tabla tradicional para md+ */}
+        <div className="max-h-[calc(100vh-300px)] overflow-y-auto hidden sm:block">
+          <table className="w-full bg-white dark:bg-gray-800 dark:text-gray-200">
             <thead className="sticky top-0 bg-gray-100 dark:bg-gray-700">
               <tr>
                 <th className="py-3 px-6">Descripción</th>
@@ -187,42 +214,53 @@ const ClassesMaintenance = () => {
               </tr>
             </thead>
             <tbody>
-              {classes.map((clase) => (
-                <tr
-                  key={clase.Id_clase}
-                  className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                >
-                  <td className="py-4 px-6 text-center">{clase.Descripcion}</td>
-                  <td className="py-4 px-6 text-center">
-                    {clase.RAE_Materia.Nombre}
-                  </td>
-                  <td className="py-4 px-6 text-center">
-                    {clase.RAE_Secciones.Nombre}
-                  </td>
-                  <td className="py-4 px-6 text-center">
-                    {clase.RAE_Funcionarios.Primer_nombre +
-                      " " +
-                      clase.RAE_Funcionarios.Primer_apellido}
-                  </td>
-                  <td className="py-4 px-6 text-center">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs ${
-                        clase.Estado === "A"
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {clase.Estado === "A" ? "Activo" : "Inactivo"}
-                    </span>
-                  </td>
-                  <td className="py-4 px-6 text-center">
-                    <ActionButtons
-                      onEdit={() => handleEditClass(clase)}
-                      onDelete={() => handleDeleteClass(clase)}
-                    />
+              {classes.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-8 text-center text-gray-400 dark:text-gray-500">
+                    <div className="flex flex-col items-center gap-2">
+                      <img src="/images/search-empty.svg" alt="Sin resultados" className="w-16 h-16 mx-auto mb-2 opacity-70" />
+                      <span>No se encontraron clases</span>
+                    </div>
                   </td>
                 </tr>
-              ))}
+              ) : (
+                classes.map((clase) => (
+                  <tr
+                    key={clase.Id_clase}
+                    className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                  >
+                    <td className="py-4 px-6 text-center">{clase.Descripcion}</td>
+                    <td className="py-4 px-6 text-center">
+                      {clase.RAE_Materia.Nombre}
+                    </td>
+                    <td className="py-4 px-6 text-center">
+                      {clase.RAE_Secciones.Nombre}
+                    </td>
+                    <td className="py-4 px-6 text-center">
+                      {clase.RAE_Funcionarios.Primer_nombre +
+                        " " +
+                        clase.RAE_Funcionarios.Primer_apellido}
+                    </td>
+                    <td className="py-4 px-6 text-center">
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          clase.Estado === "A"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {clase.Estado === "A" ? "Activo" : "Inactivo"}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6 text-center">
+                      <ActionButtons
+                        onEdit={() => handleEditClass(clase)}
+                        onDelete={() => handleDeleteClass(clase)}
+                      />
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

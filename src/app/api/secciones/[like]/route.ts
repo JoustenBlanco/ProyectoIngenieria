@@ -21,7 +21,18 @@ export async function GET(req: NextRequest) {
       },
     };
 
-    const sections = await prisma.rAE_Secciones.findMany({ where: whereClause });
+    const sections = await prisma.rAE_Secciones.findMany({
+      where: whereClause,
+      include: {
+        RAE_Funcionarios: {
+          select: {
+            Primer_nombre: true,
+            Primer_apellido: true,
+            Segundo_apellido: true,
+          },
+        },
+      },
+    });
     if (sections.length === 0) {
       return NextResponse.json(
         { error: "No se encontraron secciones" },
