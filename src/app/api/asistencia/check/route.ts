@@ -27,7 +27,7 @@ export async function GET(req: Request) {
     endOfDay.setUTCHours(23, 59, 59, 999);
 
 
-    const existingAttendance = await prisma.rAE_Asistencia.findFirst({
+    const existingAttendance = await prisma.rAE_Asistencia.findMany({
       where: {
         Id_clase: parseInt(classId, 10),
         RAE_Clases: {

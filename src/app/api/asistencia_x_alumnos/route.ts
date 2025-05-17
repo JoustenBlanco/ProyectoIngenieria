@@ -53,17 +53,32 @@ export async function POST(_req: Request) {
 
   export async function DELETE(_req: Request) {
     try {
-      const { Id_asistencia, Id_alumno } = await _req.json(); 
-      const result = await prisma.rAE_Asistencia_X_Alumnos.delete({
-        where: { 
-            Id_asistencia_Id_alumno:{
-                Id_alumno:Id_alumno,
-                Id_asistencia:Id_asistencia,
-            }
-        }, 
-      });
-      return NextResponse.json(result, { status: 200 });
-    } catch (error) {
-      return NextResponse.json({ error: 'Error deleting record' }, { status: 500 });
-    }
+        // Soporte para query string
+        const { searchParams } = new URL(_req.url);
+        let Id_asistencia = searchParams.get("Id_asistencia");
+        let Id_alumno = searchParams.get("Id_alumno");
+
+        // Si no viene por query, intenta leer del body (soporta ambos)
+        if (!Id_asistencia || !Id_alumno) {
+          const body = await _req.json().catch(() => ({}));
+          Id_asistencia = Id_asistencia || body.Id_asistencia;
+          Id_alumno = Id_alumno || body.Id_alumno;
+        }
+
+        if (!Id_asistencia || !Id_alumno) {
+          return NextResponse.json({ error: 'Missing Id_asistencia or Id_alumno' }, { status: 400 });
+        }
+
+        const result = await prisma.rAE_Asistencia_X_Alumnos.delete({
+          where: {
+            Id_asistencia_Id_alumno: {
+              Id_alumno: Number(Id_alumno),
+              Id_asistencia: Number(Id_asistencia),
+            },
+          },
+        });
+        return NextResponse.json(result, { status: 200 });
+      } catch (error) {
+        return NextResponse.json({ error: 'Error deleting record' }, { status: 500 });
+      }
   }
