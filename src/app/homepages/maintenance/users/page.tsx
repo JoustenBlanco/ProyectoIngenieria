@@ -163,9 +163,6 @@ export default function Users() {
     setAlert({ message, type, show: true });
   };
 
-  const showAlert = (message: string, type: "success" | "error" | "info" | "warning" = "info") => {
-    setAlert({ message, type, show: true });
-  };
 
   const handleSave = async (data: FormValues) => {
     console.log("Datos a enviar:", data);
