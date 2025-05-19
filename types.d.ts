@@ -154,7 +154,8 @@ interface CreateStudent {
     Cedula:string,                                                
     Estado:string,                                                 
     Suplente:string,                                               
-    Password:string,                                              
+    Password:string,    
+    Change_password:string,                                          
   }
 
   interface CrearFuncionarios{                                     
@@ -167,7 +168,8 @@ interface CreateStudent {
     Cedula:string,                                                
     Estado:string,                                                 
     Suplente:string,                                               
-    Password:string,                                             
+    Password:string,
+    Change_password:string,                                              
   }
 
   interface Parents{

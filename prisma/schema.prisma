@@ -143,6 +143,7 @@ model RAE_Funcionarios {
   Estado                         String                           @db.VarChar(1)
   Suplente                       String                           @db.VarChar(1)
   Password                       String                           @db.VarChar(100)
+  Change_password                String                           @default("N") @db.VarChar(1)
   RAE_Alerta_Temprana            RAE_Alerta_Temprana[]
   RAE_Clases                     RAE_Clases[]
   RAE_Funcionarios_X_AnnoLectivo RAE_Funcionarios_X_AnnoLectivo[]

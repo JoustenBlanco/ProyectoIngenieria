@@ -425,7 +425,7 @@ const StudentsList: React.FC = () => {
               </div>
             `;
 
-              await fetch("/api/send_email", {
+              await fetch("/api/send_email/parents", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",

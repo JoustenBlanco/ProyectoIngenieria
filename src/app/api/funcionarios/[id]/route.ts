@@ -1,5 +1,6 @@
-import {NextResponse} from "next/server"
-import {prisma} from '../../../../../lib/prisma'
+import {NextResponse} from "next/server";
+import {prisma} from '../../../../../lib/prisma';
+import bcrypt from 'bcryptjs';
 
 
 //ejemplo de uso del endpoint
@@ -32,6 +33,7 @@ export async function GET(req: Request) {
   export async function PUT(req: Request) {
     try {
       const data : Funcionarios = await req.json();
+      data.Password = await bcrypt.hash(data.Password,10);
       const result = await prisma.rAE_Funcionarios.update({
         where: { 
             Id_funcionario : data.Id_funcionario
@@ -45,6 +47,7 @@ export async function GET(req: Request) {
             Estado:data.Estado,                                                 
             Suplente:data.Suplente,                                               
             Password:data.Password,
+            Change_password:data.Change_password,
         },
       });
       return NextResponse.json(result, { status: 200 });

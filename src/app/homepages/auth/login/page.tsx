@@ -6,6 +6,7 @@ import Carousel from "../../../_components/Atoms/carousel";
 import { useRouter } from "next/navigation";
 import { signIn, getSession } from "next-auth/react";
 import useAuthStore from "../../../../../provider/store";
+import recoveryPassword from "../../../services/change_password";
 
 
 export default function LoginPage() {
@@ -43,6 +44,37 @@ export default function LoginPage() {
     }
   };
 
+  const handleRecoveryPassword = async (event: React.MouseEvent) => {
+    event.preventDefault();
+    if(cedula === ""){
+      setError("Por favor ingrese su cédula");
+      return;
+    }
+    else{
+      const urlGetUser = `/api/funcionarios/cedula/[ced]?cedula=${cedula}`;
+      const fetchWorker = await fetch(urlGetUser, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const worker: Funcionarios = await fetchWorker.json();
+      if (!worker) {
+        setError("Error al recuperar la contraseña, comuniquese con soporte");
+        return;
+      }
+      try {
+     await recoveryPassword(worker); 
+     setError("Se ha enviado un correo a su cuenta con la nueva contraseña");
+    }
+    catch (error) {
+      console.error("Error al recuperar la contraseña:", error);
+      setError("Error al recuperar la contraseña, comuniquese con soporte");
+      return;
+    }
+    }
+  }
+
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
 
@@ -76,7 +108,13 @@ export default function LoginPage() {
         Rol: rol.Nombre,
       };
       setUser(usuario);
-      router.push("/homepages/curses");
+      console.log("El funcionario es: ", funcionario);
+      if(funcionario.Change_password === "Y"){
+        router.push("/homepages/auth/recovery_password");
+      }
+      else{
+        router.push("/homepages/curses");
+      }
     }
   };
 
@@ -139,7 +177,7 @@ export default function LoginPage() {
             Iniciar sesión
           </button>
           <div className="mt-4 text-left">
-            <a href="#" className="text-gray-700 dark:text-gray-300 hover:underline">
+            <a href="" onClick={handleRecoveryPassword} className="text-gray-700 dark:text-gray-300 hover:underline">
               ¿Olvidaste tu contraseña?
             </a>
           </div>
