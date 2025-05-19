@@ -10,6 +10,7 @@ import { createStudentPerSeccion, getFunctionaryIdByCedula } from "@/app/service
 import { convertToISODate } from "@/app/utils/dateCast";
 import { useSecciones } from "../../../hooks/useSecciones";
 import { useFuncionarios } from "../../../hooks/useFuncionarios";
+import Alert from "../../../_components/feedBack/alert";
 
 const SectionsMaintenance = () => {
   const { sections, fetchSections, setSections } = useSecciones();
@@ -18,6 +19,12 @@ const SectionsMaintenance = () => {
   const [isSectionModalOpen, setIsSectionModalOpen] = React.useState(false);
   const [sectionToEdit, setSectionToEdit] = React.useState<Seccion | null>(null);
   const [searchTerm, setSearchTerm] = React.useState("");
+
+  const [alert, setAlert] = React.useState<{ message: string; type: "success" | "error" | "info" | "warning"; show: boolean }>({
+    message: "",
+    type: "info",
+    show: false,
+  });
 
   const {
     register: registerSection,
@@ -45,6 +52,10 @@ const SectionsMaintenance = () => {
     setValue("Id_funcionario", dataFromExcel.Id_funcionario);
     setValue("Estado", dataFromExcel.Estado);
     setValue("Comentarios", dataFromExcel.Comentarios);
+  };
+
+  const showAlert = (message: string, type: "success" | "error" | "info" | "warning" = "info") => {
+    setAlert({ message, type, show: true });
   };
 
   const handleCreateSection = async (data: Seccion) => {
@@ -77,18 +88,18 @@ const SectionsMaintenance = () => {
             setExcelStudentsData([]);
           } catch (error) {
             console.error("Error al crear estudiantes:", error);
-            alert("Error al crear estudiantes de la sección desde documento Excel");
+            showAlert("Error al crear estudiantes de la sección desde documento Excel", "error");
           }
         }
-        alert("Sección guardada exitosamente");
+        showAlert("Sección guardada exitosamente", "success");
         fetchSections();
         handleNew();
       } else {
-        alert("Error al guardar la Sección");
+        showAlert("Error al guardar la Sección", "error");
       }
     } catch (error) {
       console.error("Error en la petición", error);
-      alert("Ocurrió un error");
+      showAlert("Ocurrió un error", "error");
     }
 
     setIsSectionModalOpen(false);
@@ -112,16 +123,16 @@ const SectionsMaintenance = () => {
       });
 
       if (response.ok) {
-        alert("Sección eliminada exitosamente");
+        showAlert("Sección eliminada exitosamente", "success");
         handleNew();
         fetchSections();
       } else {
         const errorData = await response.json();
-        alert(`Error al eliminar la sección: ${errorData.error}`);
+        showAlert(`Error al eliminar la sección: ${errorData.error}`, "error");
       }
     } catch (error) {
       console.error("Error en la petición de eliminación", error);
-      alert("Ocurrió un error al eliminar la sección");
+      showAlert("Ocurrió un error al eliminar la sección", "error");
     }
   };
 
@@ -150,6 +161,12 @@ const SectionsMaintenance = () => {
 
   return (
     <>
+      <Alert
+        type={alert.type}
+        message={alert.message}
+        show={alert.show}
+        onClose={() => setAlert((a) => ({ ...a, show: false }))}
+      />
       <div className="flex justify-between mb-4 items-center">
         <Input
           id="searchSection"

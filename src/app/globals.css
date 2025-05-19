@@ -6,3 +6,14 @@
   transform: scale(0.9);
   transform-origin: top left;
 }
+
+@layer utilities {
+  .animate-pulse-green { animation: pulse-green 1.5s infinite; }
+  .animate-pulse-red { animation: pulse-red 1.5s infinite; }
+  .animate-pulse-yellow { animation: pulse-yellow 1.5s infinite; }
+  .animate-pulse-blue { animation: pulse-blue 1.5s infinite; }
+  @keyframes pulse-green { 0%, 100% { border-color: #22c55e; } 50% { border-color: #bbf7d0; } }
+  @keyframes pulse-red { 0%, 100% { border-color: #ef4444; } 50% { border-color: #fecaca; } }
+  @keyframes pulse-yellow { 0%, 100% { border-color: #eab308; } 50% { border-color: #fef9c3; } }
+  @keyframes pulse-blue { 0%, 100% { border-color: #3b82f6; } 50% { border-color: #bfdbfe; } }
+}

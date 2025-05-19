@@ -13,6 +13,7 @@ import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";
 import { set } from "date-fns";
+import Alert from "../../../_components/feedBack/alert";
 
 export default function Students() {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -28,6 +29,15 @@ export default function Students() {
   const [sections, setSections] = useState<Seccion[]>([]);
   const [showParentList, setShowParentList] = useState(false);
   const [parentsChanged, setParentsChanged] = useState(false);
+  const [alert, setAlert] = useState<{ message: string; type: "success" | "error" | "info" | "warning"; show: boolean }>({
+    message: "",
+    type: "info",
+    show: false,
+  });
+
+  const showAlert = (message: string, type: "success" | "error" | "info" | "warning" = "info") => {
+    setAlert({ message, type, show: true });
+  };
 
   const fetchSections = async () => {
     const response = await fetch(`/api/secciones`, {
@@ -135,12 +145,11 @@ export default function Students() {
           ...prevListRemove,
           prevList.find((parent) => parent.Id_encargado_legal === idAEliminar)!,
         ]);
-
         return prevList.filter(
           (parent) => parent.Id_encargado_legal !== idAEliminar
         );
       }
-      alert("El estudiante debe tener por lo menos un encargado legal");
+      showAlert("El estudiante debe tener por lo menos un encargado legal", "warning");
       return prevList;
     });
   };
@@ -162,7 +171,7 @@ export default function Students() {
 
   const handleSave = async (data: Student) => {
     if (studentParentsList.length === 0) {
-      alert("El estudiante debe tener por lo menos un encargado legal");
+      showAlert("El estudiante debe tener por lo menos un encargado legal", "warning");
       return;
     }
 
@@ -181,7 +190,7 @@ export default function Students() {
       });
 
       if (!response.ok) {
-        alert("Error al guardar el estudiante");
+        showAlert("Error al guardar el estudiante", "error");
         return;
       }
 
@@ -227,11 +236,11 @@ export default function Students() {
         );
       }
 
-      alert("Estudiante y encargados actualizados exitosamente");
+      showAlert("Estudiante y encargados actualizados exitosamente", "success");
       handleNew();
     } catch (error) {
       console.error("Error en la petición", error);
-      alert("Ocurrió un error");
+      showAlert("Ocurrió un error", "error");
     }
   };
 
@@ -256,7 +265,7 @@ export default function Students() {
 
   const handleDelete = async () => {
     if (!selectedStudent || !selectedStudent.Id_alumno) {
-      alert("Por favor selecciona un estudiante para eliminar");
+      showAlert("Por favor selecciona un estudiante para eliminar", "warning");
       return;
     }
 
@@ -270,19 +279,25 @@ export default function Students() {
       });
 
       if (response.ok) {
-        alert("Estudiante eliminado exitosamente");
+        showAlert("Estudiante eliminado exitosamente", "success");
         handleNew();
       } else {
         const errorData = await response.json();
-        alert(`Error al eliminar el estudiante: ${errorData.error}`);
+        showAlert(`Error al eliminar el estudiante: ${errorData.error}`, "error");
       }
     } catch (error) {
       console.error("Error en la petición de eliminación", error);
-      alert("Ocurrió un error al eliminar el estudiante");
+      showAlert("Ocurrió un error al eliminar el estudiante", "error");
     }
   };
   return (
     <div className="p-6 flex flex-col h-full">
+      <Alert
+        type={alert.type}
+        message={alert.message}
+        show={alert.show}
+        onClose={() => setAlert((a) => ({ ...a, show: false }))}
+      />
       <h1 className="text-3xl font-bold mb-8 text-gray-500 dark:text-gray-400">
         Mantenimiento - Estudiantes
       </h1>
