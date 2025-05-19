@@ -24,8 +24,8 @@ export async function POST(req: Request) {
       from: `"Liceo San Pedro" <${process.env.GMAIL_USER}>`,
       to,
       subject,
-      text: message || '', 
-      html: html || '',    
+      text: message || '',
+      html: html || '',
     });
 
     return NextResponse.json({ message: 'Correo enviado correctamente' });

@@ -8,7 +8,6 @@ import { signIn, getSession } from "next-auth/react";
 import useAuthStore from "../../../../../provider/store";
 import recoveryPassword from "../../../services/change_password";
 
-
 export default function LoginPage() {
   const router = useRouter();
   const [cedula, setCedula] = useState("");
@@ -34,23 +33,20 @@ export default function LoginPage() {
     "Controla la asistencia de tus estudiantes",
   ];
 
-  const handleShowPassword = () =>{
-    
-    if (showPassword === "text" ){
+  const handleShowPassword = () => {
+    if (showPassword === "text") {
       setShowPassword("password");
-    }
-    else{
+    } else {
       setShowPassword("text");
     }
   };
 
   const handleRecoveryPassword = async (event: React.MouseEvent) => {
     event.preventDefault();
-    if(cedula === ""){
+    if (cedula === "") {
       setError("Por favor ingrese su cédula");
       return;
-    }
-    else{
+    } else {
       const urlGetUser = `/api/funcionarios/cedula/[ced]?cedula=${cedula}`;
       const fetchWorker = await fetch(urlGetUser, {
         method: "GET",
@@ -63,17 +59,22 @@ export default function LoginPage() {
         setError("Error al recuperar la contraseña, comuniquese con soporte");
         return;
       }
+      if (worker.Estado === "I" || worker.Change_password === "Y") {
+        setError(
+          "El usuario se encuentra inactivo o ya solicito recuperar su contraseña, comuniquese con soporte si cree que es un error"
+        );
+        return;
+      }
       try {
-     await recoveryPassword(worker); 
-     setError("Se ha enviado un correo a su cuenta con la nueva contraseña");
+        await recoveryPassword(worker);
+        setError("Se ha enviado un correo a su cuenta con la nueva contraseña");
+      } catch (error) {
+        console.error("Error al recuperar la contraseña:", error);
+        setError("Error al recuperar la contraseña, comuniquese con soporte");
+        return;
+      }
     }
-    catch (error) {
-      console.error("Error al recuperar la contraseña:", error);
-      setError("Error al recuperar la contraseña, comuniquese con soporte");
-      return;
-    }
-    }
-  }
+  };
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -85,15 +86,20 @@ export default function LoginPage() {
     });
     if (res?.error) {
       setError("Credenciales incorrectas, por favor intente de nuevo.");
-      console.log('El error es ' + res.error);
+      console.log("El error es " + res.error);
     } else {
       const session = await getSession();
       const urlUsuario = `/api/funcionarios/[id]?Id_funcionario=${session?.user.id}`;
       const resultUsuario = await fetch(urlUsuario);
       const funcionario: Funcionarios = await resultUsuario.json();
+      if (funcionario.Estado === "I") {
+        setError("El usuario se encuentra inactivo, comuniquese con soporte");
+        return;
+      }
       const urlRolxFuncionario = `/api/funcionarios_x_rol?Id_funcionario=${session?.user.id}`;
       const resultRolXFuncionario = await fetch(urlRolxFuncionario);
-      const rol_x_funcionario: FuncionariosXRol = await resultRolXFuncionario.json();
+      const rol_x_funcionario: FuncionariosXRol =
+        await resultRolXFuncionario.json();
       const rolUrl = `/api/rol_funcionario/[Id]?Id_rol_funcionario=${rol_x_funcionario.Id_rol_funcionario}`;
       const resultRol = await fetch(rolUrl);
       const rol: RolFuncionario = await resultRol.json();
@@ -109,10 +115,9 @@ export default function LoginPage() {
       };
       setUser(usuario);
       console.log("El funcionario es: ", funcionario);
-      if(funcionario.Change_password === "Y"){
+      if (funcionario.Change_password === "Y") {
         router.push("/homepages/auth/recovery_password");
-      }
-      else{
+      } else {
         router.push("/homepages/curses");
       }
     }
@@ -147,7 +152,7 @@ export default function LoginPage() {
           <Input
             id="password"
             name="password"
-            type = {showPassword}
+            type={showPassword}
             label="Contraseña"
             placeholder="Ingresa tu contraseña"
             required
@@ -177,7 +182,11 @@ export default function LoginPage() {
             Iniciar sesión
           </button>
           <div className="mt-4 text-left">
-            <a href="" onClick={handleRecoveryPassword} className="text-gray-700 dark:text-gray-300 hover:underline">
+            <a
+              href=""
+              onClick={handleRecoveryPassword}
+              className="text-gray-700 dark:text-gray-300 hover:underline"
+            >
               ¿Olvidaste tu contraseña?
             </a>
           </div>
