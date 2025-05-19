@@ -1,6 +1,5 @@
-import { Prisma } from "@prisma/client";
 
-function generateRandomPassword(length: number = 16): string {
+export function generateRandomPassword(length: number = 16): string {
   const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=";
   let password = "";
   for (let i = 0; i < length; i++) {
@@ -9,6 +8,77 @@ function generateRandomPassword(length: number = 16): string {
   }
   return password;
 }
+
+export async function newUserPassword(user: Funcionarios) {
+  const urlSendEmail = `/api/send_email`;
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang=\"es\">
+<head>
+  <meta charset=\"UTF-8\" />
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"/>
+  <title>Primer Ingreso RAE LSP</title>
+</head>
+<body style=\"font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;\">
+  <table align=\"center\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color: #f4f4f4; padding: 20px;\">
+    <tr>
+      <td align=\"center\">
+        <table width=\"600\" cellpadding=\"0\" cellspacing=\"0\" style=\"background-color: #ffffff; border-radius: 8px; overflow: hidden;\">
+          <tr>
+            <td style=\"padding: 20px; text-align: center; background-color: #2783B1; color: white;\">
+              <h2 style=\"margin: 0;\">Primer Ingreso</h2>
+            </td>
+          </tr>
+          <tr>
+            <td style=\"padding: 30px;\">
+              <p style=\"font-size: 16px; color: #333333;\">
+                Hola, le damos la bienvenida a RAE LSP el sistema para el registro de asistencia en el Liceo San Pedro.
+              </p>
+              <p style=\"font-size: 16px; color: #333333;\">
+                Tu contraseña provisional para el primer inicio de sesión es:
+              </p>
+              <p style=\"font-size: 20px; font-weight: bold; color: #2783B1; background-color: #f0f8ff; padding: 10px; text-align: center; border-radius: 4px;\">
+                ${user.Password}
+              </p>
+              <p style=\"font-size: 16px; color: #333333;\">
+                Por seguridad, te recomendamos iniciar sesión lo antes posible para que cambies la contraseña por una que solo tu conozcas.</br>
+                Para iniciar sesión, utiliza tu cédula como nombre de usuario y la contraseña provisional que te hemos proporcionado.
+              </p>
+              <hr style=\"margin: 30px 0;\" />
+              <p style=\"font-size: 14px; color: #777777;\">
+                Si tienes algún problema por favor comunícate con el equipo de soporte de <strong>Liceo San Pedro</strong> o administrativos de manera inmediata.
+              </p>
+              <p style=\"font-size: 14px; color: #777777; text-align: center; margin-top: 40px;\">
+                &copy; 2025 Liceo San Pedro. Todos los derechos reservados.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`;
+
+  const body = {
+    to: user.Email,
+    subject: "Primer ingreso RAE LSP",
+    html: htmlContent,
+  };
+  const resultEmail = await fetch(urlSendEmail, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  if (!resultEmail.ok) {
+    throw new Error("Error al enviar el correo de recuperación de contraseña");
+  }
+
+}
+
 
 async function recoveryPassword(user: Funcionarios) {
   user.Password = generateRandomPassword();

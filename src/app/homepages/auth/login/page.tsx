@@ -6,7 +6,7 @@ import Carousel from "../../../_components/Atoms/carousel";
 import { useRouter } from "next/navigation";
 import { signIn, getSession } from "next-auth/react";
 import useAuthStore from "../../../../../provider/store";
-import recoveryPassword from "../../../services/change_password";
+import recoveryPassword from "../../../services/password_mail";
 
 export default function LoginPage() {
   const router = useRouter();
