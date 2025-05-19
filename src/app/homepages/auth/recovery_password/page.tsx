@@ -25,6 +25,16 @@ export default function LoginPage() {
 
   const handleNewPassword = async (event: React.FormEvent) => {
     event.preventDefault();
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
+
+    if (!passwordRegex.test(newPassword)) {
+      setError(
+        "La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula y un número."
+      );
+      return;
+    }
+
     if (newPassword !== retypedPassword) {
       setError("Las contraseñas no coinciden");
       return;
@@ -88,6 +98,7 @@ export default function LoginPage() {
             value={retypedPassword}
             onChange={(e) => setRetypedPassword(e.target.value)}
           />
+
           {error && <p className="text-red-500 mt-2">{error}</p>}
           <div className="flex items-center mt-4 mb-6">
             <input
