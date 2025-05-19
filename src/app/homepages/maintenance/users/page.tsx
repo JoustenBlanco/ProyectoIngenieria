@@ -8,6 +8,7 @@ import UserList from "../../../_components/Users/UserList";
 import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";
+import Alert from "../../../_components/feedBack/alert";
 
 type FormValues = Funcionarios & {
   rol_funcionario?: number;
@@ -20,6 +21,11 @@ export default function Users() {
   const [funcionarioRoles, setFuncionarioRoles] = useState<FuncionariosXRol[]>(
     []
   );
+  const [alert, setAlert] = useState<{ message: string; type: "success" | "error" | "info" | "warning"; show: boolean }>({
+    message: "",
+    type: "info",
+    show: false,
+  });
 
   useEffect(() => {
     if (status == "unauthenticated") {
@@ -151,6 +157,10 @@ export default function Users() {
     }
   };
 
+  const showAlert = (message: string, type: "success" | "error" | "info" | "warning" = "info") => {
+    setAlert({ message, type, show: true });
+  };
+
   const handleSave = async (data: FormValues ) => {
     console.log("Datos a enviar:", data);
     try {
@@ -166,18 +176,18 @@ export default function Users() {
       });
       if (response.ok) {
         const result = await response.json();
-        alert("Funcionario guardado exitosamente");
+        showAlert("Funcionario guardado exitosamente", "success");
         if (rolId) {
           const funcionarioId = selectedUser?.Id_funcionario || result.Id_funcionario;
           await handleFuncionarioRol(funcionarioId, rolId);
         }
         handleNew();
       } else {
-        alert("Error al guardar el funcionario");
+        showAlert("Error al guardar el funcionario", "error");
       }
     } catch (error) {
       console.error("Error en la petición", error);
-      alert("Ocurrió un error");
+      showAlert("Ocurrió un error", "error");
     }
   };
 
@@ -205,7 +215,7 @@ export default function Users() {
 
   const handleDelete = async () => {
     if (!selectedUser || !selectedUser.Id_funcionario) {
-      alert("Por favor selecciona un funcionario para eliminar");
+      showAlert("Por favor selecciona un funcionario para eliminar", "warning");
       return;
     }
     
@@ -227,15 +237,15 @@ export default function Users() {
       });
 
       if (response.ok) {
-        alert("Funcionario eliminado exitosamente");
+        showAlert("Funcionario eliminado exitosamente", "success");
         handleNew();
       } else {
         const errorData = await response.json();
-        alert(`Error al eliminar el funcionario: ${errorData.error}`);
+        showAlert(`Error al eliminar el funcionario: ${errorData.error}`, "error");
       }
     } catch (error) {
       console.error("Error en la petición de eliminación", error);
-      alert("Ocurrió un error al eliminar el funcionario");
+      showAlert("Ocurrió un error al eliminar el funcionario", "error");
     }
   };
 
@@ -249,6 +259,12 @@ export default function Users() {
 
   return (
     <div className="p-6 flex flex-col h-full">
+      <Alert
+        type={alert.type}
+        message={alert.message}
+        show={alert.show}
+        onClose={() => setAlert((a) => ({ ...a, show: false }))}
+      />
       <h1 className="text-3xl font-bold mb-8 text-gray-500 dark:text-gray-400">
         Mantenimiento - Usuarios
       </h1>

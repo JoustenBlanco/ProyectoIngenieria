@@ -8,6 +8,7 @@ import { useClases } from "../../../hooks/useClases";
 import { useMaterias } from "../../../hooks/useMaterias";
 import { useFuncionarios } from "../../../hooks/useFuncionarios";
 import { useSecciones } from "../../../hooks/useSecciones";
+import Alert from "../../../_components/feedBack/alert";
 
 const ClassesMaintenance = () => {
   const { classes, fetchClasses, setClasses } = useClases();
@@ -18,6 +19,12 @@ const ClassesMaintenance = () => {
   const [isClassModalOpen, setIsClassModalOpen] = React.useState(false);
   const [classToEdit, setClassToEdit] = React.useState<Clase | null>(null);
   const [searchTerm, setSearchTerm] = React.useState("");
+
+  const [alert, setAlert] = React.useState<{ message: string; type: "success" | "error" | "info" | "warning"; show: boolean }>({
+    message: "",
+    type: "info",
+    show: false,
+  });
 
   const {
     register: registerClass,
@@ -45,6 +52,10 @@ const ClassesMaintenance = () => {
     }
   };
 
+  const showAlert = (message: string, type: "success" | "error" | "info" | "warning" = "info") => {
+    setAlert({ message, type, show: true });
+  };
+
   const handleCreateClass = async (data: Clase) => {
     data.Id_funcionario = Number(data.Id_funcionario);
     data.Id_materia = Number(data.Id_materia);
@@ -59,18 +70,18 @@ const ClassesMaintenance = () => {
         body: JSON.stringify(data),
       });
       if (response.ok) {
-        alert("Clase guardada exitosamente");
+        showAlert("Clase guardada exitosamente", "success");
         fetchClasses();
         resetClass({
           Descripcion: "",
           Estado: "",
         });
       } else {
-        alert("Error al guardar la Clase");
+        showAlert("Error al guardar la Clase", "error");
       }
     } catch (error) {
       console.error("Error en la petición", error);
-      alert("Ocurrió un error");
+      showAlert("Ocurrió un error", "error");
     }
 
     setIsClassModalOpen(false);
@@ -94,7 +105,7 @@ const ClassesMaintenance = () => {
       });
 
       if (response.ok) {
-        alert("Clase eliminada exitosamente");
+        showAlert("Clase eliminada exitosamente", "success");
         resetClass({
           Descripcion: "",
           Estado: "",
@@ -102,16 +113,22 @@ const ClassesMaintenance = () => {
         fetchClasses();
       } else {
         const errorData = await response.json();
-        alert(`Error al eliminar la clase: ${errorData.error}`);
+        showAlert(`Error al eliminar la clase: ${errorData.error}`, "error");
       }
     } catch (error) {
       console.error("Error en la petición de eliminación", error);
-      alert("Ocurrió un error al eliminar la clase");
+      showAlert("Ocurrió un error al eliminar la clase", "error");
     }
   };
 
   return (
     <>
+      <Alert
+        type={alert.type}
+        message={alert.message}
+        show={alert.show}
+        onClose={() => setAlert((a) => ({ ...a, show: false }))}
+      />
       {/* Buscador y botón de Agregar */}
       <div className="flex justify-between mb-4 items-center">
         <Input

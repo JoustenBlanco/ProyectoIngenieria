@@ -5,6 +5,7 @@ import Select from "../../../_components/Atoms/select";
 import Modal from "../../../_components/Atoms/modal";
 import { useForm } from "react-hook-form";
 import { useMaterias } from "../../../hooks/useMaterias";
+import Alert from "../../../_components/feedBack/alert";
 
 const SubjectsMaintenance = () => {
   const { subjects, fetchSubjects, setSubjects } = useMaterias();
@@ -13,6 +14,11 @@ const SubjectsMaintenance = () => {
     null
   );
   const [searchTerm, setSearchTerm] = React.useState("");
+  const [alert, setAlert] = React.useState<{ message: string; type: "success" | "error" | "info" | "warning"; show: boolean }>({
+    message: "",
+    type: "info",
+    show: false,
+  });
 
   const {
     register: registerSubject,
@@ -20,6 +26,10 @@ const SubjectsMaintenance = () => {
     formState: { errors: errorsSubject },
     reset: resetSubject,
   } = useForm<Materia>();
+
+  const showAlert = (message: string, type: "success" | "error" | "info" | "warning" = "info") => {
+    setAlert({ message, type, show: true });
+  };
 
   const handleCreateSubject = async (data: Materia) => {
     console.log("Datos a enviar:", data);
@@ -32,7 +42,7 @@ const SubjectsMaintenance = () => {
         body: JSON.stringify(data),
       });
       if (response.ok) {
-        alert("Materia guardada exitosamente");
+        showAlert("Materia guardada exitosamente", "success");
         fetchSubjects();
         resetSubject({
           Nombre: "",
@@ -40,11 +50,11 @@ const SubjectsMaintenance = () => {
           Descripcion: "",
         });
       } else {
-        alert("Error al guardar la Materia");
+        showAlert("Error al guardar la Materia", "error");
       }
     } catch (error) {
       console.error("Error en la petición", error);
-      alert("Ocurrió un error");
+      showAlert("Ocurrió un error", "error");
     }
 
     setIsSubjectModalOpen(false);
@@ -68,15 +78,15 @@ const SubjectsMaintenance = () => {
       });
 
       if (response.ok) {
-        alert("Materia eliminada exitosamente");
+        showAlert("Materia eliminada exitosamente", "success");
         fetchSubjects();
       } else {
         const errorData = await response.json();
-        alert(`Error al eliminar la materia: ${errorData.error}`);
+        showAlert(`Error al eliminar la materia: ${errorData.error}`, "error");
       }
     } catch (error) {
       console.error("Error en la petición de eliminación", error);
-      alert("Ocurrió un error al eliminar la materia");
+      showAlert("Ocurrió un error al eliminar la materia", "error");
     }
   };
 
@@ -98,6 +108,12 @@ const SubjectsMaintenance = () => {
 
   return (
     <>
+      <Alert
+        type={alert.type}
+        message={alert.message}
+        show={alert.show}
+        onClose={() => setAlert((a) => ({ ...a, show: false }))}
+      />
       <div className="flex justify-between mb-4 items-center">
         <Input
           id="searchSubject"

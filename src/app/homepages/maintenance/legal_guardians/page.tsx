@@ -9,6 +9,7 @@ import GuardianList from "../../../_components/legal_guardians/GuardiansList";
 import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";
+import Alert from "../../../_components/feedBack/alert";
 
 export default function Legal_Guardians() {
   const { data: session, status } = useSession();
@@ -42,6 +43,11 @@ export default function Legal_Guardians() {
     null
   );
   const [showGuardianList, setShowGuardianList] = useState(false);
+  const [alert, setAlert] = useState<{ message: string; type: "success" | "error" | "info" | "warning"; show: boolean }>({
+    message: "",
+    type: "info",
+    show: false,
+  });
 
   const handleOpenGuardianList = () => {
     setShowGuardianList(true);
@@ -57,6 +63,10 @@ export default function Legal_Guardians() {
     reset(guardian);
   };
 
+  const showAlert = (message: string, type: "success" | "error" | "info" | "warning" = "info") => {
+    setAlert({ message, type, show: true });
+  };
+
   const onSubmit = async (data: Parents) => {
     try {
       const response = await fetch("/api/encargados_legales", {
@@ -68,14 +78,14 @@ export default function Legal_Guardians() {
       });
 
       if (response.ok) {
-        alert("Encargado legal guardado exitosamente");
+        showAlert("Encargado legal guardado exitosamente", "success");
         handleNew();
       } else {
         throw new Error("Error al guardar el encargado legal");
       }
     } catch (error) {
       console.error(error);
-      alert("Hubo un problema al guardar el encargado legal");
+      showAlert("Hubo un problema al guardar el encargado legal", "error");
     }
   };
 
@@ -97,10 +107,10 @@ export default function Legal_Guardians() {
 
   const handleDelete = async () => {
     if (!selectedUGuardian || !selectedUGuardian.Id_encargado_legal) {
-      alert("Por favor selecciona un encargado para eliminar");
+      showAlert("Por favor selecciona un encargado para eliminar", "warning");
       return;
     }
-  
+
     try {
       const response = await fetch("/api/encargados_legales", {
         method: "DELETE",
@@ -109,22 +119,28 @@ export default function Legal_Guardians() {
         },
         body: JSON.stringify({ Id_encargado_legal: selectedUGuardian.Id_encargado_legal}),
       });
-  
+
       if (response.ok) {
-        alert("Encargado eliminado exitosamente");
+        showAlert("Encargado eliminado exitosamente", "success");
         handleNew();
       } else {
         const errorData = await response.json();
-        alert(`Error al eliminar el encargado: ${errorData.error}`);
+        showAlert(`Error al eliminar el encargado: ${errorData.error}`, "error");
       }
     } catch (error) {
       console.error("Error en la petición de eliminación", error);
-      alert("Ocurrió un error al eliminar el encargado");
+      showAlert("Ocurrió un error al eliminar el encargado", "error");
     }
   };
 
   return (
     <div className="p-6 flex flex-col h-full">
+      <Alert
+        type={alert.type}
+        message={alert.message}
+        show={alert.show}
+        onClose={() => setAlert((a) => ({ ...a, show: false }))}
+      />
       <div className="w-full text-start mb-8">
         <h1 className="text-3xl font-bold text-gray-500 dark:text-gray-400">
           Mantenimiento - Encargados Legales

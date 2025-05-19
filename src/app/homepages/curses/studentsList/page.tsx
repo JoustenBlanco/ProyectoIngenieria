@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Student from "@/app/_components/students/student";
+import Alert from "@/app/_components/feedBack/alert";
 
 import { Textarea, Checkbox, Modal, Button } from "flowbite-react";
 import { useSearchParams } from "next/navigation";
@@ -22,6 +23,26 @@ const StudentsList: React.FC = () => {
   >(null);
   const [modalComment, setModalComment] = useState("");
   const [selectAll, setSelectAll] = useState(false);
+  const [alert, setAlert] = useState<{ message: string; type: "success" | "error" | "info" | "warning"; show: boolean }>({
+    message: "",
+    type: "info",
+    show: false,
+  });
+  const [confirm, setConfirm] = useState<{
+    show: boolean;
+    message: string;
+    onConfirm: (() => void) | null;
+    onCancel?: (() => void) | null;
+  }>({
+    show: false,
+    message: "",
+    onConfirm: null,
+    onCancel: null,
+  });
+
+  const showAlert = (message: string, type: "success" | "error" | "info" | "warning" = "info") => {
+    setAlert({ message, type, show: true });
+  };
 
   const handleOpenCommentModal = (studentId: number, comment: string) => {
     setActiveCommentStudentId(studentId);
@@ -322,7 +343,7 @@ const StudentsList: React.FC = () => {
         });
         const result = await response.json();
         if (result) {
-          alert("Asistencia actualizada exitosamente.");
+          showAlert("Asistencia actualizada exitosamente.", "success");
           await handleSaveStudentAttendance(
             asistenciaId,
             panel.students,
@@ -340,7 +361,7 @@ const StudentsList: React.FC = () => {
         });
         const result = await response.json();
         if (result && result.Id_asistencia) {
-          alert("Asistencia guardada exitosamente.");
+          showAlert("Asistencia guardada exitosamente.", "success");
           await handleSaveStudentAttendance(
             result.Id_asistencia,
             panel.students,
@@ -356,7 +377,7 @@ const StudentsList: React.FC = () => {
       }
     } catch (error) {
       console.error("Error guardando o actualizando asistencia:", error);
-      alert("Hubo un error al guardar o actualizar la asistencia.");
+      showAlert("Hubo un error al guardar o actualizar la asistencia.", "error");
     }
   };
 
@@ -441,10 +462,10 @@ const StudentsList: React.FC = () => {
         })
       );
 
-      alert("Asistencia guardada exitosamente.");
+      showAlert("Asistencia guardada exitosamente.", "success");
     } catch (error) {
       console.error("Error guardando la asistencia de estudiantes:", error);
-      alert("Hubo un error al guardar la asistencia de los estudiantes.");
+      showAlert("Hubo un error al guardar la asistencia de los estudiantes.", "error");
     }
   };
 
@@ -486,63 +507,91 @@ const StudentsList: React.FC = () => {
       return;
     }
 
-    if (
-      !window.confirm(
-        "¿Está seguro que desea eliminar esta asistencia? Esta acción no se puede deshacer."
-      )
-    ) {
-      return;
-    }
-
-    try {
-      // 1. Eliminar todos los registros de asistencia_x_alumnos para esta asistencia
-      await Promise.all(
-        panel.students.map(async (student) => {
-          await fetch(
-            `/api/asistencia_x_alumnos?Id_asistencia=${panel.asistenciaId}&Id_alumno=${student.Id_alumno}`,
-            {
-              method: "DELETE",
-            }
+    // Usar Alert como confirmación
+    setConfirm({
+      show: true,
+      message: "¿Está seguro que desea eliminar esta asistencia? Esta acción no se puede deshacer.",
+      onConfirm: async () => {
+        setConfirm((c) => ({ ...c, show: false }));
+        try {
+          // 1. Eliminar todos los registros de asistencia_x_alumnos para esta asistencia
+          await Promise.all(
+            panel.students.map(async (student) => {
+              await fetch(
+                `/api/asistencia_x_alumnos?Id_asistencia=${panel.asistenciaId}&Id_alumno=${student.Id_alumno}`,
+                {
+                  method: "DELETE",
+                }
+              );
+            })
           );
-        })
-      );
 
-      // 2. Eliminar la asistencia
-      await fetch(`/api/asistencia?Id_asistencia=${panel.asistenciaId}`, {
-        method: "DELETE",
-      });
+          // 2. Eliminar la asistencia
+          await fetch(`/api/asistencia?Id_asistencia=${panel.asistenciaId}`, {
+            method: "DELETE",
+          });
 
-      // 3. Quitar el panel del estado
-      setAttendancePanels((prevPanels) => {
-        const panels = prevPanels.filter((_, i) => i !== panelIdx);
-        let newExpanded = expandedPanel;
-        if (expandedPanel === panelIdx) newExpanded = 0;
-        else if (expandedPanel > panelIdx) newExpanded = expandedPanel - 1;
-        setExpandedPanel(panels.length === 0 ? 0 : newExpanded);
-        return panels.length === 0
-          ? [
-              {
-                comments: "",
-                place: "",
-                startTime: null,
-                endTime: null,
-                errors: {},
-                asistenciaId: null,
-                students: studentsList,
-              },
-            ]
-          : panels;
-      });
+          // 3. Quitar el panel del estado
+          setAttendancePanels((prevPanels) => {
+            const panels = prevPanels.filter((_, i) => i !== panelIdx);
+            let newExpanded = expandedPanel;
+            if (expandedPanel === panelIdx) newExpanded = 0;
+            else if (expandedPanel > panelIdx) newExpanded = expandedPanel - 1;
+            setExpandedPanel(panels.length === 0 ? 0 : newExpanded);
+            return panels.length === 0
+              ? [
+                  {
+                    comments: "",
+                    place: "",
+                    startTime: null,
+                    endTime: null,
+                    errors: {},
+                    asistenciaId: null,
+                    students: studentsList,
+                  },
+                ]
+              : panels;
+          });
 
-      alert("Asistencia eliminada correctamente.");
-    } catch (error) {
-      console.error("Error eliminando la asistencia:", error);
-      alert("Hubo un error al eliminar la asistencia.");
-    }
+          showAlert("Asistencia eliminada correctamente.", "success");
+        } catch (error) {
+          console.error("Error eliminando la asistencia:", error);
+          showAlert("Hubo un error al eliminar la asistencia.", "error");
+        }
+      },
+      onCancel: () => setConfirm((c) => ({ ...c, show: false })),
+    });
   };
 
   return (
     <div className="flex flex-col w-full min-h-screen">
+      {/* Alert message */}
+      <div className="w-full max-w-2xl mx-auto mt-2">
+        <Alert
+          type={alert.type}
+          message={alert.message}
+          show={alert.show}
+          onClose={() => setAlert((a) => ({ ...a, show: false }))}
+        />
+        {/* Confirm modal */}
+        <Alert
+          type="warning"
+          message={confirm.message}
+          show={confirm.show}
+          buttons={[
+            {
+              text: "Cancelar",
+              onClick: () => confirm.onCancel && confirm.onCancel(),
+              color: "gray",
+            },
+            {
+              text: "Eliminar",
+              onClick: () => confirm.onConfirm && confirm.onConfirm(),
+              color: "red",
+            },
+          ]}
+        />
+      </div>
       <h1 className="text-3xl font-bold mb-4 text-gray-500 dark:text-gray-400 text-center">
         Registrar Asistencia
       </h1>

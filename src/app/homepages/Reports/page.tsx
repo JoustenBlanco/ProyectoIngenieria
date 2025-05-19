@@ -5,6 +5,7 @@ import { useState } from "react";
 import SelectionModal from "@/app/_components/Reports/selectionModal";
 import ReportTable from "@/app/_components/Reports/reportTable";
 import ExportButtons from "@/app/_components/Reports/exportButtons";
+import Alert from "@/app/_components/feedBack/alert";
 
 import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";
@@ -31,6 +32,15 @@ export default function Reports() {
   const [searchValue, setSearchValue] = useState<string | null>(null);
   const [selectedReport, setSelectedReport] = useState<string>("");
   const [items, setItems] = useState<any[]>([]);
+  const [alert, setAlert] = useState<{ message: string; type: "success" | "error" | "info" | "warning"; show: boolean }>({
+    message: "",
+    type: "info",
+    show: false,
+  });
+
+  const showAlert = (message: string, type: "success" | "error" | "info" | "warning" = "info") => {
+    setAlert({ message, type, show: true });
+  };
 
   const fetchItems = async (query: string, type: string) => {
     let endpoint = "";
@@ -66,12 +76,12 @@ export default function Reports() {
   const fetchDataReportStudents = async () => {
     if (!searchValue) {
       console.warn("No se ha seleccionado un estudiante.");
-      alert("No se ha seleccionado un estudiante.");
+      showAlert("No se ha seleccionado un estudiante.", "warning");
       return;
     }
 
     if (!isHistorical && (!startDate || !endDate)) {
-      alert("Seleccione un rango de fechas válido.");
+      showAlert("Seleccione un rango de fechas válido.", "warning");
       return;
     }
 
@@ -94,17 +104,17 @@ export default function Reports() {
 
   const validateAndFetchData = () => {
     if (!selectedReport) {
-      alert("Seleccione un tipo de reporte.");
+      showAlert("Seleccione un tipo de reporte.", "warning");
       return;
     }
 
     if (!searchValue) {
-      alert(`Seleccione ${selectedReport.replace("Por ", "")}`);
+      showAlert(`Seleccione ${selectedReport.replace("Por ", "")}`, "warning");
       return;
     }
 
     if (!isHistorical && (!startDate || !endDate)) {
-      alert("Seleccione un rango de fechas válido.");
+      showAlert("Seleccione un rango de fechas válido.", "warning");
       return;
     }
     fetchDataReportStudents();
@@ -115,6 +125,12 @@ export default function Reports() {
 
   return (
     <div className="p-6">
+      <Alert
+        type={alert.type}
+        message={alert.message}
+        show={alert.show}
+        onClose={() => setAlert((a) => ({ ...a, show: false }))}
+      />
       <h1 className="text-3xl font-bold mb-8 text-gray-500 dark:text-gray-400">
         Reportes de Asistenia
       </h1>
