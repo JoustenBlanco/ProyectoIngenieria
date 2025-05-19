@@ -26,11 +26,11 @@ export default function LoginPage() {
   const handleNewPassword = async (event: React.FormEvent) => {
     event.preventDefault();
     const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%#*?()+&\-]{8,}$/;
 
     if (!passwordRegex.test(newPassword)) {
       setError(
-        "La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula y un número."
+        "La contraseña debe tener al menos 8 caracteres, incluyendo una mayúscula, una minúscula y un número "
       );
       return;
     }
