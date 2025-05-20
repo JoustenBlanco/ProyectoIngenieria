@@ -343,7 +343,6 @@ const StudentsList: React.FC = () => {
         });
         const result = await response.json();
         if (result) {
-          showAlert("Asistencia actualizada exitosamente.", "success");
           await handleSaveStudentAttendance(
             asistenciaId,
             panel.students,
@@ -361,7 +360,6 @@ const StudentsList: React.FC = () => {
         });
         const result = await response.json();
         if (result && result.Id_asistencia) {
-          showAlert("Asistencia guardada exitosamente.", "success");
           await handleSaveStudentAttendance(
             result.Id_asistencia,
             panel.students,
@@ -392,6 +390,20 @@ const StudentsList: React.FC = () => {
           const { Id_alumno, Asistio, Comentarios } = student;
 
           // Guardar o actualizar asistencia por estudiante
+          const claseResponse = await fetch(
+            `/api/clases`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              cache: "no-store",
+            }
+          );
+          const Clases = await claseResponse.json();
+          const clase = Clases.find(
+            (clase: any) => clase.Id_clase == claseId
+          );
           await fetch("/api/asistencia_x_alumnos", {
             method: isEdit ? "PUT" : "POST",
             headers: {
@@ -405,7 +417,6 @@ const StudentsList: React.FC = () => {
             }),
           });
 
-          // Si el estudiante no asistió, enviar correo
           if (!Asistio) {
             const studentRes = await fetch(
               `/api/alumnos/[id]?Id_estudiante=${Id_alumno}`
@@ -427,7 +438,7 @@ const StudentsList: React.FC = () => {
                   } ${studentData.Segundo_nombre} ${
                 studentData.Primer_apellido
               } ${studentData.Segundo_apellido}</strong>
-                  no asistió a clases el día <strong>${new Date().toLocaleDateString()}</strong>.
+                  no asistió a clases de <strong>${clase.RAE_Materia.Nombre}</strong> el día <strong>${new Date().toLocaleDateString()}</strong>.
                 </p>
                 <p style="margin-top: 20px;">
                   Lo invitamos cordialmente a acercarse a las instalaciones para justificar la ausencia o esclarecer cualquier duda. 
@@ -446,7 +457,7 @@ const StudentsList: React.FC = () => {
               </div>
             `;
 
-              await fetch("/api/send_email/parents", {
+              await fetch("/api/send_email", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
