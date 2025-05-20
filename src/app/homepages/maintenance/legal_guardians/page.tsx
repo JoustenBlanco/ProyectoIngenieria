@@ -10,6 +10,7 @@ import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";
 import Alert from "../../../_components/feedBack/alert";
+import Loading from "../../../_components/feedBack/loading";
 
 export default function Legal_Guardians() {
   const { data: session, status } = useSession();
@@ -132,6 +133,10 @@ export default function Legal_Guardians() {
       showAlert("Ocurrió un error al eliminar el encargado", "error");
     }
   };
+
+  if (status === "loading") {
+    return <Loading />;
+  }
 
   return (
     <div className="p-6 flex flex-col h-full">

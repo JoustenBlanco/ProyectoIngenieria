@@ -1,6 +1,7 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import Loading from "../feedBack/loading";
 
 interface CurseProps {
   image: string;
@@ -9,15 +10,23 @@ interface CurseProps {
   route: string;
   sectionId: string; 
   claseId: string;
+  onNavigate?: (route: string, sectionId: string, claseId: string) => void; // Nueva prop
 }
 
-const Curse: React.FC<CurseProps> = ({ image, title, description, route, sectionId, claseId }) => {
+const Curse: React.FC<CurseProps> = ({ image, title, description, route, sectionId, claseId, onNavigate }) => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleClick = () => {
-    router.push(`${route}?sectionId=${sectionId}&claseId=${claseId}`);
+    setIsLoading(true);
+    if (onNavigate) {
+      onNavigate(route, sectionId, claseId);
+    } 
   };
 
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div

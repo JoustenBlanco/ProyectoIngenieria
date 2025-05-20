@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { signIn, getSession } from "next-auth/react";
 import useAuthStore from "../../../../../provider/store";
 import recoveryPassword from "../../../services/password_mail";
+import Loading from "../../../_components/feedBack/loading";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -14,6 +15,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState("password");
+  const [isLoading, setIsLoading] = useState(false);
   const { setUser } = useAuthStore();
 
   const images = [
@@ -78,6 +80,7 @@ export default function LoginPage() {
 
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
+    setIsLoading(true);
 
     const res = await signIn("credentials", {
       redirect: false,
@@ -86,6 +89,7 @@ export default function LoginPage() {
     });
     if (res?.error) {
       setError("Credenciales incorrectas, por favor intente de nuevo.");
+      setIsLoading(false);
       console.log("El error es " + res.error);
     } else {
       const session = await getSession();
@@ -94,6 +98,7 @@ export default function LoginPage() {
       const funcionario: Funcionarios = await resultUsuario.json();
       if (funcionario.Estado === "I") {
         setError("El usuario se encuentra inactivo, comuniquese con soporte");
+        setIsLoading(false);
         return;
       }
       const urlRolxFuncionario = `/api/funcionarios_x_rol?Id_funcionario=${session?.user.id}`;
@@ -115,6 +120,7 @@ export default function LoginPage() {
       };
       setUser(usuario);
       console.log("El funcionario es: ", funcionario);
+      setIsLoading(false);
       if (funcionario.Change_password === "Y") {
         router.push("/homepages/auth/recovery_password");
       } else {
@@ -122,6 +128,10 @@ export default function LoginPage() {
       }
     }
   };
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div className="app-scaled flex flex-col md:flex-row bg-white dark:bg-gray-900 rounded-2xl overflow-hidden w-full max-w-6xl mx-auto shadow-2xl relative">

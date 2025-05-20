@@ -5,12 +5,16 @@ import useAuthStore from "../../../../provider/store";
 import Curse from "../../_components/curses/curse";
 import { useSession } from "next-auth/react";
 import { redirect, useRouter } from "next/navigation";
+import Loading from "../../_components/feedBack/loading"; // Importa Loading
 
 export default function Curses() {
   const user = useAuthStore((state) => state.user);
   const [clases, setClases] = useState<ClaseXSessiones[]>([]); 
+  const [isLoading, setIsLoading] = useState(false); // Nuevo estado
   const idFuncionario = user?.Id;
   const { data: session, status } = useSession();
+  const router = useRouter();
+
   useEffect(() => {
     console.log("Llega al useEffect de about");
   if (status == "unauthenticated"){
@@ -37,6 +41,16 @@ export default function Curses() {
 
     fetchClases();
   }, [idFuncionario]);
+
+  const handleNavigate = (route: string, sectionId: string, claseId: string) => {
+    setIsLoading(true);
+    router.push(`${route}?sectionId=${sectionId}&claseId=${claseId}`);
+  };
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
     <div className="p-6 flex-col justify-start items-center">
       <h1 className="text-3xl font-bold mb-4 text-gray-500 dark:text-gray-400">Cursos</h1>
@@ -49,7 +63,8 @@ export default function Curses() {
               description={clase.Descripcion || "Sin descripción"}
               route="/homepages/curses/studentsList"
               sectionId={clase.Id_seccion.toString()}
-              claseId={clase.Id_clase.toString()} // Pasar el ID de la sección
+              claseId={clase.Id_clase.toString()}
+              onNavigate={handleNavigate} // Pasa la función
             />
         ))}
       </div>

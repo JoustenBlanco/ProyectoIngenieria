@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import SectionsMaintenance from "./SectionsMaintenance";
 import ClassesMaintenance from "./ClassesMaintenance";
 import SubjectsMaintenance from "./SubjectsMaintenance";
+import Loading from "../../../_components/feedBack/loading";
 
 const MaintenancePage = () => {
   const { data: session, status } = useSession();
@@ -15,6 +16,10 @@ const MaintenancePage = () => {
       redirect("/homepages/auth/login");
     }
   }, [session, status]);
+
+  if (status === "loading") {
+    return <Loading />;
+  }
 
   return (
     <div className="container mx-auto p-6 dark:bg-gray-900">

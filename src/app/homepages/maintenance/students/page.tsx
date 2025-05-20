@@ -14,6 +14,7 @@ import { useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";
 import { set } from "date-fns";
 import Alert from "../../../_components/feedBack/alert";
+import Loading from "../../../_components/feedBack/loading";
 
 export default function Students() {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -290,6 +291,11 @@ export default function Students() {
       showAlert("Ocurrió un error al eliminar el estudiante", "error");
     }
   };
+
+  if (status === "loading") {
+    return <Loading />;
+  }
+
   return (
     <div className="p-6 flex flex-col h-full">
       <Alert

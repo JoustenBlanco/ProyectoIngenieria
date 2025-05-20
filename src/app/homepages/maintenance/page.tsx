@@ -3,6 +3,7 @@ import Mainten from "../../_components/maintenance/maintenance";
 import { useSession } from "next-auth/react";
 import { use, useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";
+import Loading from "../../_components/feedBack/loading"; // Importa Loading
 
 export default function Maintenance() {
   const { data: session, status } = useSession();
@@ -13,6 +14,11 @@ export default function Maintenance() {
       redirect("/homepages/auth/login");
     }
   }, [session, status]);
+
+  if (status === "loading") {
+    return <Loading />;
+  }
+
   return (
     <div className="p-6">
       <h1 className="text-3xl font-bold mb-8 text-gray-500 dark:text-gray-400">Mantenimiento</h1>

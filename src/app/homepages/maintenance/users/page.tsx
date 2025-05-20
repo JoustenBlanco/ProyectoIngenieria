@@ -14,6 +14,7 @@ import {
 } from "../../../services/password_mail";
 import { send } from "process";
 import Alert from "../../../_components/feedBack/alert";
+import Loading from "../../../_components/feedBack/loading";
 
 type FormValues = Funcionarios & {
   rol_funcionario?: number;
@@ -265,6 +266,10 @@ export default function Users() {
     value: Number(rol.Id_rol_funcionario),
     label: rol.Nombre,
   }));
+
+  if (status === "loading") {
+    return <Loading />;
+  }
 
   return (
     <div className="p-6 flex flex-col h-full">
