@@ -121,7 +121,7 @@ export default function Reports() {
     setShowTable(true);
   };
 
-  const reportOptions = ["Por Estudiante", "Por Sección"];
+  const reportOptions = ["Por Estudiante"];
 
   return (
     <div className="p-6">
