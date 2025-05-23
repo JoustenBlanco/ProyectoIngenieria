@@ -221,7 +221,7 @@ export default function Legal_Guardians() {
             required
             {...register("Cedula", { 
               required: "Este campo es requerido",
-              pattern: { value: /^[1-9]-\d{4}-\d{4}$/, message: "Formato inválido. Use: #-####-#### (ejemplo: 1-1234-1234)" }
+              pattern: { value: /^[1-9]\d{4}\d{4}$/, message: "Formato inválido. Use: ######### (ejemplo: 112341234)" }
             })}
             error={errors.Cedula?.message}
           />
@@ -233,7 +233,7 @@ export default function Legal_Guardians() {
             required
             {...register("Numero", { 
               required: "Este campo es requerido",
-              pattern: { value: /^[2-8][0-9]{3}-[0-9]{4}$/, message: "Formato inválido. Use: ####-#### (ejemplo: 2222-3333)" }
+              pattern: { value: /^[2-8][0-9]{3}[0-9]{4}$/, message: "Formato inválido. Use: ####-#### (ejemplo: 22223333)" }
             })}
             error={errors.Numero?.message}
           />

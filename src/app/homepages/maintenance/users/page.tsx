@@ -407,7 +407,7 @@ export default function Users() {
             {...register("Numero_telefono", {
               required: "Este campo es requerido",
               pattern: {
-                value: /^[2-8][0-9]{3}-[0-9]{4}$/,
+                value: /^[2-8][0-9]{3}[0-9]{4}$/,
                 message:
                   "Formato inválido. Use: ####-#### (ejemplo: 2222-3333)",
               },
