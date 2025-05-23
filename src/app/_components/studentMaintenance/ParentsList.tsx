@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from "react";
 import ParentListItem from "./ParentListItem";
 import DarkModeWrapper from "../DarkModeWreapper/DarkModeWrapper";
+import GuardianList from "../../_components/legal_guardians/GuardiansList";
 
 interface StudentListProps {
   onClose: () => void;
   onSelectParents: (selectedParents: Parents[]) => void;
 }
 
-const ParentList: React.FC<StudentListProps> = ({ onClose, onSelectParents }) => {
+const ParentList: React.FC<StudentListProps> = ({
+  onClose,
+  onSelectParents,
+}) => {
   const [parents, setParents] = useState<Parents[]>([]);
+  const [showSearch, setShowSearch] = useState(false);
   const [selectedParents, setSelectedParents] = useState<Parents[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,21 +53,47 @@ const ParentList: React.FC<StudentListProps> = ({ onClose, onSelectParents }) =>
     });
   };
 
+  const handleSelectGuardian = (guardian: any) => {
+    toggleSelectParent(guardian);
+    console.log(guardian);
+  };
+
   const handleConfirm = () => {
     onSelectParents(selectedParents);
     onClose();
   };
 
+  const handleShowSearch = () => {
+    console.log("Llega por aca");
+    setShowSearch(!showSearch);
+  };
+
   return (
     <DarkModeWrapper>
       <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+        {showSearch ? (
+          <GuardianList
+            onClose={handleShowSearch}
+            onSelectGuardian={handleSelectGuardian}
+          />
+        ) : null}
         <div className="bg-white dark:bg-gray-800 w-4/5 max-w-3xl p-6 rounded-lg shadow-lg">
           <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-gray-100">
             Selecciona encargados legales
           </h2>
+          <div className="flex justify-end mb-6">
+            <button
+              onClick={handleShowSearch}
+              className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition duration-150"
+            >
+              Buscar Encargados
+            </button>
+          </div>
 
           {isLoading ? (
-            <p className="text-center text-gray-600 dark:text-gray-300">Cargando...</p>
+            <p className="text-center text-gray-600 dark:text-gray-300">
+              Cargando...
+            </p>
           ) : error ? (
             <p className="text-center text-red-500">{error}</p>
           ) : (

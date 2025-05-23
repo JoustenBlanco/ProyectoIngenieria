@@ -5,21 +5,19 @@ import Input from "../../../_components/Atoms/input";
 import Select from "../../../_components/Atoms/select";
 import DateInput from "../../../_components/Atoms/dateInput";
 import ActionButtons from "../../../_components/Atoms/ActionButtons";
-
 import StudentList from "../../../_components/studentMaintenance/StudentsList";
 import ParentList from "../../../_components/studentMaintenance/ParentsList";
 import ParentCardList from "@/app/_components/studentMaintenance/ParentCardList";
 import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { redirect, useRouter } from "next/navigation";
-import { set } from "date-fns";
 import Alert from "../../../_components/feedBack/alert";
 import Loading from "../../../_components/feedBack/loading";
 
 export default function Students() {
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [studentParentsList, setStudentParentsList] = useState<Parents[]>([]);
-  const [removeStudentParentList, setRemoveStudentParentLis] = useState<
+  const [removeStudentParentList, setRemoveStudentParentList] = useState<
     Parents[]
   >([]);
   const [newStudentParentsList, newSetStudentParentsList] = useState<Parents[]>(
@@ -29,14 +27,20 @@ export default function Students() {
   const { data: session, status } = useSession();
   const [sections, setSections] = useState<Seccion[]>([]);
   const [showParentList, setShowParentList] = useState(false);
-  const [parentsChanged, setParentsChanged] = useState(false);
-  const [alert, setAlert] = useState<{ message: string; type: "success" | "error" | "info" | "warning"; show: boolean }>({
+  const [alert, setAlert] = useState<{
+    message: string;
+    type: "success" | "error" | "info" | "warning";
+    show: boolean;
+  }>({
     message: "",
     type: "info",
     show: false,
   });
 
-  const showAlert = (message: string, type: "success" | "error" | "info" | "warning" = "info") => {
+  const showAlert = (
+    message: string,
+    type: "success" | "error" | "info" | "warning" = "info"
+  ) => {
     setAlert({ message, type, show: true });
   };
 
@@ -52,6 +56,7 @@ export default function Students() {
   };
 
   const fetchParentsByStuden = async (id: number) => {
+    console.log("Fetching parents for student ID:", id);
     const response = await fetch(
       `/api/encargados_x_alumnos/[id]?Id_estudiante=${id}`,
       {
@@ -142,7 +147,7 @@ export default function Students() {
   const handleRemoveParent = (idAEliminar: number) => {
     setStudentParentsList((prevList) => {
       if (prevList.length - 1 > 0) {
-        setRemoveStudentParentLis((prevListRemove) => [
+        setRemoveStudentParentList((prevListRemove) => [
           ...prevListRemove,
           prevList.find((parent) => parent.Id_encargado_legal === idAEliminar)!,
         ]);
@@ -150,7 +155,10 @@ export default function Students() {
           (parent) => parent.Id_encargado_legal !== idAEliminar
         );
       }
-      showAlert("El estudiante debe tener por lo menos un encargado legal", "warning");
+      showAlert(
+        "El estudiante debe tener por lo menos un encargado legal",
+        "warning"
+      );
       return prevList;
     });
   };
@@ -166,13 +174,16 @@ export default function Students() {
     );
     setStudentParentsList((prevLista) => [...prevLista, ...nuevos]);
     if (selectedStudent) {
-      newSetStudentParentsList((prevLista) => [...prevLista, ...nuevos]);
+      newSetStudentParentsList(nuevos);
     }
   };
 
   const handleSave = async (data: Student) => {
     if (studentParentsList.length === 0) {
-      showAlert("El estudiante debe tener por lo menos un encargado legal", "warning");
+      showAlert(
+        "El estudiante debe tener por lo menos un encargado legal",
+        "warning"
+      );
       return;
     }
 
@@ -180,7 +191,7 @@ export default function Students() {
       ...data,
       Id_seccion: Number(data.Id_seccion),
     };
-
+    console.log("Student data:", studentData);
     try {
       const response = await fetch("/api/alumnos", {
         method: selectedStudent ? "PUT" : "POST",
@@ -202,7 +213,10 @@ export default function Students() {
         const result = await response.json();
         studentId = result.Id_alumno;
       }
-
+      console.log(
+        "El tamanno del parent list es:",
+        newStudentParentsList.length
+      );
       if (newStudentParentsList.length > 0) {
         await Promise.all(
           newStudentParentsList.map((encargado) =>
@@ -259,6 +273,7 @@ export default function Students() {
       Id_seccion: 0,
     });
     newSetStudentParentsList([]);
+    setRemoveStudentParentList([]);
     setStudentParentsList([]);
     setShowParentList(false);
     setSelectedStudent(null);
@@ -284,7 +299,10 @@ export default function Students() {
         handleNew();
       } else {
         const errorData = await response.json();
-        showAlert(`Error al eliminar el estudiante: ${errorData.error}`, "error");
+        showAlert(
+          `Error al eliminar el estudiante: ${errorData.error}`,
+          "error"
+        );
       }
     } catch (error) {
       console.error("Error en la petición de eliminación", error);
@@ -463,9 +481,9 @@ export default function Students() {
             {...register("Cedula", {
               required: "Este campo es requerido",
               pattern: {
-                value: /^[1-9]-\d{4}-\d{4}$/,
+                value: /^[1-9]\d{4}\d{4}$/,
                 message:
-                  "Formato inválido. Use: #-####-#### (ejemplo: 1-1234-1234)",
+                  "Formato inválido. Use: ######### (ejemplo: 112341234)",
               },
             })}
             error={errors.Cedula?.message}
